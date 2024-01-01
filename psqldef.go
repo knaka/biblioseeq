@@ -1,6 +1,8 @@
 package common
 
 import (
+	. "app/internal/utils"
+	"errors"
 	"net/url"
 	"os"
 	"strings"
@@ -15,7 +17,7 @@ import (
 func (Db) Converge() error {
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
-		return nil
+		return errors.New("DB_URL is not set")
 	}
 	u, err := url.Parse(dbUrl)
 	if err != nil {
@@ -24,7 +26,7 @@ func (Db) Converge() error {
 	args := []string{}
 	pass, _ := u.User.Password()
 	dbName := strings.ReplaceAll(u.Path, "/", "")
-	err = ExecWith(
+	return RunWith(
 		map[string]string{
 			"PGPASSWORD": pass,
 		},
@@ -37,7 +39,6 @@ func (Db) Converge() error {
 			dbName,
 		}, args...)...,
 	)
-	return err
 }
 
 // Dump dumps a database.
@@ -46,7 +47,7 @@ func (Db) Converge() error {
 func (Db) Dump() error {
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
-		return nil
+		return errors.New("DB_URL is not set")
 	}
 	u, err := url.Parse(dbUrl)
 	if err != nil {
@@ -54,7 +55,7 @@ func (Db) Dump() error {
 	}
 	args := []string{}
 	dbName := strings.ReplaceAll(u.Path, "/", "")
-	err = ExecWith(
+	return RunWith(
 		nil,
 		"psqldef",
 		append([]string{
@@ -66,5 +67,4 @@ func (Db) Dump() error {
 			dbName,
 		}, args...)...,
 	)
-	return err
 }

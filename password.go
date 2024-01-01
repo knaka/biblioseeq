@@ -1,6 +1,7 @@
 package common
 
 import (
+	. "app/internal/utils"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"os"
@@ -10,6 +11,6 @@ import (
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Pwhash(password string) {
-	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	_, _ = fmt.Fprintln(os.Stdout, string(hash))
+	hash := Ensure(bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost))
+	Assert(fmt.Fprintln(os.Stdout, string(hash)))
 }

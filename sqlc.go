@@ -1,6 +1,8 @@
 package common
 
 import (
+	. "app/internal/utils"
+	"errors"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
@@ -22,15 +24,12 @@ func (Sqlc) Gen() error {
 		filepath.Join("db", "schema.sql"),
 	)
 	destPath := filepath.Join("db", "sqlcgen")
-	dest, _ := target.NewestModTime(destPath)
+	dest := Ensure(target.NewestModTime(destPath))
 	if !dest.IsZero() && dest.Compare(source) > 0 {
 		return nil
 	}
-	err := sh.Rm(destPath)
-	if err != nil {
-		return err
-	}
-	return ExecWith(nil, "sqlc", "generate")
+	Assert(sh.Rm(destPath))
+	return RunWith(nil, "sqlc", "generate")
 }
 
 // Vet runs queries through a set of lint rules.
@@ -39,11 +38,11 @@ func (Sqlc) Gen() error {
 func (Sqlc) Vet() error {
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
-		log.Panicf("panic d5e4c70")
+		return errors.New("no DB_URL")
 	}
 	u, err := url.ParseRequestURI(dbUrl)
 	if err != nil {
-		log.Panicf("panic 5d83c26 (%v)", err)
+		return err
 	}
 	values := u.Query()
 	values.Set("options", "-c enable_seqscan=off")
@@ -52,9 +51,8 @@ func (Sqlc) Vet() error {
 	if err != nil {
 		log.Panicf("panic 8b901e4 (%v)", err)
 	}
-	log.Println("1436ea9", u.String())
 	// Linting queries — sqlc 1.23.0 documentation https://docs.sqlc.dev/en/stable/howto/vet.html
-	return ExecWith(map[string]string{
+	return RunWith(map[string]string{
 		//"SQLCDEBUG": "dumpvetenv=1,dumpexplain=1", // Environment variables — sqlc 1.23.0 documentation https://docs.sqlc.dev/en/stable/reference/environment-variables.html#sqlcdebug
 	}, "sqlc", "vet")
 }

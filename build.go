@@ -1,6 +1,7 @@
 package common
 
 import (
+	. "app/internal/utils"
 	"fmt"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
@@ -18,7 +19,7 @@ type AirInfoParams struct {
 	ExcludeDirs  []string
 }
 
-var AirInfo AirInfoParams
+var AirInfo *AirInfoParams
 
 var baseName = filepath.Base(mainPackage)
 
@@ -52,14 +53,11 @@ func makeBinName(baseName, targetEnv, goos, goarch string) string {
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Build) Cross(goarch string) error {
 	mg.Deps(Gen)
-	_ = os.Symlink(
+	Assert(os.Symlink(
 		fmt.Sprintf("prebuilt-%s.Dockerfile", goarch),
 		"Dockerfile",
-	)
+	))
 	// Do not Deps because this chroot's
-	//if err = BuildClient(); err != nil {
-	//	return err
-	//}
 	mg.Deps(Client.Build)
 	const goos = "linux"
 	if goarch == "native" {
@@ -88,7 +86,7 @@ func (Build) Cross(goarch string) error {
 func Air() error {
 	envMap := make(map[string]string)
 	binPath := filepath.Join(buildDir, makeBinName(baseName, AirInfo.TargetEnv, runtime.GOOS, runtime.GOARCH))
-	return ExecWith(envMap,
+	return RunWith(envMap,
 		"air",
 		"--build.cmd", fmt.Sprintf("go build -gcflags 'all=-N -l' -o %s %s", binPath, AirInfo.BuildPackage),
 		"--build.bin", binPath,

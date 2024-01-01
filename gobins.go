@@ -1,6 +1,7 @@
 package common
 
 import (
+	. "app/internal/utils"
 	"errors"
 	"fmt"
 	"github.com/magefile/mage/mg"
@@ -15,7 +16,7 @@ import (
 
 var goBinDir string
 
-type GobinPackageParams struct {
+type GobinPkgParams struct {
 	Name    string
 	Version string
 	Tags    string
@@ -23,23 +24,23 @@ type GobinPackageParams struct {
 
 func init() {
 	// The `mage` command only runs in directories containing magefiles or a `magefiles/` directory.
-	wd := ensure(os.Getwd())
+	wd := Ensure(os.Getwd())
 	goBinDir = filepath.Join(wd, ".gobin")
 	DirsToCleanUp = append(DirsToCleanUp, goBinDir)
 }
 
-var GobinPackages []GobinPackageParams
+var GobinPkgs []*GobinPkgParams
 
-func ExecWith(env map[string]string, cmd string, args ...string) error {
-	mg.Deps(Gobins)
+// RunWith runs the given command prioritizing binaries in .gobin/ directory. It is not a task function.
+func RunWith(env map[string]string, cmd string, args ...string) error {
 	_, err := exec.LookPath(cmd)
 	if err != nil {
-		err = Gobin(cmd)
+		err := Gobin(cmd)
 		if err != nil {
 			return err
 		}
 	}
-	_ = os.Setenv("PATH", goBinDir+string(os.PathListSeparator)+os.Getenv("PATH"))
+	Assert(os.Setenv("PATH", goBinDir+string(os.PathListSeparator)+os.Getenv("PATH")))
 	return sh.RunWith(env, cmd, args...)
 }
 
@@ -56,7 +57,7 @@ func Exec(command string) error {
 		fields := strings.Split(env, "=")
 		envMap[fields[0]] = fields[1]
 	}
-	return ExecWith(envMap, args[0], args[1:]...)
+	return RunWith(envMap, args[0], args[1:]...)
 }
 
 func ensureGobinInstalled(pkgName, version, tags string) error {
@@ -66,15 +67,15 @@ func ensureGobinInstalled(pkgName, version, tags string) error {
 		return nil
 	}
 	pkgNameWithVer := pkgName + "@" + version
-	assert(fmt.Fprintf(os.Stderr, "Building %s\n", pkgNameWithVer))
+	Assert(fmt.Fprintf(os.Stderr, "Building %s\n", pkgNameWithVer))
 	linkTgtPath := filepath.Join(goBinDir, cmdName)
-	assert(os.Remove(linkTgtPath))
-	assert(sh.RunWith(
+	Assert(os.Remove(linkTgtPath))
+	Assert(sh.RunWith(
 		map[string]string{"GOBIN": goBinDir},
 		mg.GoCmd(), "install", "-tags", tags, pkgNameWithVer,
 	))
-	assert(os.Rename(linkTgtPath, binPath))
-	assert(os.Symlink(filepath.Base(binPath), linkTgtPath))
+	Assert(os.Rename(linkTgtPath, binPath))
+	Assert(os.Symlink(filepath.Base(binPath), linkTgtPath))
 	return nil
 }
 
@@ -82,10 +83,9 @@ func ensureGobinInstalled(pkgName, version, tags string) error {
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gobins() {
-	_ = os.MkdirAll(goBinDir, 0755)
-	log.Println(GobinPackages)
-	for _, pkg := range GobinPackages {
-		assert(ensureGobinInstalled(pkg.Name, pkg.Version, pkg.Tags))
+	Assert(os.MkdirAll(goBinDir, 0755))
+	for _, pkg := range GobinPkgs {
+		Assert(ensureGobinInstalled(pkg.Name, pkg.Version, pkg.Tags))
 	}
 }
 
@@ -93,8 +93,7 @@ func Gobins() {
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gobin(name string) error {
-	log.Println("1ff5f77", name)
-	for _, pkg := range GobinPackages {
+	for _, pkg := range GobinPkgs {
 		if name == pkg.Name || name == filepath.Base(pkg.Name) {
 			return ensureGobinInstalled(pkg.Name, pkg.Version, pkg.Tags)
 		}

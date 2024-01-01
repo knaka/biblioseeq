@@ -18,11 +18,7 @@ type DockerfileParams struct {
 
 var dockerfileTemplate = "template.dockerfile"
 
-var DockerfileSettings []DockerfileParams
-
-func InitDockerfileTemplate(template string) {
-	dockerfileTemplate = template
-}
+var DockerfileSettings []*DockerfileParams
 
 func generateDockerfile(data *DockerfileParams) error {
 	tmpl, err := template.ParseFiles(filepath.Join(dir, dockerfileTemplate))
@@ -50,7 +46,7 @@ func generateDockerfile(data *DockerfileParams) error {
 func Dockerfiles() error {
 	for _, dockerfileParams := range DockerfileSettings {
 		if updated, _ := target.Path(dockerfileParams.Filename, dockerfileTemplate); updated {
-			err := generateDockerfile(&dockerfileParams)
+			err := generateDockerfile(dockerfileParams)
 			if err != nil {
 				return err
 			}

@@ -8,19 +8,15 @@ import (
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Psql() error {
-	dbUrl := os.Getenv("DB_URL")
-	err := ExecWith(
-		map[string]string{},
-		"psql",
-		dbUrl,
-	)
-	if err != nil {
-		dbUrl = os.Getenv("ADMIN_DB_URL")
-		err = ExecWith(
-			map[string]string{},
-			"psql",
-			dbUrl,
-		)
+	var err error
+	for _, dbUrl := range []string{
+		os.Getenv("DB_URL"),
+		os.Getenv("ADMIN_DB_URL"),
+	} {
+		err = RunWith(nil, "psql", dbUrl)
+		if err == nil {
+			return nil
+		}
 	}
 	return err
 }

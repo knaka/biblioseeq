@@ -1,16 +1,13 @@
 package common
 
 import (
+	. "app/internal/utils"
 	"github.com/magefile/mage/mg"
 	"os"
 )
 
 // noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
 type Client mg.Namespace
-
-type bar struct {
-	dir string
-}
 
 var ClientDirs []string
 
@@ -25,9 +22,10 @@ func (Client) Build() error {
 	var err error
 	for _, dir := range ClientDirs {
 		err = (func() error {
-			_ = os.Chdir(dir)
-			defer (func() { _ = os.Chdir("..") })()
-			return ExecWith(nil, "npm", "run", "build:development")
+			wd := Ensure(os.Getwd())
+			Assert(os.Chdir(dir))
+			defer (func() { Ignore(os.Chdir(wd)) })()
+			return RunWith(nil, "npm", "run", "build:development")
 		})()
 		if err != nil {
 			return err

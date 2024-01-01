@@ -21,7 +21,7 @@ var LoadEnv = func() {}
 func execGooseSub(dump bool, args ...string) error {
 	LoadEnv()
 	dbUrl := os.Getenv("DB_URL")
-	err := ExecWith(
+	err := RunWith(
 		map[string]string{
 			"GOOSE_DRIVER":   "postgres",
 			"GOOSE_DBSTRING": dbUrl,

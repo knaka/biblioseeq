@@ -1,6 +1,7 @@
 package common
 
 import (
+	. "app/internal/utils"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/target"
 )
@@ -9,17 +10,15 @@ import (
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Bufgen() error {
-	source, _ := target.NewestModTime("proto")
-	dest, _ := target.NewestModTime("pbgen")
+	source := Ensure(target.NewestModTime("proto"))
+	dest := Ensure(target.NewestModTime("pbgen"))
 	if dest.Compare(source) > 0 {
 		return nil
 	}
-	return ExecWith(nil, "buf", "generate", "proto/")
+	return RunWith(nil, "buf", "generate", "proto/")
 }
 
 // Pbgen is an alias of 'bufgen'.
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func Pbgen() {
-	mg.Deps(Bufgen)
-}
+func Pbgen() { mg.Deps(Bufgen) }
