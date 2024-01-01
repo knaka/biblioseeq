@@ -1,8 +1,0 @@
-#!/bin/bash
-set -o nounset -o errexit -o pipefail
-
-cd "$(dirname "$0")"
-toplevel="$(git rev-parse --show-toplevel)"
-prefix=${PWD##$toplevel/}
-cd "$toplevel"
-git subtree push --prefix "$prefix" https://github.com/knaka/magefiles-common main
