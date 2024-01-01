@@ -1,7 +1,6 @@
 package common
 
 import (
-	"app/env"
 	"fmt"
 	"github.com/magefile/mage/sh"
 	"log"
@@ -18,7 +17,8 @@ func execGoose(args ...string) error {
 }
 
 func execGooseSub(dump bool, args ...string) error {
-	env.Load()
+	//todo: どうしよう
+	//env.Load()
 	dbUrl := os.Getenv("DB_URL")
 	err := ExecWith(
 		map[string]string{

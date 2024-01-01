@@ -83,3 +83,7 @@ func Lint() error {
 	)
 	return nil
 }
+
+func Foo() error {
+	return nil
+}

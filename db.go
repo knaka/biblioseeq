@@ -1,8 +1,6 @@
 package common
 
 import (
-	"app/db/seeds"
-	"app/env"
 	"database/sql"
 	"fmt"
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -10,7 +8,6 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"sort"
 	"strings"
 )
 
@@ -18,7 +15,8 @@ import (
 type Db mg.Namespace
 
 func execMainDatabaseDdl(ddlWithDbNamePlaceholder string) error {
-	env.Load()
+	//todo: どうしよう
+	//env.Load()
 	adminDbUrl := os.Getenv("ADMIN_DB_URL")
 	dbUrl := os.Getenv("DB_URL")
 	urlDb, err := url.Parse(dbUrl)
@@ -54,7 +52,8 @@ func (Db) Create() error {
 }
 
 func execDbQuery(query string) error {
-	env.Load()
+	//todo: どうしよう
+	//env.Load()
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
 		return nil
@@ -86,31 +85,32 @@ func (Db) Drop() error {
 // Seed inserts seed data into the database.
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func (Db) Seed() error {
-	entries, err := seeds.Fs.ReadDir(".")
-	if err != nil {
-		log.Panicf("panic 9080748 (%v)", err)
-	}
-	sort.Slice(entries, func(i, j int) bool {
-		return strings.Compare(entries[j].Name(), entries[i].Name()) > 0
-	})
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
-		}
-		cont, err := seeds.Fs.ReadFile(entry.Name())
-		if err != nil {
-			log.Panicf("panic 2a6f7d2 (%v)", err)
-		}
-		log.Println("Executing", entry.Name())
-		log.Println(string(cont))
-		err = execDbQuery(string(cont))
-		if err != nil {
-			log.Panicf("panic 271df6d (%v)", err)
-		}
-	}
-	return nil
-}
+// todo: どうしよう。seed の embed 無い
+//func (Db) Seed() error {
+//	entries, err := seeds.Fs.ReadDir(".")
+//	if err != nil {
+//		log.Panicf("panic 9080748 (%v)", err)
+//	}
+//	sort.Slice(entries, func(i, j int) bool {
+//		return strings.Compare(entries[j].Name(), entries[i].Name()) > 0
+//	})
+//	for _, entry := range entries {
+//		if entry.IsDir() {
+//			continue
+//		}
+//		cont, err := seeds.Fs.ReadFile(entry.Name())
+//		if err != nil {
+//			log.Panicf("panic 2a6f7d2 (%v)", err)
+//		}
+//		log.Println("Executing", entry.Name())
+//		log.Println(string(cont))
+//		err = execDbQuery(string(cont))
+//		if err != nil {
+//			log.Panicf("panic 271df6d (%v)", err)
+//		}
+//	}
+//	return nil
+//}
 
 // Migrate migrates the database to the most recent version available.
 //
