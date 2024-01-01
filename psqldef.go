@@ -13,8 +13,6 @@ import (
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Converge() error {
-	//todo: どうしよう
-	//env.Load()
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
 		return nil
@@ -46,8 +44,6 @@ func (Db) Converge() error {
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Dump() error {
-	//todo: どうしよう
-	//env.Load()
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
 		return nil

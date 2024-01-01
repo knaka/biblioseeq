@@ -15,8 +15,6 @@ import (
 type Db mg.Namespace
 
 func execMainDatabaseDdl(ddlWithDbNamePlaceholder string) error {
-	//todo: どうしよう
-	//env.Load()
 	adminDbUrl := os.Getenv("ADMIN_DB_URL")
 	dbUrl := os.Getenv("DB_URL")
 	urlDb, err := url.Parse(dbUrl)
@@ -52,8 +50,6 @@ func (Db) Create() error {
 }
 
 func execDbQuery(query string) error {
-	//todo: どうしよう
-	//env.Load()
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
 		return nil

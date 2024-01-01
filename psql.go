@@ -8,8 +8,6 @@ import (
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Psql() error {
-	//todo: どうしよう
-	//env.Load()
 	dbUrl := os.Getenv("DB_URL")
 	err := ExecWith(
 		map[string]string{},

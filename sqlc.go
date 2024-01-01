@@ -37,8 +37,6 @@ func (Sqlc) Gen() error {
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Sqlc) Vet() error {
-	//todo: どうしよう
-	//env.Load()
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
 		log.Panicf("panic d5e4c70")

@@ -16,9 +16,10 @@ func execGoose(args ...string) error {
 	return execGooseSub(true, args...)
 }
 
+var LoadEnv = func() {}
+
 func execGooseSub(dump bool, args ...string) error {
-	//todo: どうしよう
-	//env.Load()
+	LoadEnv()
 	dbUrl := os.Getenv("DB_URL")
 	err := ExecWith(
 		map[string]string{
