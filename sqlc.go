@@ -1,7 +1,6 @@
 package common
 
 import (
-	"app/env"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
@@ -38,7 +37,8 @@ func (Sqlc) Gen() error {
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Sqlc) Vet() error {
-	env.Load()
+	//todo: どうしよう
+	//env.Load()
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
 		log.Panicf("panic d5e4c70")

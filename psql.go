@@ -1,7 +1,6 @@
 package common
 
 import (
-	"app/env"
 	"os"
 )
 
@@ -9,7 +8,8 @@ import (
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Psql() error {
-	env.Load()
+	//todo: どうしよう
+	//env.Load()
 	dbUrl := os.Getenv("DB_URL")
 	err := ExecWith(
 		map[string]string{},

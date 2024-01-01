@@ -1,7 +1,6 @@
 package common
 
 import (
-	"app/env"
 	"net/url"
 	"os"
 	"strings"
@@ -14,7 +13,8 @@ import (
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Converge() error {
-	env.Load()
+	//todo: どうしよう
+	//env.Load()
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
 		return nil
@@ -46,7 +46,8 @@ func (Db) Converge() error {
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Dump() error {
-	env.Load()
+	//todo: どうしよう
+	//env.Load()
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
 		return nil
