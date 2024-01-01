@@ -15,7 +15,7 @@ import (
 
 var goBinDir string
 
-type GobinPackage struct {
+type GobinPackageParams struct {
 	Name    string
 	Version string
 	Tags    string
@@ -28,11 +28,7 @@ func init() {
 	DirsToCleanUp = append(DirsToCleanUp, goBinDir)
 }
 
-var gobinPackages []GobinPackage
-
-func InitGobins(packages ...GobinPackage) {
-	gobinPackages = packages
-}
+var GobinPackages []GobinPackageParams
 
 func ExecWith(env map[string]string, cmd string, args ...string) error {
 	mg.Deps(Gobins)
@@ -87,8 +83,8 @@ func ensureGobinInstalled(pkgName, version, tags string) error {
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gobins() {
 	_ = os.MkdirAll(goBinDir, 0755)
-	log.Println(gobinPackages)
-	for _, pkg := range gobinPackages {
+	log.Println(GobinPackages)
+	for _, pkg := range GobinPackages {
 		assert(ensureGobinInstalled(pkg.Name, pkg.Version, pkg.Tags))
 	}
 }
@@ -98,7 +94,7 @@ func Gobins() {
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gobin(name string) error {
 	log.Println("1ff5f77", name)
-	for _, pkg := range gobinPackages {
+	for _, pkg := range GobinPackages {
 		if name == pkg.Name || name == filepath.Base(pkg.Name) {
 			return ensureGobinInstalled(pkg.Name, pkg.Version, pkg.Tags)
 		}

@@ -12,25 +12,13 @@ import (
 
 var mainPackage string
 
-type foo struct {
-	buildPackage string
-	targetEnv    string
-	excludeDirs  []string
+type AirInfoParams struct {
+	BuildPackage string
+	TargetEnv    string
+	ExcludeDirs  []string
 }
 
-var airInfo foo
-
-func InitBuild(
-	buildPackage string,
-	targetEnv string,
-	excludeDirs []string,
-) {
-	airInfo = foo{
-		buildPackage: buildPackage,
-		targetEnv:    targetEnv,
-		excludeDirs:  excludeDirs,
-	}
-}
+var AirInfo AirInfoParams
 
 var baseName = filepath.Base(mainPackage)
 
@@ -99,13 +87,13 @@ func (Build) Cross(goarch string) error {
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Air() error {
 	envMap := make(map[string]string)
-	binPath := filepath.Join(buildDir, makeBinName(baseName, airInfo.targetEnv, runtime.GOOS, runtime.GOARCH))
+	binPath := filepath.Join(buildDir, makeBinName(baseName, AirInfo.TargetEnv, runtime.GOOS, runtime.GOARCH))
 	return ExecWith(envMap,
 		"air",
-		"--build.cmd", fmt.Sprintf("go build -gcflags 'all=-N -l' -o %s %s", binPath, airInfo.buildPackage),
+		"--build.cmd", fmt.Sprintf("go build -gcflags 'all=-N -l' -o %s %s", binPath, AirInfo.BuildPackage),
 		"--build.bin", binPath,
 		"--build.stop_on_error", "true",
-		"--build.exclude_dir", strings.Join(airInfo.excludeDirs, ","),
+		"--build.exclude_dir", strings.Join(AirInfo.ExcludeDirs, ","),
 	)
 }
 

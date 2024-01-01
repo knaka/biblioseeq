@@ -12,13 +12,7 @@ type bar struct {
 	dir string
 }
 
-var clientInfo []bar
-
-func InitClient(dirs ...string) {
-	for _, dir := range dirs {
-		clientInfo = append(clientInfo, bar{dir: dir})
-	}
-}
+var ClientDirs []string
 
 // Build builds web client application.
 //
@@ -29,9 +23,9 @@ func (Client) Build() error {
 		return nil
 	}
 	var err error
-	for _, clt := range clientInfo {
+	for _, dir := range ClientDirs {
 		err = (func() error {
-			_ = os.Chdir(clt.dir)
+			_ = os.Chdir(dir)
 			defer (func() { _ = os.Chdir("..") })()
 			return ExecWith(nil, "npm", "run", "build:development")
 		})()
