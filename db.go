@@ -1,15 +1,14 @@
 package common
 
 import (
-	"app/db/seeds"
 	"database/sql"
 	"fmt"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/magefile/mage/mg"
+	"github.com/magefile/mage/sh"
 	"log"
 	"net/url"
 	"os"
-	"sort"
 	"strings"
 )
 
@@ -84,29 +83,30 @@ func (Db) Drop() error {
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Seed() error {
-	entries, err := seeds.Fs.ReadDir(".")
-	if err != nil {
-		log.Panicf("panic 9080748 (%v)", err)
-	}
-	sort.Slice(entries, func(i, j int) bool {
-		return strings.Compare(entries[j].Name(), entries[i].Name()) > 0
-	})
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
-		}
-		cont, err := seeds.Fs.ReadFile(entry.Name())
-		if err != nil {
-			log.Panicf("panic 2a6f7d2 (%v)", err)
-		}
-		log.Println("Executing", entry.Name())
-		log.Println(string(cont))
-		err = execDbQuery(string(cont))
-		if err != nil {
-			log.Panicf("panic 271df6d (%v)", err)
-		}
-	}
-	return nil
+	//entries, err := seeds.Fs.ReadDir(".")
+	//if err != nil {
+	//	log.Panicf("panic 9080748 (%v)", err)
+	//}
+	//sort.Slice(entries, func(i, j int) bool {
+	//	return strings.Compare(entries[j].Name(), entries[i].Name()) > 0
+	//})
+	//for _, entry := range entries {
+	//	if entry.IsDir() {
+	//		continue
+	//	}
+	//	cont, err := seeds.Fs.ReadFile(entry.Name())
+	//	if err != nil {
+	//		log.Panicf("panic 2a6f7d2 (%v)", err)
+	//	}
+	//	log.Println("Executing", entry.Name())
+	//	log.Println(string(cont))
+	//	err = execDbQuery(string(cont))
+	//	if err != nil {
+	//		log.Panicf("panic 271df6d (%v)", err)
+	//	}
+	//}
+	//return nil
+	return sh.Run(mg.GoCmd(), "run", "./cmd/db-seed")
 }
 
 // Migrate migrates the database to the most recent version available.

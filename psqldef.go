@@ -1,7 +1,6 @@
 package common
 
 import (
-	. "app/internal/utils"
 	"errors"
 	"net/url"
 	"os"
