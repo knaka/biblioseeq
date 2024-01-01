@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -84,7 +83,7 @@ func (Db) Drop() error {
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Seed() error {
-	return sh.Run(mg.GoCmd(), "run", filepath.Join(".", "cmd", "db-seed"))
+	return sh.Run(mg.GoCmd(), "run", "./cmd/db-seed")
 }
 
 // Migrate migrates the database to the most recent version available.
