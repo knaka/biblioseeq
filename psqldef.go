@@ -7,9 +7,6 @@ import (
 	"strings"
 )
 
-// PGPASSWORD= ./.gobin/psqldef --file=db/schema.sql --host=127.0.0.1 --port=5432 --user=knaka --dry-run yuber_dev
-// PGPASSWORD= ./.gobin/psqldef --file=db/schema.sql --host=127.0.0.1 --port=5432 --user=knaka yuber_dev
-
 // Converge converges a PostgreSQL database.
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
