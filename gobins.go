@@ -1,9 +1,9 @@
 package common
 
 import (
-	. "app/internal/utils"
 	"errors"
 	"fmt"
+	. "github.com/knaka/go-utils"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/mattn/go-shellwords"

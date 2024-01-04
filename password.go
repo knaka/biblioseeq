@@ -1,8 +1,8 @@
 package common
 
 import (
-	. "app/internal/utils"
 	"fmt"
+	. "github.com/knaka/go-utils"
 	"golang.org/x/crypto/bcrypt"
 	"os"
 )

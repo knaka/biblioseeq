@@ -1,8 +1,8 @@
 package common
 
 import (
-	. "app/internal/utils"
 	"fmt"
+	. "github.com/knaka/go-utils"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/tidwall/gjson"

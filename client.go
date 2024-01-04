@@ -1,7 +1,7 @@
 package common
 
 import (
-	. "app/internal/utils"
+	. "github.com/knaka/go-utils"
 	"github.com/magefile/mage/mg"
 	"os"
 )

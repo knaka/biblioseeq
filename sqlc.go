@@ -1,8 +1,8 @@
 package common
 
 import (
-	. "app/internal/utils"
 	"errors"
+	. "github.com/knaka/go-utils"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
