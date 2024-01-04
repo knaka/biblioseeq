@@ -1,0 +1,40 @@
+#!/bin/bash
+set -o nounset -o errexit -o pipefail
+
+cd "$(dirname "$0")"
+if test -e .git
+then
+  echo "This directory is not a subtree."
+  exit 1
+fi
+
+show_help() {
+  echo "Usage: $0 <push|pull>"
+  exit 1
+}
+
+base="$(basename "$0")"
+case "$base" in
+  push-subtree) cmd=push ;;
+  pull-subtree) cmd=pull ;;
+  *)
+    if test "${1+SET}" != SET
+    then
+      show_help
+      exit 1
+    fi
+    cmd="$1"
+    shift
+    ;;
+esac
+repos=$(cat repos)
+toplevel="$(git rev-parse --show-toplevel)"
+prefix=${PWD##$toplevel/}
+cd "$toplevel"
+case "$cmd" in
+  push) git subtree push --prefix "$prefix" "$repos" main ;;
+  pull) git subtree pull --prefix "$prefix" "$repos" --squash main ;;
+  *)
+    show_help
+    ;;
+esac

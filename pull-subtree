@@ -1,9 +1,1 @@
-#!/bin/bash
-set -o nounset -o errexit -o pipefail
-
-cd "$(dirname "$0")"
-repos=$(cat repos)
-toplevel="$(git rev-parse --show-toplevel)"
-prefix=${PWD##$toplevel/}
-cd "$toplevel"
-git subtree pull --prefix "$prefix" "$repos" --squash main
+subtree
