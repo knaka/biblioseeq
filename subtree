@@ -27,13 +27,13 @@ case "$base" in
     shift
     ;;
 esac
-repos=$(cat repos)
+repo=$(if test -r .repo; then cat .repo; else cat .repo.default; fi)
 toplevel="$(git rev-parse --show-toplevel)"
 prefix=${PWD##$toplevel/}
 cd "$toplevel"
 case "$cmd" in
-  push) git subtree push --prefix "$prefix" "$repos" main ;;
-  pull) git subtree pull --prefix "$prefix" "$repos" --squash main ;;
+  push) git subtree push --prefix "$prefix" "$repo" main ;;
+  pull) git subtree pull --prefix "$prefix" "$repo" --squash main ;;
   *)
     show_help
     ;;
