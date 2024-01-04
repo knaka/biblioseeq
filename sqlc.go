@@ -28,7 +28,7 @@ func (Sqlc) Gen() error {
 	if !dest.IsZero() && dest.Compare(source) > 0 {
 		return nil
 	}
-	Assert(sh.Rm(destPath))
+	Ensure0(sh.Rm(destPath))
 	return RunWith(nil, "sqlc", "generate")
 }
 

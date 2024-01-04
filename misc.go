@@ -18,7 +18,7 @@ var DirsToCleanUp []string
 func Clean() {
 	fmt.Println("Cleaning...")
 	for _, dir := range DirsToCleanUp {
-		Assert(os.RemoveAll(dir))
+		Ensure0(os.RemoveAll(dir))
 	}
 }
 
@@ -42,7 +42,7 @@ func (Env) Compose() {
 		Path:    "/" + gjson.Get(json, "services.ap.environment.DB_DATABASE").String(),
 		RawPath: "sslmode=disable",
 	}
-	Assert(fmt.Fprintf(os.Stdout, "DB_URL=%s\n", urlDb.String()))
+	Ensure0(fmt.Fprintf(os.Stdout, "DB_URL=%s\n", urlDb.String()))
 }
 
 // Print (host string, port int, user, password, database string) prints text in the .env format that references the CDK configuration.
@@ -59,7 +59,7 @@ func (Env) Print(host string, port int, user, password, database string) {
 		Path:     "/" + database,
 		RawQuery: "sslmode=disable",
 	}
-	Assert(fmt.Fprintf(os.Stdout, "DB_URL=%s\n", urlDb.String()))
+	Ensure0(fmt.Fprintf(os.Stdout, "DB_URL=%s\n", urlDb.String()))
 }
 
 // Lint analyses.

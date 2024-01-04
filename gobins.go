@@ -40,7 +40,7 @@ func RunWith(env map[string]string, cmd string, args ...string) error {
 			return err
 		}
 	}
-	Assert(os.Setenv("PATH", goBinDir+string(os.PathListSeparator)+os.Getenv("PATH")))
+	Ensure0(os.Setenv("PATH", goBinDir+string(os.PathListSeparator)+os.Getenv("PATH")))
 	return sh.RunWith(env, cmd, args...)
 }
 
@@ -67,15 +67,15 @@ func ensureGobinInstalled(pkgName, version, tags string) error {
 		return nil
 	}
 	pkgNameWithVer := pkgName + "@" + version
-	Assert(fmt.Fprintf(os.Stderr, "Building %s\n", pkgNameWithVer))
+	Ensure0(fmt.Fprintf(os.Stderr, "Building %s\n", pkgNameWithVer))
 	linkTgtPath := filepath.Join(goBinDir, cmdName)
-	Assert(os.Remove(linkTgtPath))
-	Assert(sh.RunWith(
+	Ensure0(os.Remove(linkTgtPath))
+	Ensure0(sh.RunWith(
 		map[string]string{"GOBIN": goBinDir},
 		mg.GoCmd(), "install", "-tags", tags, pkgNameWithVer,
 	))
-	Assert(os.Rename(linkTgtPath, binPath))
-	Assert(os.Symlink(filepath.Base(binPath), linkTgtPath))
+	Ensure0(os.Rename(linkTgtPath, binPath))
+	Ensure0(os.Symlink(filepath.Base(binPath), linkTgtPath))
 	return nil
 }
 
@@ -83,9 +83,9 @@ func ensureGobinInstalled(pkgName, version, tags string) error {
 //
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gobins() {
-	Assert(os.MkdirAll(goBinDir, 0755))
+	Ensure0(os.MkdirAll(goBinDir, 0755))
 	for _, pkg := range GobinPkgs {
-		Assert(ensureGobinInstalled(pkg.Name, pkg.Version, pkg.Tags))
+		Ensure0(ensureGobinInstalled(pkg.Name, pkg.Version, pkg.Tags))
 	}
 }
 
