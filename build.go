@@ -2,7 +2,6 @@ package common
 
 import (
 	"fmt"
-	. "github.com/knaka/go-utils"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"os"
@@ -11,7 +10,7 @@ import (
 	"strings"
 )
 
-var mainPackage string
+var MainPackage string
 
 type AirInfoParams struct {
 	BuildPackage string
@@ -21,7 +20,9 @@ type AirInfoParams struct {
 
 var AirInfo *AirInfoParams
 
-var baseName = filepath.Base(mainPackage)
+func baseName() string {
+	return filepath.Base(MainPackage)
+}
 
 var buildDir string
 
@@ -41,7 +42,7 @@ func (Build) Native() error {
 	mg.Deps(Gen)
 	// Do not Deps this together because this chroot's
 	mg.Deps(Client.Build)
-	return sh.Run(mg.GoCmd(), "build", "-o", filepath.Join(buildDir, baseName), mainPackage)
+	return sh.Run(mg.GoCmd(), "build", "-o", filepath.Join(buildDir, baseName()), MainPackage)
 }
 
 func makeBinName(baseName, targetEnv, goos, goarch string) string {
@@ -53,10 +54,10 @@ func makeBinName(baseName, targetEnv, goos, goarch string) string {
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Build) Cross(goarch string) error {
 	mg.Deps(Gen)
-	Ensure0(os.Symlink(
-		fmt.Sprintf("prebuilt-%s.Dockerfile", goarch),
-		"Dockerfile",
-	))
+	//Ensure0(os.Symlink(
+	//	fmt.Sprintf("prebuilt-%s.Dockerfile", goarch),
+	//	"Dockerfile",
+	//))
 	// Do not Deps because this chroot's
 	mg.Deps(Client.Build)
 	const goos = "linux"
@@ -75,8 +76,8 @@ func (Build) Cross(goarch string) error {
 		// -w
 		//   Omit the DWARF symbol table.
 		"-ldflags=-s -w",
-		"-o", filepath.Join(buildDir, makeBinName(baseName, "prod", goos, goarch)),
-		mainPackage,
+		"-o", filepath.Join(buildDir, makeBinName(baseName(), "prod", goos, goarch)),
+		MainPackage,
 	)
 }
 
@@ -85,7 +86,7 @@ func (Build) Cross(goarch string) error {
 // noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Air() error {
 	envMap := make(map[string]string)
-	binPath := filepath.Join(buildDir, makeBinName(baseName, AirInfo.TargetEnv, runtime.GOOS, runtime.GOARCH))
+	binPath := filepath.Join(buildDir, makeBinName(baseName(), AirInfo.TargetEnv, runtime.GOOS, runtime.GOARCH))
 	return RunWith(envMap,
 		"air",
 		"--build.cmd", fmt.Sprintf("go build -gcflags 'all=-N -l' -o %s %s", binPath, AirInfo.BuildPackage),
