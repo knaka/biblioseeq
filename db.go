@@ -3,7 +3,7 @@ package common
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"log"
