@@ -29,6 +29,7 @@ func (Db) Converge() error {
 		"psqldef",
 		append([]string{
 			"--file", "db/schema.sql",
+			"--file", "db/schema_info.sql",
 			"--host", u.Hostname(),
 			"--port", u.Port(),
 			"--user", u.User.Username(),
