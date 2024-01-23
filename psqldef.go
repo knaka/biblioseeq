@@ -9,7 +9,7 @@ import (
 
 // Converge converges a PostgreSQL database.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Converge() error {
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
@@ -40,7 +40,7 @@ func (Db) Converge() error {
 
 // Dump dumps a database.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Dump() error {
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {

@@ -16,7 +16,7 @@ type Sqlc mg.Namespace
 
 // Gen generates sqlc queries code.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Sqlc) Gen() error {
 	source, _ := target.NewestModTime(
 		filepath.Join("db", "migrations"),
@@ -34,7 +34,7 @@ func (Sqlc) Gen() error {
 
 // Vet runs queries through a set of lint rules.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Sqlc) Vet() error {
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {

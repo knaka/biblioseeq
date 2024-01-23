@@ -46,7 +46,7 @@ func RunWith(env map[string]string, cmd string, args ...string) error {
 
 // Exec (command string) executes the given command prioritizing binaries in .gobin/ directory.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Exec(command string) error {
 	envs, args, err := shellwords.ParseWithEnvs(command)
 	if err != nil {
@@ -81,7 +81,7 @@ func ensureGobinInstalled(pkgName, version, tags string) error {
 
 // Gobins installs necessary Go binaries.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gobins() {
 	Ensure0(os.MkdirAll(goBinDir, 0755))
 	for _, pkg := range GobinPkgs {
@@ -91,7 +91,7 @@ func Gobins() {
 
 // Gobin installs the Go binary with the given command name or package name.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gobin(name string) error {
 	for _, pkg := range GobinPkgs {
 		if name == pkg.Name || name == filepath.Base(pkg.Name) {

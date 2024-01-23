@@ -14,7 +14,7 @@ var DirsToCleanUp []string
 
 // Clean cleans up generated files.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Clean() {
 	fmt.Println("Cleaning...")
 	for _, dir := range DirsToCleanUp {
@@ -22,12 +22,12 @@ func Clean() {
 	}
 }
 
-// noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
 type Env mg.Namespace
 
 // Compose prints text in the .env format that references the Docker Compose configuration.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Env) Compose() {
 	json := Ensure(sh.Output("docker", "compose", "config", "--format", "json"))
 	host := "127.0.0.1"
@@ -47,7 +47,7 @@ func (Env) Compose() {
 
 // Print (host string, port int, user, password, database string) prints text in the .env format that references the CDK configuration.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Env) Print(host string, port int, user, password, database string) {
 	urlDb := url.URL{
 		Scheme: "postgresql",
@@ -64,7 +64,7 @@ func (Env) Print(host string, port int, user, password, database string) {
 
 // Lint analyses.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Lint() error {
 	mg.Deps(
 		Sqlc.Vet,
@@ -74,7 +74,7 @@ func Lint() error {
 
 // Gen generates binding codes.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gen() error {
 	// Docker build does not generate dependent files.
 	if os.Getenv("NO_GEN") == "" {

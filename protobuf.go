@@ -8,7 +8,7 @@ import (
 
 // Bufgen generates protocol buffer binding code.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Bufgen() error {
 	source := Ensure(target.NewestModTime("proto"))
 	dest := Ensure(target.NewestModTime("pbgen"))
@@ -20,5 +20,5 @@ func Bufgen() error {
 
 // Pbgen is an alias of 'bufgen'.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Pbgen() { mg.Deps(Bufgen) }

@@ -6,14 +6,14 @@ import (
 	"os"
 )
 
-// noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
 type Client mg.Namespace
 
 var ClientDirs []string
 
 // Build builds web client application.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Client) Build() error {
 	// Docker build does not build clients.
 	if os.Getenv("NO_CLIENT_BUILD") != "" {

@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-// noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
 type Db mg.Namespace
 
 func execMainDatabaseDdl(ddlWithDbNamePlaceholder string) error {
@@ -41,7 +41,7 @@ func execMainDatabaseDdl(ddlWithDbNamePlaceholder string) error {
 
 // Create creates a new PostgreSQL database.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Create() error {
 	err := execMainDatabaseDdl("CREATE DATABASE %s")
 	if err != nil {
@@ -74,21 +74,21 @@ func execDbQuery(query string) error {
 
 // Drop drops a PostgreSQL database if exists.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Drop() error {
 	return execMainDatabaseDdl("DROP DATABASE IF EXISTS %s")
 }
 
 // Seed inserts seed data into the database.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Seed() error {
 	return sh.Run(mg.GoCmd(), "run", "./cmd/db-seed")
 }
 
 // Migrate migrates the database to the most recent version available.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (db Db) Migrate() error {
 	err := execGoose("up")
 	if err != nil {

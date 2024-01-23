@@ -6,7 +6,7 @@ import (
 
 // Psql executes psql(1) command on the database defined in .env* file
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Psql() error {
 	var err error
 	for _, dbUrl := range []string{

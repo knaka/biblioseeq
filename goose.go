@@ -56,35 +56,35 @@ func execGooseSub(dump bool, args ...string) error {
 
 // Reset rolls back all migrations.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Reset() error {
 	return execGoose("reset")
 }
 
 // Up migrates the database up by 1.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Up() error {
 	return execGoose("up-by-one")
 }
 
 // Down rolls back the database version by 1.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Down() error {
 	return execGoose("down")
 }
 
 // New (name string) creates a new migration file with the current timestamp.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) New(name string) error {
 	return execGooseWoDump("create", name, "sql")
 }
 
 // Fix applies sequential ordering to migrations.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Fix() error {
 	return execGooseWoDump("fix")
 }

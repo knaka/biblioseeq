@@ -42,7 +42,7 @@ func generateDockerfile(data *DockerfileParams) error {
 
 // Dockerfiles generates dockerfiles from the template.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Dockerfiles() error {
 	for _, dockerfileParams := range DockerfileSettings {
 		if updated, _ := target.Path(dockerfileParams.Filename, dockerfileTemplate); updated {

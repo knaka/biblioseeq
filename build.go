@@ -32,12 +32,12 @@ func init() {
 	DirsToCleanUp = append(DirsToCleanUp, buildDir)
 }
 
-// noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
 type Build mg.Namespace
 
 // Native builds the main binary for the current environment.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Build) Native() error {
 	mg.Deps(Gen)
 	// Do not Deps this together because this chroot's
@@ -51,7 +51,7 @@ func makeBinName(baseName, targetEnv, goos, goarch string) string {
 
 // Cross (goarch string) builds a binary for a specified architecture.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Build) Cross(goarch string) error {
 	mg.Deps(Gen)
 	//Ensure0(os.Symlink(
@@ -83,7 +83,7 @@ func (Build) Cross(goarch string) error {
 
 // Air launches the server process and keeps it live-reloading.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Air() error {
 	envMap := make(map[string]string)
 	binPath := filepath.Join(buildDir, makeBinName(baseName(), AirInfo.TargetEnv, runtime.GOOS, runtime.GOARCH))
@@ -98,10 +98,10 @@ func Air() error {
 
 // Dev is an alias for 'air'.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Dev() { mg.Deps(Air) }
 
 // Start is an alias for 'air'.
 //
-// noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Start() { mg.Deps(Air) }
