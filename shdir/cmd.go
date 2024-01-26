@@ -14,17 +14,11 @@ import (
 	"strings"
 )
 
-// RunInDir is like RunWith, but doesn't specify any environment variables.
-func RunInDir(dir string, cmd string, args ...string) error {
-	return RunInDirWith(nil, dir, cmd, args...)
-}
-
-// RunInDirWith runs the given command in dir working directory,
-// directing stderr to this program's stderr and
+// RunWith runs the given command, directing stderr to this program's stderr and
 // printing stdout to stdout if mage was run with -v.  It adds adds env to the
 // environment variables for the command being run. Environment variables should
 // be in the format name=value.
-func RunInDirWith(env map[string]string, dir string, cmd string, args ...string) error {
+func RunWith(env map[string]string, dir string, cmd string, args ...string) error {
 	var output io.Writer
 	if mg.Verbose() {
 		output = os.Stdout
