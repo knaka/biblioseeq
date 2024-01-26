@@ -42,7 +42,7 @@ func (Build) Native() error {
 	mg.Deps(Gen)
 	// Do not Deps this together because this chroot's
 	mg.Deps(Client.Build)
-	return sh.Run(mg.GoCmd(), "build", "-o", filepath.Join(buildDir, baseName()), MainPackage)
+	return sh.RunWith(nil, mg.GoCmd(), "build", "-o", filepath.Join(buildDir, baseName()), MainPackage)
 }
 
 func makeBinName(baseName, targetEnv, goos, goarch string) string {

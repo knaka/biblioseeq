@@ -83,7 +83,7 @@ func (Db) Drop() error {
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Seed() error {
-	return sh.Run(mg.GoCmd(), "run", "./cmd/db-seed")
+	return sh.RunWith(nil, mg.GoCmd(), "run", "./cmd/db-seed")
 }
 
 // Migrate migrates the database to the most recent version available.
