@@ -37,10 +37,11 @@ func Gogen(target string) error {
 }
 
 func sqlcGen() error {
-	paths := Ensure(filepath.Glob("db/schema.sql"))
+	paths := Ensure(filepath.Glob("db/schema*.sql"))
 	paths = append(paths,
 		filepath.Join("db", "migrations"),
 		filepath.Join("db", "queries"),
+		filepath.Join("db", "sqlc.yaml"),
 	)
 	sourceNewestStamp := Ensure(target.NewestModTime(
 		paths...,
@@ -52,7 +53,7 @@ func sqlcGen() error {
 		return nil
 	}
 	Ensure0(os.Rename(destPath, destPathBak))
-	err := shdir.RunWith("", nil, "db", "sqlc", "generate")
+	err := shdir.RunWith("db", nil, "sqlc", "generate")
 	if err == nil {
 		Ensure0(sh.Rm(destPathBak))
 	} else {
