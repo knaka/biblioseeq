@@ -87,7 +87,7 @@ func (Build) Cross(goarch string) error {
 func Air() error {
 	envMap := make(map[string]string)
 	binPath := filepath.Join(buildDir, makeBinName(baseName(), AirInfo.TargetEnv, runtime.GOOS, runtime.GOARCH))
-	return RunWith(envMap,
+	return RunWith("", envMap,
 		"air",
 		"--build.cmd", fmt.Sprintf("go build -gcflags 'all=-N -l' -o %s %s", binPath, AirInfo.BuildPackage),
 		"--build.bin", binPath,

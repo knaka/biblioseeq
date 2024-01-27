@@ -18,12 +18,12 @@ import (
 // printing stdout to stdout if mage was run with -v.  It adds adds env to the
 // environment variables for the command being run. Environment variables should
 // be in the format name=value.
-func RunWith(env map[string]string, dir string, cmd string, args ...string) error {
+func RunWith(dir string, env map[string]string, cmd string, args ...string) error {
 	var output io.Writer
 	if mg.Verbose() {
 		output = os.Stdout
 	}
-	_, err := Exec(env, dir, output, os.Stderr, cmd, args...)
+	_, err := Exec(dir, env, output, os.Stderr, cmd, args...)
 	return err
 }
 
@@ -39,7 +39,7 @@ func RunWith(env map[string]string, dir string, cmd string, args ...string) erro
 // Ran reports if the command ran (rather than was not found or not executable).
 // Code reports the exit code the command returned if it ran. If err == nil, ran
 // is always true and code is always 0.
-func Exec(env map[string]string, dir string, stdout, stderr io.Writer, cmd string, args ...string) (ran bool, err error) {
+func Exec(dir string, env map[string]string, stdout, stderr io.Writer, cmd string, args ...string) (ran bool, err error) {
 	expand := func(s string) string {
 		s2, ok := env[s]
 		if ok {
@@ -51,7 +51,7 @@ func Exec(env map[string]string, dir string, stdout, stderr io.Writer, cmd strin
 	for i := range args {
 		args[i] = os.Expand(args[i], expand)
 	}
-	ran, code, err := run(env, dir, stdout, stderr, cmd, args...)
+	ran, code, err := run(dir, env, stdout, stderr, cmd, args...)
 	if err == nil {
 		return true, nil
 	}
@@ -61,7 +61,7 @@ func Exec(env map[string]string, dir string, stdout, stderr io.Writer, cmd strin
 	return ran, fmt.Errorf(`failed to run "%s %s: %v"`, cmd, strings.Join(args, " "), err)
 }
 
-func run(env map[string]string, dir string, stdout, stderr io.Writer, cmd string, args ...string) (ran bool, code int, err error) {
+func run(dir string, env map[string]string, stdout, stderr io.Writer, cmd string, args ...string) (ran bool, code int, err error) {
 	c := exec.Command(cmd, args...)
 	c.Env = os.Environ()
 	for k, v := range env {

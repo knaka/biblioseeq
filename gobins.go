@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	. "github.com/knaka/go-utils"
+	"github.com/knaka/magefiles-common/shdir"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/mattn/go-shellwords"
@@ -32,7 +33,7 @@ func init() {
 var GobinPkgs []*GobinPkgParams
 
 // RunWith runs the given command prioritizing binaries in .gobin/ directory. It is not a task function.
-func RunWith(env map[string]string, cmd string, args ...string) error {
+func RunWith(dir string, env map[string]string, cmd string, args ...string) error {
 	_, err := exec.LookPath(cmd)
 	if err != nil {
 		err := Gobin(cmd)
@@ -41,7 +42,7 @@ func RunWith(env map[string]string, cmd string, args ...string) error {
 		}
 	}
 	Ensure0(os.Setenv("PATH", goBinDir+string(os.PathListSeparator)+os.Getenv("PATH")))
-	return sh.RunWith(env, cmd, args...)
+	return shdir.RunWith(dir, env, cmd, args...)
 }
 
 // Exec (command string) executes the given command prioritizing binaries in .gobin/ directory.
@@ -57,7 +58,7 @@ func Exec(command string) error {
 		fields := strings.Split(env, "=")
 		envMap[fields[0]] = fields[1]
 	}
-	return RunWith(envMap, args[0], args[1:]...)
+	return RunWith("", envMap, args[0], args[1:]...)
 }
 
 func ensureGobinInstalled(pkgName, version, tags string) error {
@@ -69,7 +70,7 @@ func ensureGobinInstalled(pkgName, version, tags string) error {
 	pkgNameWithVer := pkgName + "@" + version
 	Ensure0(fmt.Fprintf(os.Stderr, "Building %s\n", pkgNameWithVer))
 	linkTgtPath := filepath.Join(goBinDir, cmdName)
-	Ensure0(os.Remove(linkTgtPath))
+	Ensure0(sh.Rm(linkTgtPath))
 	Ensure0(sh.RunWith(
 		map[string]string{"GOBIN": goBinDir},
 		mg.GoCmd(), "install", "-tags", tags, pkgNameWithVer,

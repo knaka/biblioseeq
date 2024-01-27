@@ -23,6 +23,7 @@ func (Db) Converge() error {
 	pass, _ := u.User.Password()
 	dbName := strings.ReplaceAll(u.Path, "/", "")
 	return RunWith(
+		"",
 		map[string]string{
 			"PGPASSWORD": pass,
 		},
@@ -53,6 +54,7 @@ func (Db) Dump() error {
 	args := []string{}
 	dbName := strings.ReplaceAll(u.Path, "/", "")
 	return RunWith(
+		"",
 		nil,
 		"psqldef",
 		append([]string{

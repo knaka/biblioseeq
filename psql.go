@@ -13,7 +13,7 @@ func Psql() error {
 		os.Getenv("DB_URL"),
 		os.Getenv("ADMIN_DB_URL"),
 	} {
-		err = RunWith(nil, "psql", dbUrl)
+		err = RunWith("", nil, "psql", dbUrl)
 		if err == nil {
 			return nil
 		}

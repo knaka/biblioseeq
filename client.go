@@ -25,7 +25,7 @@ func (Client) Build() error {
 			wd := Ensure(os.Getwd())
 			Ensure0(os.Chdir(dir))
 			defer (func() { Ignore(os.Chdir(wd)) })()
-			return RunWith(nil, "npm", "run", "build:development")
+			return RunWith("", nil, "npm", "run", "build:development")
 		})()
 		if err != nil {
 			return err

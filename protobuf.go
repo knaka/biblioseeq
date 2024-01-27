@@ -15,7 +15,7 @@ func Bufgen() error {
 	if dest.Compare(source) > 0 {
 		return nil
 	}
-	return RunWith(nil, "buf", "generate", "proto/")
+	return RunWith("", nil, "buf", "generate", "proto/")
 }
 
 // Pbgen is an alias of 'bufgen'.

@@ -19,11 +19,24 @@ type Sqlc mg.Namespace
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (s Sqlc) Gen() (err error) {
-	err = s.gen()
+	err = sqlcGen()
+	if err != nil {
+		return
+	}
+	err = Gogen("./db/.")
+	if err != nil {
+		return
+	}
+	err = sqlcGen()
 	return
 }
 
-func (Sqlc) gen() error {
+func Gogen(target string) error {
+	Ensure0(Gobin("go-generate-fast"))
+	return RunWith("", nil, "go-generate-fast", target)
+}
+
+func sqlcGen() error {
 	paths := Ensure(filepath.Glob("db/schema.sql"))
 	paths = append(paths,
 		filepath.Join("db", "migrations"),
@@ -39,7 +52,7 @@ func (Sqlc) gen() error {
 		return nil
 	}
 	Ensure0(os.Rename(destPath, destPathBak))
-	err := shdir.RunWith(nil, "db", "sqlc", "generate")
+	err := shdir.RunWith("", nil, "db", "sqlc", "generate")
 	if err == nil {
 		Ensure0(sh.Rm(destPathBak))
 	} else {
@@ -68,7 +81,7 @@ func (Sqlc) Vet() error {
 		log.Panicf("panic 8b901e4 (%v)", err)
 	}
 	// Linting queries — sqlc 1.23.0 documentation https://docs.sqlc.dev/en/stable/howto/vet.html
-	return RunWith(map[string]string{
+	return RunWith("", map[string]string{
 		//"SQLCDEBUG": "dumpvetenv=1,dumpexplain=1", // Environment variables — sqlc 1.23.0 documentation https://docs.sqlc.dev/en/stable/reference/environment-variables.html#sqlcdebug
 	}, "sqlc", "vet")
 }
