@@ -3,6 +3,7 @@ package common
 import (
 	"errors"
 	. "github.com/knaka/go-utils"
+	"github.com/knaka/magefiles-common/shdir"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
@@ -17,19 +18,34 @@ type Sqlc mg.Namespace
 // Gen generates sqlc queries code.
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func (Sqlc) Gen() error {
-	source, _ := target.NewestModTime(
+func (s Sqlc) Gen() (err error) {
+	err = s.gen()
+	return
+}
+
+func (Sqlc) gen() error {
+	paths := Ensure(filepath.Glob("db/schema.sql"))
+	paths = append(paths,
 		filepath.Join("db", "migrations"),
 		filepath.Join("db", "queries"),
-		filepath.Join("db", "schema.sql"),
 	)
+	sourceNewestStamp := Ensure(target.NewestModTime(
+		paths...,
+	))
 	destPath := filepath.Join("db", "sqlcgen")
-	dest := Ensure(target.NewestModTime(destPath))
-	if !dest.IsZero() && dest.Compare(source) > 0 {
+	destPathBak := destPath + ".bak"
+	destNewestStamp := Ensure(target.NewestModTime(destPath))
+	if !destNewestStamp.IsZero() && destNewestStamp.Compare(sourceNewestStamp) > 0 {
 		return nil
 	}
-	Ensure0(sh.Rm(destPath))
-	return RunWith(nil, "sqlc", "generate")
+	Ensure0(os.Rename(destPath, destPathBak))
+	err := shdir.RunWith(nil, "db", "sqlc", "generate")
+	if err == nil {
+		Ensure0(sh.Rm(destPathBak))
+	} else {
+		Ensure0(os.Rename(destPathBak, destPath))
+	}
+	return err
 }
 
 // Vet runs queries through a set of lint rules.
