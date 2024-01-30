@@ -78,7 +78,7 @@ func run(dir string, env map[string]string, stdout, stderr io.Writer, cmd string
 	}
 	// To protect against logging from doing exec in global variables
 	if mg.Verbose() {
-		log.Println("exec:", cmd, strings.Join(quoted, " "))
+		log.Println("exec in", dir, ":", cmd, strings.Join(quoted, " "))
 	}
 	err = c.Run()
 	return sh.CmdRan(err), sh.ExitStatus(err), err

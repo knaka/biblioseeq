@@ -67,3 +67,11 @@ func (Db) Dump() error {
 		}, args...)...,
 	)
 }
+
+func (Db) Gen() error {
+	err := Gobin("go-generate-fast")
+	if err != nil {
+		return err
+	}
+	return RunWith("db", nil, "go-generate-fast", ".")
+}
