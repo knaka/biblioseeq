@@ -68,9 +68,9 @@ func (Db) Dump() error {
 	)
 }
 
+// Gen generates bindings and helpers for a database.
 func (Db) Gen() error {
-	err := Gobin("go-generate-fast")
-	if err != nil {
+	if err := Gobin("go-generate-fast"); err != nil {
 		return err
 	}
 	return RunWith("db", nil, "go-generate-fast", ".")
