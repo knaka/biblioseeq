@@ -77,7 +77,7 @@ func Lint() error {
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gen() error {
 	// Docker build does not generate dependent files.
-	if os.Getenv("NO_GEN") == "" {
+	if os.Getenv("NO_GEN") == "" && os.Getenv("NO_GENERATE") == "" {
 		mg.Deps(
 			Sqlc.Gen,
 			Bufgen,
@@ -85,4 +85,11 @@ func Gen() error {
 		)
 	}
 	return nil
+}
+
+// Generate is an alias for Gen.
+//
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+func Generate() error {
+	return Gen()
 }
