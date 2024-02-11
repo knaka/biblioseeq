@@ -82,7 +82,7 @@ func (Sqlc) Vet() error {
 		log.Panicf("panic 8b901e4 (%v)", err)
 	}
 	// Linting queries — sqlc 1.23.0 documentation https://docs.sqlc.dev/en/stable/howto/vet.html
-	return RunWith("", map[string]string{
+	return RunWith("db", map[string]string{
 		//"SQLCDEBUG": "dumpvetenv=1,dumpexplain=1", // Environment variables — sqlc 1.23.0 documentation https://docs.sqlc.dev/en/stable/reference/environment-variables.html#sqlcdebug
 	}, "sqlc", "vet")
 }
