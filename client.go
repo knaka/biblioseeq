@@ -22,8 +22,8 @@ func (Client) Build() error {
 	var err error
 	for _, dir := range ClientDirs {
 		err = (func() error {
-			wd := Ensure(os.Getwd())
-			Ensure0(os.Chdir(dir))
+			wd := V(os.Getwd())
+			V0(os.Chdir(dir))
 			defer (func() { Ignore(os.Chdir(wd)) })()
 			return RunWith("", nil, "npm", "run", "build:development")
 		})()

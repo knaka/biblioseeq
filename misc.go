@@ -18,7 +18,7 @@ var DirsToCleanUp []string
 func Clean() {
 	fmt.Println("Cleaning...")
 	for _, dir := range DirsToCleanUp {
-		Ensure0(os.RemoveAll(dir))
+		V0(os.RemoveAll(dir))
 	}
 }
 
@@ -29,7 +29,7 @@ type Env mg.Namespace
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Env) Compose() {
-	json := Ensure(sh.Output("docker", "compose", "config", "--format", "json"))
+	json := V(sh.Output("docker", "compose", "config", "--format", "json"))
 	host := "127.0.0.1"
 	publishedPort := gjson.Get(json, "services.db.ports.0.published").Int()
 	urlDb := url.URL{
@@ -42,7 +42,7 @@ func (Env) Compose() {
 		Path:    "/" + gjson.Get(json, "services.ap.environment.DB_DATABASE").String(),
 		RawPath: "sslmode=disable",
 	}
-	Ensure0(fmt.Fprintf(os.Stdout, "DB_URL=%s\n", urlDb.String()))
+	V0(fmt.Fprintf(os.Stdout, "DB_URL=%s\n", urlDb.String()))
 }
 
 // Print (host string, port int, user, password, database string) prints text in the .env format that references the CDK configuration.
@@ -59,7 +59,7 @@ func (Env) Print(host string, port int, user, password, database string) {
 		Path:     "/" + database,
 		RawQuery: "sslmode=disable",
 	}
-	Ensure0(fmt.Fprintf(os.Stdout, "DB_URL=%s\n", urlDb.String()))
+	V0(fmt.Fprintf(os.Stdout, "DB_URL=%s\n", urlDb.String()))
 }
 
 // Lint analyses.

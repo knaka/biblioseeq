@@ -32,32 +32,32 @@ func (s Sqlc) Gen() (err error) {
 }
 
 func Gogen(target string) error {
-	Ensure0(Gobin("go-generate-fast"))
+	V0(Gobin("go-generate-fast"))
 	return RunWith("", nil, "go-generate-fast", target)
 }
 
 func sqlcGen() error {
-	paths := Ensure(filepath.Glob("db/schema*.sql"))
+	paths := V(filepath.Glob("db/schema*.sql"))
 	paths = append(paths,
 		filepath.Join("db", "migrations"),
 		filepath.Join("db", "queries"),
 		filepath.Join("db", "sqlc.yaml"),
 	)
-	sourceNewestStamp := Ensure(target.NewestModTime(
+	sourceNewestStamp := V(target.NewestModTime(
 		paths...,
 	))
 	destPath := filepath.Join("db", "sqlcgen")
 	destPathBak := destPath + ".bak"
-	destNewestStamp := Ensure(target.NewestModTime(destPath))
+	destNewestStamp := V(target.NewestModTime(destPath))
 	if !destNewestStamp.IsZero() && destNewestStamp.Compare(sourceNewestStamp) > 0 {
 		return nil
 	}
-	Ensure0(os.Rename(destPath, destPathBak))
+	V0(os.Rename(destPath, destPathBak))
 	err := shdir.RunWith("db", nil, "sqlc", "generate")
 	if err == nil {
-		Ensure0(sh.Rm(destPathBak))
+		V0(sh.Rm(destPathBak))
 	} else {
-		Ensure0(os.Rename(destPathBak, destPath))
+		V0(os.Rename(destPathBak, destPath))
 	}
 	return err
 }

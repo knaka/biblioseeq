@@ -11,6 +11,6 @@ import (
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Pwhash(password string) {
-	hash := Ensure(bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost))
-	Ensure0(fmt.Fprintln(os.Stdout, string(hash)))
+	hash := V(bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost))
+	V0(fmt.Fprintln(os.Stdout, string(hash)))
 }

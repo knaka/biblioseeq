@@ -54,7 +54,7 @@ func makeBinName(baseName, targetEnv, goos, goarch string) string {
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Build) Cross(goarch string) error {
 	mg.Deps(Gen)
-	//Ensure0(os.Symlink(
+	//V0(os.Symlink(
 	//	fmt.Sprintf("prebuilt-%s.Dockerfile", goarch),
 	//	"Dockerfile",
 	//))

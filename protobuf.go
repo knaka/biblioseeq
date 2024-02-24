@@ -10,8 +10,8 @@ import (
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Bufgen() error {
-	source := Ensure(target.NewestModTime("proto"))
-	dest := Ensure(target.NewestModTime("pbgen"))
+	source := V(target.NewestModTime("proto"))
+	dest := V(target.NewestModTime("pbgen"))
 	if dest.Compare(source) > 0 {
 		return nil
 	}

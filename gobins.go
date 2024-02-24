@@ -25,7 +25,7 @@ type GobinPkgParams struct {
 
 func init() {
 	// The `mage` command only runs in directories containing magefiles or a `magefiles/` directory.
-	wd := Ensure(os.Getwd())
+	wd := V(os.Getwd())
 	goBinDir = filepath.Join(wd, ".gobin")
 	DirsToCleanUp = append(DirsToCleanUp, goBinDir)
 }
@@ -41,7 +41,7 @@ func RunWith(dir string, env map[string]string, cmd string, args ...string) erro
 			return err
 		}
 	}
-	Ensure0(os.Setenv("PATH", goBinDir+string(os.PathListSeparator)+os.Getenv("PATH")))
+	V0(os.Setenv("PATH", goBinDir+string(os.PathListSeparator)+os.Getenv("PATH")))
 	return shdir.RunWith(dir, env, cmd, args...)
 }
 
@@ -68,15 +68,15 @@ func ensureGobinInstalled(pkgName, version, tags string) error {
 		return nil
 	}
 	pkgNameWithVer := pkgName + "@" + version
-	Ensure0(fmt.Fprintf(os.Stderr, "Building %s\n", pkgNameWithVer))
+	V0(fmt.Fprintf(os.Stderr, "Building %s\n", pkgNameWithVer))
 	linkTgtPath := filepath.Join(goBinDir, cmdName)
-	Ensure0(sh.Rm(linkTgtPath))
-	Ensure0(sh.RunWith(
+	V0(sh.Rm(linkTgtPath))
+	V0(sh.RunWith(
 		map[string]string{"GOBIN": goBinDir},
 		mg.GoCmd(), "install", "-tags", tags, pkgNameWithVer,
 	))
-	Ensure0(os.Rename(linkTgtPath, binPath))
-	Ensure0(os.Symlink(filepath.Base(binPath), linkTgtPath))
+	V0(os.Rename(linkTgtPath, binPath))
+	V0(os.Symlink(filepath.Base(binPath), linkTgtPath))
 	return nil
 }
 
@@ -84,9 +84,9 @@ func ensureGobinInstalled(pkgName, version, tags string) error {
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gobins() {
-	Ensure0(os.MkdirAll(goBinDir, 0755))
+	V0(os.MkdirAll(goBinDir, 0755))
 	for _, pkg := range GobinPkgs {
-		Ensure0(ensureGobinInstalled(pkg.Name, pkg.Version, pkg.Tags))
+		V0(ensureGobinInstalled(pkg.Name, pkg.Version, pkg.Tags))
 	}
 }
 
