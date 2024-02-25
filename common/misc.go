@@ -72,17 +72,20 @@ func Lint() error {
 	return nil
 }
 
+var genFns []any
+
+// AddGenFn adds a function to the list of functions to generate something.
+func AddGenFn(fn any) {
+	genFns = append(genFns, fn)
+}
+
 // Gen generates binding codes.
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gen() error {
 	// Docker build does not generate dependent files.
 	if os.Getenv("NO_GEN") == "" && os.Getenv("NO_GENERATE") == "" {
-		mg.Deps(
-			Sqlc.Gen,
-			Bufgen,
-			Dockerfiles,
-		)
+		mg.Deps(genFns...)
 	}
 	return nil
 }

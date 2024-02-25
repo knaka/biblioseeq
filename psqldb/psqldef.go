@@ -92,3 +92,7 @@ func (Db) Gen() (err error) {
 	}
 	return common.RunWith("db", nil, "go-generate-fast", ".")
 }
+
+func init() {
+	common.AddGenFn(Db.Gen)
+}

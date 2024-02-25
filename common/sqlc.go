@@ -86,3 +86,7 @@ func (Sqlc) Vet() error {
 		//"SQLCDEBUG": "dumpvetenv=1,dumpexplain=1", // Environment variables — sqlc 1.23.0 documentation https://docs.sqlc.dev/en/stable/reference/environment-variables.html#sqlcdebug
 	}, "sqlc", "vet")
 }
+
+func init() {
+	AddGenFn(Sqlc.Gen)
+}

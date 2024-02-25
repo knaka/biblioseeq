@@ -6,10 +6,12 @@ import (
 	"github.com/magefile/mage/target"
 )
 
-// Bufgen generates protocol buffer binding code.
+type Pb mg.Namespace
+
+// Gen generates protocol buffer binding code.
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func Bufgen() error {
+func (Pb) Gen() (err error) {
 	source := V(target.NewestModTime("proto"))
 	dest := V(target.NewestModTime("pbgen"))
 	if dest.Compare(source) > 0 {
@@ -18,7 +20,6 @@ func Bufgen() error {
 	return RunWith("", nil, "buf", "generate", "proto/")
 }
 
-// Pbgen is an alias of 'bufgen'.
-//
-//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func Pbgen() { mg.Deps(Bufgen) }
+func init() {
+	AddGenFn(Pb.Gen)
+}

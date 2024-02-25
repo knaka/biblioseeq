@@ -30,7 +30,11 @@ func init() {
 	DirsToCleanUp = append(DirsToCleanUp, goBinDir)
 }
 
-var GobinPkgs []*GobinPkg
+var gobinPkgs []*GobinPkg
+
+func SetGobinPkgs(pkgs ...*GobinPkg) {
+	gobinPkgs = pkgs
+}
 
 // RunWith runs the given command prioritizing binaries in .gobin/ directory. It is not a task function.
 func RunWith(dir string, env map[string]string, cmd string, args ...string) error {
@@ -85,7 +89,7 @@ func ensureGobinInstalled(pkgName, version, tags string) error {
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gobins() {
 	V0(os.MkdirAll(goBinDir, 0755))
-	for _, pkg := range GobinPkgs {
+	for _, pkg := range gobinPkgs {
 		V0(ensureGobinInstalled(pkg.Name, pkg.Version, pkg.Tags))
 	}
 }
@@ -94,7 +98,7 @@ func Gobins() {
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Gobin(name string) error {
-	for _, pkg := range GobinPkgs {
+	for _, pkg := range gobinPkgs {
 		if name == pkg.Name || name == filepath.Base(pkg.Name) {
 			return ensureGobinInstalled(pkg.Name, pkg.Version, pkg.Tags)
 		}

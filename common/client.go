@@ -9,7 +9,11 @@ import (
 //goland:noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
 type Client mg.Namespace
 
-var ClientDirs []string
+var clientDirBases []string
+
+func SetClientDirBases(dirBases ...string) {
+	clientDirBases = dirBases
+}
 
 // Build builds web client application.
 //
@@ -20,11 +24,11 @@ func (Client) Build() error {
 		return nil
 	}
 	var err error
-	for _, dir := range ClientDirs {
+	for _, dirBase := range clientDirBases {
 		err = (func() error {
 			wd := V(os.Getwd())
-			V0(os.Chdir(dir))
-			defer (func() { Ignore(os.Chdir(wd)) })()
+			V0(os.Chdir(dirBase))
+			defer (func() { V0(os.Chdir(wd)) })()
 			return RunWith("", nil, "npm", "run", "build:development")
 		})()
 		if err != nil {

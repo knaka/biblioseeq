@@ -18,7 +18,11 @@ type Dockerfile struct {
 
 var dockerfileTemplate = "template.dockerfile"
 
-var Dockerfiles_ []*Dockerfile
+var dockerfiles []*Dockerfile
+
+func SetDockerfiles(dockerfiles_ ...*Dockerfile) {
+	dockerfiles = dockerfiles_
+}
 
 func generateDockerfile(data *Dockerfile) error {
 	tmpl, err := template.ParseFiles(filepath.Join(dir, dockerfileTemplate))
@@ -44,7 +48,7 @@ func generateDockerfile(data *Dockerfile) error {
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Dockerfiles() error {
-	for _, dockerfileParams := range Dockerfiles_ {
+	for _, dockerfileParams := range dockerfiles {
 		if updated, _ := target.Path(dockerfileParams.Filename, dockerfileTemplate); updated {
 			err := generateDockerfile(dockerfileParams)
 			if err != nil {
@@ -53,4 +57,8 @@ func Dockerfiles() error {
 		}
 	}
 	return nil
+}
+
+func init() {
+	AddGenFn(Dockerfiles)
 }

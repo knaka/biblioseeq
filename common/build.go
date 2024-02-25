@@ -24,12 +24,12 @@ func baseName() string {
 	return filepath.Base(MainPackage)
 }
 
-var buildDir string
+var buildDirPath string
 
 func init() {
 	wd, _ := os.Getwd()
-	buildDir = filepath.Join(wd, ".build")
-	DirsToCleanUp = append(DirsToCleanUp, buildDir)
+	buildDirPath = filepath.Join(wd, ".build")
+	DirsToCleanUp = append(DirsToCleanUp, buildDirPath)
 }
 
 //goland:noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
@@ -42,7 +42,7 @@ func (Build) Native() error {
 	mg.Deps(Gen)
 	// Do not Deps this together because this chroot's
 	mg.Deps(Client.Build)
-	return sh.RunWith(nil, mg.GoCmd(), "build", "-o", filepath.Join(buildDir, baseName()), MainPackage)
+	return sh.RunWith(nil, mg.GoCmd(), "build", "-o", filepath.Join(buildDirPath, baseName()), MainPackage)
 }
 
 func makeBinName(baseName, targetEnv, goos, goarch string) string {
@@ -76,7 +76,7 @@ func (Build) Cross(goarch string) error {
 		// -w
 		//   Omit the DWARF symbol table.
 		"-ldflags=-s -w",
-		"-o", filepath.Join(buildDir, makeBinName(baseName(), "prod", goos, goarch)),
+		"-o", filepath.Join(buildDirPath, makeBinName(baseName(), "prod", goos, goarch)),
 		MainPackage,
 	)
 }
@@ -86,7 +86,7 @@ func (Build) Cross(goarch string) error {
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Air() error {
 	envMap := make(map[string]string)
-	binPath := filepath.Join(buildDir, makeBinName(baseName(), AirInfo.TargetEnv, runtime.GOOS, runtime.GOARCH))
+	binPath := filepath.Join(buildDirPath, makeBinName(baseName(), AirInfo.TargetEnv, runtime.GOOS, runtime.GOARCH))
 	return RunWith("", envMap,
 		"air",
 		"--build.cmd", fmt.Sprintf("go build -gcflags 'all=-N -l' -o %s %s", binPath, AirInfo.BuildPackage),
