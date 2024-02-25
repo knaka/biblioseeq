@@ -19,19 +19,20 @@ type Sqlc mg.Namespace
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (s Sqlc) Gen() (err error) {
-	err = sqlcGen()
-	if err != nil {
-		return
-	}
-	err = Gogen("./db/.")
-	if err != nil {
-		return
-	}
-	err = sqlcGen()
-	return
+	//err = sqlcGen()
+	//if err != nil {
+	//	return
+	//}
+	//err = Gogen("db")
+	//if err != nil {
+	//	return
+	//}
+	//err = sqlcGen()
+	//return
+	return Gogen("db")
 }
 
-func Gogen(target string) error {
+func Gogen(target string, _ ...any) error {
 	V0(Gobin("go-generate-fast"))
 	return RunWith("", nil, "go-generate-fast", target)
 }
@@ -89,4 +90,5 @@ func (Sqlc) Vet() error {
 
 func init() {
 	AddGenFn(Sqlc.Gen)
+	AddLintFn(Sqlc.Vet)
 }

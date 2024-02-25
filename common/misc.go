@@ -62,13 +62,20 @@ func (Env) Print(host string, port int, user, password, database string) {
 	V0(fmt.Fprintf(os.Stdout, "DB_URL=%s\n", urlDb.String()))
 }
 
+var lintFns []any
+
+// AddLintFn adds a function to the list of functions to lint something.
+//
+//goland:noinspection GoUnnecessarilyExportedIdentifiers
+func AddLintFn(fn any) {
+	lintFns = append(lintFns, fn)
+}
+
 // Lint analyses.
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Lint() error {
-	mg.Deps(
-		Sqlc.Vet,
-	)
+	mg.Deps(lintFns...)
 	return nil
 }
 
