@@ -1,4 +1,4 @@
-module github.com/knaka/magefiles-common
+module github.com/knaka/magefiles-shared
 
 go 1.20
 
