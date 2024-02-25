@@ -60,10 +60,12 @@ func execDbQuery(query string) error {
 		return err
 	}
 	defer (func() { _ = db.Close() })()
+	log.Println("Executing query:", query)
 	result, err := db.Exec(query)
 	if err != nil {
 		return err
 	}
+	log.Println("Done.")
 	n, err := result.RowsAffected()
 	if err != nil {
 		log.Panicf("panic 27d2d65 (%v)", err)
@@ -90,9 +92,9 @@ func (Db) Seed() error {
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (db Db) Migrate() error {
-	err := execGoose("up")
-	if err != nil {
-		return err
-	}
+	//err := execGoose("up")
+	//if err != nil {
+	//	return err
+	//}
 	return db.Converge()
 }

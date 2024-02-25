@@ -17,7 +17,7 @@ import (
 
 var goBinDir string
 
-type GobinPkgParams struct {
+type GobinPkg struct {
 	Name    string
 	Version string
 	Tags    string
@@ -30,7 +30,7 @@ func init() {
 	DirsToCleanUp = append(DirsToCleanUp, goBinDir)
 }
 
-var GobinPkgs []*GobinPkgParams
+var GobinPkgs []*GobinPkg
 
 // RunWith runs the given command prioritizing binaries in .gobin/ directory. It is not a task function.
 func RunWith(dir string, env map[string]string, cmd string, args ...string) error {

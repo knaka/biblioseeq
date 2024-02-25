@@ -10,7 +10,7 @@ import (
 
 const dir = "."
 
-type DockerfileParams struct {
+type Dockerfile struct {
 	Filename string
 	Goarch   string
 	Prebuilt bool
@@ -18,9 +18,9 @@ type DockerfileParams struct {
 
 var dockerfileTemplate = "template.dockerfile"
 
-var DockerfileSettings []*DockerfileParams
+var Dockerfiles_ []*Dockerfile
 
-func generateDockerfile(data *DockerfileParams) error {
+func generateDockerfile(data *Dockerfile) error {
 	tmpl, err := template.ParseFiles(filepath.Join(dir, dockerfileTemplate))
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func generateDockerfile(data *DockerfileParams) error {
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Dockerfiles() error {
-	for _, dockerfileParams := range DockerfileSettings {
+	for _, dockerfileParams := range Dockerfiles_ {
 		if updated, _ := target.Path(dockerfileParams.Filename, dockerfileTemplate); updated {
 			err := generateDockerfile(dockerfileParams)
 			if err != nil {
