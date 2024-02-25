@@ -1,7 +1,8 @@
-package common
+package psql
 
 import (
 	"errors"
+	common "github.com/knaka/magefiles-common"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -40,7 +41,7 @@ func (Db) Converge() (err error) {
 	var args []string
 	pass, _ := u.User.Password()
 	dbName := strings.ReplaceAll(u.Path, "/", "")
-	V0(RunWith(
+	V0(common.RunWith(
 		"",
 		map[string]string{
 			"PGPASSWORD": pass,
@@ -76,7 +77,7 @@ func (Db) Dump() error {
 	}
 	var args []string
 	dbName := strings.ReplaceAll(u.Path, "/", "")
-	return RunWith(
+	return common.RunWith(
 		"",
 		nil,
 		"psqldef",
@@ -93,8 +94,8 @@ func (Db) Dump() error {
 
 // Gen generates bindings and helpers for a database.
 func (Db) Gen() (err error) {
-	if err = Gobin("go-generate-fast"); err != nil {
+	if err = common.Gobin("go-generate-fast"); err != nil {
 		return
 	}
-	return RunWith("db", nil, "go-generate-fast", ".")
+	return common.RunWith("db", nil, "go-generate-fast", ".")
 }

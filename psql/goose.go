@@ -1,7 +1,8 @@
-package common
+package psql
 
 import (
 	"fmt"
+	common "github.com/knaka/magefiles-common"
 	"github.com/magefile/mage/sh"
 	"log"
 	"os"
@@ -21,7 +22,7 @@ var LoadEnv = func() {}
 func execGooseSub(dump bool, args ...string) error {
 	LoadEnv()
 	dbUrl := os.Getenv("DB_URL")
-	err := RunWith(
+	err := common.RunWith(
 		"",
 		map[string]string{
 			"GOOSE_DRIVER":   "postgres",

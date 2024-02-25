@@ -1,7 +1,8 @@
-package common
+package psql
 
 import (
 	. "github.com/knaka/go-utils"
+	common "github.com/knaka/magefiles-common"
 	"github.com/magefile/mage/mg"
 	"os"
 	"strconv"
@@ -23,7 +24,7 @@ func Psql() (err error) {
 		os.Getenv("DB_URL"),
 		os.Getenv("ADMIN_DB_URL"),
 	} {
-		err = RunWith("", nil, "psql", dbUrl)
+		err = common.RunWith("", nil, "psql", dbUrl)
 		if err == nil {
 			return nil
 		}
