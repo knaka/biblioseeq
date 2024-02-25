@@ -1,8 +1,8 @@
-package psql
+package psqldb
 
 import (
 	"errors"
-	common "github.com/knaka/magefiles-common"
+	common "github.com/knaka/magefiles-shared/common"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -30,11 +30,7 @@ func (Db) Converge() (err error) {
 	if dbUrl == "" {
 		return errors.New("DB_URL is not set")
 	}
-	u, err := url.Parse(dbUrl)
-	if err != nil {
-		return err
-	}
-	// read db/schema_before.sql
+	u := V(url.Parse(dbUrl))
 	for _, f := range BeforeQueryFiles {
 		V0(execDbQuery(string(V(os.ReadFile(f)))))
 	}
@@ -48,8 +44,8 @@ func (Db) Converge() (err error) {
 		},
 		"psqldef",
 		append([]string{
-			"--file", "db/schema.sql",
-			"--file", "db/schema_info.sql",
+			"--file", filepath.Join("db", "schema.sql"),
+			"--file", filepath.Join("db", "schema_info.sql"),
 			"--host", u.Hostname(),
 			"--port", u.Port(),
 			"--user", u.User.Username(),
@@ -71,10 +67,7 @@ func (Db) Dump() error {
 	if dbUrl == "" {
 		return errors.New("DB_URL is not set")
 	}
-	u, err := url.Parse(dbUrl)
-	if err != nil {
-		return err
-	}
+	u := V(url.Parse(dbUrl))
 	var args []string
 	dbName := strings.ReplaceAll(u.Path, "/", "")
 	return common.RunWith(

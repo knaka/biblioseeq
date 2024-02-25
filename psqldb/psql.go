@@ -1,8 +1,8 @@
-package psql
+package psqldb
 
 import (
 	. "github.com/knaka/go-utils"
-	common "github.com/knaka/magefiles-common"
+	"github.com/knaka/magefiles-shared/common"
 	"github.com/magefile/mage/mg"
 	"os"
 	"strconv"
@@ -19,7 +19,7 @@ func setVerbose() (err error) {
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Psql() (err error) {
 	defer Catch(&err)
-	V0(setVerbose())
+	V0(setVerbose()) // For interactive command.
 	for _, dbUrl := range []string{
 		os.Getenv("DB_URL"),
 		os.Getenv("ADMIN_DB_URL"),

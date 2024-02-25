@@ -1,8 +1,8 @@
-package psql
+package psqldb
 
 import (
 	"fmt"
-	common "github.com/knaka/magefiles-common"
+	"github.com/knaka/magefiles-shared/common"
 	"github.com/magefile/mage/sh"
 	"log"
 	"os"
@@ -90,3 +90,10 @@ func (Db) New(name string) error {
 func (Db) Fix() error {
 	return execGooseWoDump("fix")
 }
+
+// Migrate migrates the database to the most recent version available.
+//
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+//func (db Db) Migrate() error {
+//	return execGoose("up")
+//}

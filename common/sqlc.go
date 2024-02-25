@@ -3,7 +3,7 @@ package common
 import (
 	"errors"
 	. "github.com/knaka/go-utils"
-	"github.com/knaka/magefiles-common/shdir"
+	"github.com/knaka/magefiles-shared/shdir"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"

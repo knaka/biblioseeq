@@ -1,4 +1,4 @@
-package psql
+package psqldb
 
 import (
 	"database/sql"
@@ -50,6 +50,13 @@ func (Db) Create() error {
 	return nil
 }
 
+// Drop drops a PostgreSQL database if exists.
+//
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+func (Db) Drop() error {
+	return execMainDatabaseDdl("DROP DATABASE IF EXISTS %s")
+}
+
 func execDbQuery(query string) error {
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
@@ -74,27 +81,9 @@ func execDbQuery(query string) error {
 	return nil
 }
 
-// Drop drops a PostgreSQL database if exists.
-//
-//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func (Db) Drop() error {
-	return execMainDatabaseDdl("DROP DATABASE IF EXISTS %s")
-}
-
 // Seed inserts seed data into the database.
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Seed() error {
 	return sh.RunWith(nil, mg.GoCmd(), "run", "./cmd/db-seed")
-}
-
-// Migrate migrates the database to the most recent version available.
-//
-//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func (db Db) Migrate() error {
-	//err := execGoose("up")
-	//if err != nil {
-	//	return err
-	//}
-	return db.Converge()
 }
