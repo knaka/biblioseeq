@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+
+	. "github.com/knaka/go-utils"
 )
 
 func execGooseWoDump(args ...string) error {
@@ -94,6 +96,9 @@ func (Db) Fix() error {
 // Migrate migrates the database to the most recent version available.
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-//func (db Db) Migrate() error {
-//	return execGoose("up")
-//}
+func (db Db) Migrate() (err error) {
+	defer Catch(&err)
+	V0(execGoose("up"))
+	V0(db.Converge())
+	return nil
+}
