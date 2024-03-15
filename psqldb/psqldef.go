@@ -11,14 +11,18 @@ import (
 	. "github.com/knaka/go-utils"
 )
 
+// AnteConvergenceScripts is the DDL script files applied before the schema is converged.
+//
 //goland:noinspection GoUnnecessarilyExportedIdentifiers
-var BeforeQueryFiles = []string{
-	filepath.Join("db", "schema_before.sql"),
+var AnteConvergenceScripts = []string{
+	filepath.Join("db", "ante-schema.sql"),
 }
 
+// PostConvergenceScripts is the DDL script files applied after the schema is converged.
+//
 //goland:noinspection GoUnnecessarilyExportedIdentifiers
-var AfterQueryFiles = []string{
-	filepath.Join("db", "schema_after.sql"),
+var PostConvergenceScripts = []string{
+	filepath.Join("db", "post-schema.sql"),
 }
 
 // Converge converges a PostgreSQL database.
@@ -31,7 +35,7 @@ func (Db) Converge() (err error) {
 		return errors.New("DB_URL is not set")
 	}
 	u := V(url.Parse(dbUrl))
-	for _, f := range BeforeQueryFiles {
+	for _, f := range AnteConvergenceScripts {
 		V0(execDbQuery(string(V(os.ReadFile(f)))))
 	}
 	var args []string
@@ -53,7 +57,7 @@ func (Db) Converge() (err error) {
 			dbName,
 		}, args...)...,
 	))
-	for _, f := range AfterQueryFiles {
+	for _, f := range PostConvergenceScripts {
 		V0(execDbQuery(string(V(os.ReadFile(f)))))
 	}
 	return

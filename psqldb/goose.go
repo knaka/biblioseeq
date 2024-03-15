@@ -98,7 +98,7 @@ func (Db) Fix() error {
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (db Db) Migrate() (err error) {
 	defer Catch(&err)
-	V0(execGoose("up"))
+	//V0(execGoose("up"))
 	V0(db.Converge())
 	return nil
 }
