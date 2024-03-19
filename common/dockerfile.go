@@ -16,7 +16,7 @@ type Dockerfile struct {
 	Prebuilt bool
 }
 
-var dockerfileTemplate = "template.dockerfile"
+var dockerfileTemplate = "template.Dockerfile"
 
 var dockerfiles []*Dockerfile
 
