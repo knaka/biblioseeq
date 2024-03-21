@@ -18,18 +18,17 @@ func SetClientDirBases(dirBases ...string) {
 // Build builds web client application.
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func (Client) Build() error {
+func (Client) Build() (err error) {
 	// Docker build does not build clients.
 	if os.Getenv("NO_CLIENT_BUILD") != "" {
 		return nil
 	}
-	var err error
 	for _, dirBase := range clientDirBases {
 		err = (func() error {
 			wd := V(os.Getwd())
 			V0(os.Chdir(dirBase))
 			defer (func() { V0(os.Chdir(wd)) })()
-			return RunWith("", nil, "npm", "run", "build:development")
+			return RunWith("", nil, "npm", "run", "build:production")
 		})()
 		if err != nil {
 			return err
