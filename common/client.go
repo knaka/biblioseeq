@@ -28,7 +28,10 @@ func (Client) Build() (err error) {
 			wd := V(os.Getwd())
 			V0(os.Chdir(dirBase))
 			defer (func() { V0(os.Chdir(wd)) })()
-			return RunWith("", nil, "npm", "run", "build:production")
+			env := map[string]string{
+				"NODE_OPTIONS": "--openssl-legacy-provider",
+			}
+			return RunWith("", env, "npm", "run", "build:production")
 		})()
 		if err != nil {
 			return err
