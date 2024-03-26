@@ -1,9 +1,11 @@
 package psqldb
 
 import (
+	"bufio"
 	"database/sql"
 	"fmt"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	. "github.com/knaka/go-utils"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"log"
@@ -15,7 +17,7 @@ import (
 //goland:noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
 type Db mg.Namespace
 
-func execMainDatabaseDdl(ddlWithDbNamePlaceholder string) error {
+func execMainDatabaseDdl(ddlWithDbNamePlaceholder string, confirms bool) error {
 	adminDbUrl := os.Getenv("ADMIN_DB_URL")
 	dbUrl := os.Getenv("DB_URL")
 	urlDb, err := url.Parse(dbUrl)
@@ -23,6 +25,16 @@ func execMainDatabaseDdl(ddlWithDbNamePlaceholder string) error {
 		return err
 	}
 	dbName := strings.Replace(urlDb.Path, "/", "", 1)
+	if confirms {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Printf("Are you sure you want to execute the query “%s” on the database “%s”? (yes/no): ", ddlWithDbNamePlaceholder, dbName)
+		confirmation := V(reader.ReadString('\n'))
+		confirmation = strings.TrimSpace(confirmation)
+		if confirmation != "yes" {
+			return nil
+		}
+		V0(fmt.Printf("Executing query “%s” on the database “%s”...", ddlWithDbNamePlaceholder, dbName))
+	}
 	if adminDbUrl == "" {
 		urlDb.Path = "/template1"
 		adminDbUrl = urlDb.String()
@@ -43,7 +55,7 @@ func execMainDatabaseDdl(ddlWithDbNamePlaceholder string) error {
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Create() error {
-	err := execMainDatabaseDdl("CREATE DATABASE %s")
+	err := execMainDatabaseDdl("CREATE DATABASE %s", false)
 	if err != nil {
 		return err
 	}
@@ -54,7 +66,7 @@ func (Db) Create() error {
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Db) Drop() error {
-	return execMainDatabaseDdl("DROP DATABASE IF EXISTS %s")
+	return execMainDatabaseDdl("DROP DATABASE IF EXISTS %s", true)
 }
 
 func execDbQuery(query string) error {
