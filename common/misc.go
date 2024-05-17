@@ -30,8 +30,28 @@ type Env mg.Namespace
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Env) Compose() {
 	json := V(sh.Output("docker", "compose", "config", "--format", "json"))
+	//s, _ := exec.LookPath("docker-compose")
+	//fmt.Printf("docker-compose: %s\n", s)
+	//dockerId := V(sh.Output("/Applications/Docker.app/Contents/Resources/bin/docker-compose", "ps", "--quiet", "db"))
+	//cmd := exec.Command("sh", "-c", "/Applications/Docker.app/Contents/Resources/bin/docker compose ps --quiet db")
+	//out, err := cmd.Output()
+	//if err != nil {
+	//	fmt.Printf("Error: %s\n", err)
+	//	fmt.Printf("Output: %s\n", out)
+	//	return
+	//}
+	//// 出力結果を表示
+	//dockerId := strings.TrimSpace(string(out))
+	dockerId := "yubersvc-db-1"
+	//fmt.Printf("Output: %s\n", dockerId)
+	json2 := V(sh.Output("docker", "inspect", dockerId))
+	//log.Printf("json: %s\n", json)
+	//theId := gjson.Get(json, "0.NetworkSettings").String()
+	//log.Printf("theId: %s\n", theId)
 	host := "127.0.0.1"
-	publishedPort := gjson.Get(json, "services.db.ports.0.published").Int()
+	//x := gjson.Get(json, "0.NetworkSettings.Ports")
+	//log.Printf("x: %+v\n", x)
+	publishedPort := gjson.Get(json2, "0.NetworkSettings.Ports.5432/tcp.0.HostPort").Int()
 	urlDb := url.URL{
 		Scheme: "postgresql",
 		Host:   fmt.Sprintf("%s:%d", host, publishedPort),
