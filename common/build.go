@@ -41,7 +41,6 @@ type Build mg.Namespace
 func (Build) Native() error {
 	mg.Deps(Gen)
 	// Do not Deps this together because this chroot's
-	mg.Deps(Client.Build)
 	return sh.RunWith(nil, mg.GoCmd(), "build", "-o", filepath.Join(buildDirPath, baseName()), MainPackage)
 }
 
@@ -49,7 +48,8 @@ func makeBinName(baseName, targetEnv, goos, goarch string) string {
 	return fmt.Sprintf("%s-%s-%s-%s", baseName, targetEnv, goos, goarch)
 }
 
-// Cross (goarch string) builds a binary for a specified architecture.
+// Cross (goarch string: such as “amd64”, “arm64”) builds a binary for a specified architecture.
+// Known architectures: https://github.com/golang/go/blob/105ac94486f243fc478c3a146d836302a95cdbbc/src/go/build/syslist.go#L54
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Build) Cross(goarch string) error {
@@ -59,7 +59,6 @@ func (Build) Cross(goarch string) error {
 	//	"Dockerfile",
 	//))
 	// Do not Deps because this chroot's
-	mg.Deps(Client.Build)
 	const goos = "linux"
 	if goarch == "native" {
 		goarch = runtime.GOARCH
