@@ -36,6 +36,10 @@ func SetGobinPkgs(pkgs ...*GobinPkg) {
 	gobinPkgs = pkgs
 }
 
+func AddGobin(name, version, tags string) {
+	gobinPkgs = append(gobinPkgs, &GobinPkg{name, version, tags})
+}
+
 // RunWith runs the given command prioritizing binaries in .gobin/ directory. It is not a task function.
 func RunWith(dir string, env map[string]string, cmd string, args ...string) error {
 	_, err := exec.LookPath(cmd)

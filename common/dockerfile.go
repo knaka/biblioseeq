@@ -16,12 +16,16 @@ type Dockerfile struct {
 	Prebuilt bool
 }
 
-var dockerfileTemplate = "template.Dockerfile"
+var dockerfileTemplate = "Dockerfile.tmpl"
 
 var dockerfiles []*Dockerfile
 
 func SetDockerfiles(dockerfiles_ ...*Dockerfile) {
 	dockerfiles = dockerfiles_
+}
+
+func AddDockerfile(filename, goarch string, prebuilt bool) {
+	dockerfiles = append(dockerfiles, &Dockerfile{filename, goarch, prebuilt})
 }
 
 func generateDockerfile(data *Dockerfile) error {
