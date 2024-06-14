@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"text/template"
+
+	. "github.com/knaka/go-utils"
 )
 
 const dir = "."
@@ -28,8 +30,18 @@ func AddDockerfile(filename, goarch string, prebuilt bool) {
 	dockerfiles = append(dockerfiles, &Dockerfile{filename, goarch, prebuilt})
 }
 
-func generateDockerfile(data *Dockerfile) error {
-	tmpl, err := template.ParseFiles(filepath.Join(dir, dockerfileTemplate))
+func generateDockerfile(data *Dockerfile) (err error) {
+	defer Catch(&err)
+	// Struct “Template” can contain multiple templates (“defined templates”).
+	tmplTree := template.New("")
+	// “It must be called before the template is parsed.”
+	tmplTree = tmplTree.Funcs(template.FuncMap{
+		"GeneratedContentNotice": func() string {
+			return fmt.Sprintf("THIS FILE IS GENERATED FROM `%s`. DO NOT EDIT DIRECTLY.", dockerfileTemplate)
+		},
+	})
+	// The template parsed with `ParseFiles` is treated as a defined template and associated with the base name of the file.
+	tmplTree = V(tmplTree.ParseFiles(filepath.Join(dir, dockerfileTemplate)))
 	if err != nil {
 		return err
 	}
@@ -38,13 +50,8 @@ func generateDockerfile(data *Dockerfile) error {
 		return err
 	}
 	defer func() { _ = file.Close() }()
-	_, _ = file.WriteString(
-		fmt.Sprintf("# THIS FILE IS GENERATED FROM `%s`. DO NOT EDIT DIRECTLY.\n", dockerfileTemplate),
-	)
-	err = tmpl.Execute(file, data)
-	if err != nil {
-		return err
-	}
+	// Execute by the template name.
+	V0(tmplTree.ExecuteTemplate(file, filepath.Base(dockerfileTemplate), data))
 	return nil
 }
 
