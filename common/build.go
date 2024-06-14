@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	. "github.com/knaka/go-utils"
 )
 
 var MainPackage string
@@ -32,37 +34,20 @@ func init() {
 	DirsToCleanUp = append(DirsToCleanUp, buildDirPath)
 }
 
-//goland:noinspection GoUnusedExportedType, GoUnnecessarilyExportedIdentifiers
-type Build mg.Namespace
-
-// Native builds the main binary for the current environment.
-//
-//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func (Build) Native() error {
-	mg.Deps(Gen)
-	// Do not Deps this together because this chroot's
-	return sh.RunWith(nil, mg.GoCmd(), "build", "-o", filepath.Join(buildDirPath, baseName()), MainPackage)
-}
-
 func makeBinName(baseName, targetEnv, goos, goarch string) string {
 	return fmt.Sprintf("%s-%s-%s-%s", baseName, targetEnv, goos, goarch)
 }
 
-// Cross (goarch string: such as “amd64”, “arm64”) builds a binary for a specified architecture.
+// Build builds the binary for the current platform.
 // Known architectures: https://github.com/golang/go/blob/105ac94486f243fc478c3a146d836302a95cdbbc/src/go/build/syslist.go#L54
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func (Build) Cross(goarch string) error {
-	mg.Deps(Gen)
-	//V0(os.Symlink(
-	//	fmt.Sprintf("prebuilt-%s.Dockerfile", goarch),
-	//	"Dockerfile",
-	//))
-	// Do not Deps because this chroot's
-	const goos = "linux"
-	if goarch == "native" {
-		goarch = runtime.GOARCH
-	}
+func Build() error {
+	goos := "linux"
+	goarch := Ternary(os.Getenv("GOARCH") != "",
+		os.Getenv("GOARCH"),
+		runtime.GOARCH,
+	)
 	return sh.RunWith(
 		map[string]string{
 			"GOOS":   goos,
