@@ -63,10 +63,10 @@ func (Db) Converge() (err error) {
 	return
 }
 
-// Dump dumps a database.
+// Schema dumps a database schema.
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func (Db) Dump() error {
+func (Db) Schema() error {
 	dbUrl := os.Getenv("DB_URL")
 	if dbUrl == "" {
 		return errors.New("DB_URL is not set")

@@ -17,7 +17,7 @@ func setVerbose() (err error) {
 // Psql executes psql(1) command on the database defined in .env* file
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
-func Psql() (err error) {
+func (Db) Cli() (err error) {
 	defer Catch(&err)
 	V0(setVerbose()) // For interactive command.
 	for _, dbUrl := range []string{
@@ -29,5 +29,16 @@ func Psql() (err error) {
 			return nil
 		}
 	}
+	return err
+}
+
+// Dump executes pg_dump(1) command on the database defined in .env* file
+//
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+func (Db) Dump() (err error) {
+	defer Catch(&err)
+	//V0(setVerbose()) // For interactive command.
+	dbUrl := os.Getenv("DB_URL")
+	V0(common.RunWith("", nil, "pg_dump", dbUrl))
 	return err
 }
