@@ -8,6 +8,7 @@ import (
 	"github.com/tidwall/gjson"
 	"net/url"
 	"os"
+	"strings"
 )
 
 var DirsToCleanUp []string
@@ -30,34 +31,18 @@ type Env mg.Namespace
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Env) Compose() {
 	json := V(sh.Output("docker", "compose", "config", "--format", "json"))
-	//s, _ := exec.LookPath("docker-compose")
-	//fmt.Printf("docker-compose: %s\n", s)
-	//dockerId := V(sh.Output("/Applications/Docker.app/Contents/Resources/bin/docker-compose", "ps", "--quiet", "db"))
-	//cmd := exec.Command("sh", "-c", "/Applications/Docker.app/Contents/Resources/bin/docker compose ps --quiet db")
-	//out, err := cmd.Output()
-	//if err != nil {
-	//	fmt.Printf("Error: %s\n", err)
-	//	fmt.Printf("Output: %s\n", out)
-	//	return
-	//}
-	//// 出力結果を表示
-	//dockerId := strings.TrimSpace(string(out))
-	dockerId := "yubersvc-db-1"
-	//fmt.Printf("Output: %s\n", dockerId)
+	json3 := V(sh.Output("docker", "compose", "ps", "db", "--format", "json"))
+	out := gjson.Get(json3, "ID").String()
+	dockerId := strings.TrimSpace(string(out))
 	json2 := V(sh.Output("docker", "inspect", dockerId))
-	//log.Printf("json: %s\n", json)
-	//theId := gjson.Get(json, "0.NetworkSettings").String()
-	//log.Printf("theId: %s\n", theId)
 	host := "127.0.0.1"
-	//x := gjson.Get(json, "0.NetworkSettings.Ports")
-	//log.Printf("x: %+v\n", x)
 	publishedPort := gjson.Get(json2, "0.NetworkSettings.Ports.5432/tcp.0.HostPort").Int()
 	urlDb := url.URL{
 		Scheme: "postgresql",
 		Host:   fmt.Sprintf("%s:%d", host, publishedPort),
 		User: url.UserPassword(
-			gjson.Get(json, "services.ap.environment.DB_USER").String(),
-			gjson.Get(json, "services.ap.environment.DB_PASSWORD").String(),
+			gjson.Get(json, "services.db.environment.POSTGRES_USER").String(),
+			gjson.Get(json, "services.db.environment.POSTGRES_PASSWORD").String(),
 		),
 		Path:    "/" + gjson.Get(json, "services.ap.environment.DB_DATABASE").String(),
 		RawPath: "sslmode=disable",
