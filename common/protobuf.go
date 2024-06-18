@@ -12,6 +12,8 @@ type Pb mg.Namespace
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Pb) Gen() (err error) {
+	V0(Gobin("protoc-gen-connect-go"))
+	V0(Gobin("protoc-gen-go"))
 	source := V(target.NewestModTime("proto"))
 	dest := V(target.NewestModTime("pbgen"))
 	if dest.Compare(source) > 0 {
