@@ -14,7 +14,6 @@ const dir = "."
 
 type Dockerfile struct {
 	Filename string
-	Goarch   string
 	Prebuilt bool
 }
 
@@ -26,8 +25,8 @@ func SetDockerfiles(dockerfiles_ ...*Dockerfile) {
 	dockerfiles = dockerfiles_
 }
 
-func AddDockerfile(filename, goarch string, prebuilt bool) {
-	dockerfiles = append(dockerfiles, &Dockerfile{filename, goarch, prebuilt})
+func AddDockerfile(filename string, prebuilt bool) {
+	dockerfiles = append(dockerfiles, &Dockerfile{filename, prebuilt})
 }
 
 func generateDockerfile(data *Dockerfile) (err error) {

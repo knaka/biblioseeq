@@ -51,7 +51,7 @@ func Build() error {
 		os.Getenv("GOARCH"),
 		runtime.GOARCH,
 	)
-	binName := makeBinName(baseName(), "prod", goos, goarch)
+	binName := makeBinName(baseName(), "production", goos, goarch)
 	V0(sh.RunWith(
 		map[string]string{
 			"GOOS":   goos,
@@ -67,11 +67,6 @@ func Build() error {
 		"-o", filepath.Join(buildDirPath, binName),
 		MainPackage,
 	))
-	if goos == runtime.GOOS && goarch == runtime.GOARCH {
-		V0(sh.Copy(filepath.Join(buildDirPath, baseName()), filepath.Join(buildDirPath, binName)))
-		// Add executable permission to the binary
-		V0(sh.RunV("chmod", "+x", filepath.Join(buildDirPath, baseName())))
-	}
 	return nil
 }
 
