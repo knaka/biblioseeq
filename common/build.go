@@ -43,12 +43,16 @@ func makeBinName(baseName, targetEnv, goos, goarch string) string {
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func Build() error {
-	goos := "linux"
+	goos := Ternary(os.Getenv("GOOS") != "",
+		os.Getenv("GOOS"),
+		runtime.GOOS,
+	)
 	goarch := Ternary(os.Getenv("GOARCH") != "",
 		os.Getenv("GOARCH"),
 		runtime.GOARCH,
 	)
-	return sh.RunWith(
+	binName := makeBinName(baseName(), "prod", goos, goarch)
+	V0(sh.RunWith(
 		map[string]string{
 			"GOOS":   goos,
 			"GOARCH": goarch,
@@ -60,9 +64,15 @@ func Build() error {
 		// -w
 		//   Omit the DWARF symbol table.
 		"-ldflags=-s -w",
-		"-o", filepath.Join(buildDirPath, makeBinName(baseName(), "prod", goos, goarch)),
+		"-o", filepath.Join(buildDirPath, binName),
 		MainPackage,
-	)
+	))
+	if goos == runtime.GOOS && goarch == runtime.GOARCH {
+		V0(sh.Copy(filepath.Join(buildDirPath, baseName()), filepath.Join(buildDirPath, binName)))
+		// Add executable permission to the binary
+		V0(sh.RunV("chmod", "+x", filepath.Join(buildDirPath, baseName())))
+	}
+	return nil
 }
 
 // Air launches the server process and keeps it live-reloading.
