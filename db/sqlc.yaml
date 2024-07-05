@@ -1,0 +1,13 @@
+# Configuration — sqlc 1.18.0 documentation https://docs.sqlc.dev/en/stable/reference/config.html
+version: "2"
+sql:
+  -
+    schema:
+      - "./schema.sql"
+    queries: "./queries/"
+    engine: "sqlite"
+    gen:
+      go:
+        package: sqlcgen
+        out: "./sqlcgen"
+        sql_package: "database/sql"
