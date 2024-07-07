@@ -6,6 +6,7 @@ require (
 	github.com/knaka/go-utils v0.0.2024070250
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/sqldef/sqldef v0.17.11
+	github.com/webui-dev/go-webui/v2 v2.4.3
 )
 
 require (
@@ -30,3 +31,5 @@ require (
 	modernc.org/strutil v1.2.0 // indirect
 	modernc.org/token v1.1.0 // indirect
 )
+
+replace github.com/webui-dev/go-webui/v2 v2.4.3 => ./modules/go-webui/v2
