@@ -1,0 +1,1 @@
+https://raw.githubusercontent.com/knaka/gobin/main/gobin-run.go

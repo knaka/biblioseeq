@@ -118,6 +118,7 @@ func doIt() {
 	ui.Bind(w, "handleBool", handleBool)
 	ui.Bind(w, "handleResp", handleResp)
 
+	if os.Args[1] ==
 	preferedBrowser := ui.Chromium
 	//preferedBrowser := ui.Chrome
 	V0(w.ShowBrowser(doc, preferedBrowser))
