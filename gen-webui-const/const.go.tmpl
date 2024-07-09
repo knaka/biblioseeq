@@ -1,0 +1,23 @@
+{{- /* gotype: github.com/knaka/go-pinfomap.IntType */ -}}
+
+// {{GeneratedContentNotice}}
+
+package libraq
+
+import (
+	"fmt"
+	"github.com/huandu/xstrings"
+	"github.com/webui-dev/go-webui/v2"
+)
+
+func StrToBrowser(s string) (browser webui.Browser, err error) {
+	switch xstrings.ToCamelCase(s) {
+	{{- range .Consts }}
+		case "{{.Name}}":
+			browser = webui.{{.Name}}
+	{{- end}}
+	default:
+		err = fmt.Errorf("invalid browser: %s", s)
+	}
+	return
+}

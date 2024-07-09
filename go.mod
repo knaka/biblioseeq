@@ -4,7 +4,7 @@ go 1.21.6
 
 require (
 	github.com/huandu/xstrings v1.5.0
-	github.com/knaka/go-pinfomap v0.0.2024020954
+	github.com/knaka/go-pinfomap v0.0.2024070745
 	github.com/knaka/go-utils v0.0.2024070250
 	github.com/knaka/libraq v0.0.0-20240705073805-8e62ceb25fd4
 	github.com/mattn/go-sqlite3 v1.14.22
