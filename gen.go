@@ -1,1 +1,1 @@
-package libraq
+package biblioseeq

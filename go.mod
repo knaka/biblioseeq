@@ -1,12 +1,12 @@
-module github.com/knaka/athenaq
+module github.com/knaka/biblioseeq
 
 go 1.21.6
 
 require (
 	github.com/huandu/xstrings v1.5.0
+	github.com/incu6us/goimports-reviser/v3 v3.6.3
 	github.com/knaka/go-pinfomap v0.0.2024070745
 	github.com/knaka/go-utils v0.0.2024070250
-	github.com/knaka/libraq v0.0.0-20240705073805-8e62ceb25fd4
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/sqldef/sqldef v0.17.11
 	github.com/webui-dev/go-webui/v2 v2.4.3
@@ -23,6 +23,7 @@ require (
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
+	golang.org/x/exp v0.0.0-20231108232855-2478ac86f678 // indirect
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect

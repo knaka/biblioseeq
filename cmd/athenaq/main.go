@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/knaka/libraq/db"
-	"github.com/knaka/libraq/db/sqlcgen"
+	"github.com/knaka/biblioseeq"
+	"github.com/knaka/biblioseeq/db"
+	"github.com/knaka/biblioseeq/db/sqlcgen"
 	_ "github.com/mattn/go-sqlite3"
 	ui "github.com/webui-dev/go-webui/v2"
 	"log"
@@ -118,16 +119,9 @@ func doIt() {
 	ui.Bind(w, "handleBool", handleBool)
 	ui.Bind(w, "handleResp", handleResp)
 
-	if os.Args[1] ==
-	preferedBrowser := ui.Chromium
-	//preferedBrowser := ui.Chrome
-	V0(w.ShowBrowser(doc, preferedBrowser))
-	//if err != nil {
-	//	Assert(w.Show(doc))
-	//}
-	//V0(w.Show(doc))
-
-	// Wait until all windows get closed.
+	preferredBrowser := "Chromium"
+	preferredBrowserId := V(biblioseeq.StrToBrowser(preferredBrowser))
+	V0(w.ShowBrowser(doc, preferredBrowserId))
 	ui.Wait()
 }
 
