@@ -1,0 +1,4 @@
+#!/bin/bash
+set -o nounset -o errexit -o pipefail
+
+go run ./gobin-run go-generate-fast
