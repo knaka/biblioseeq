@@ -11,7 +11,7 @@ import (
 )
 
 func StrToBrowser(s string) (browser webui.Browser, err error) {
-	switch xstrings.ToCamelCase(s) {
+	switch s {
 	{{- range .Consts }}
 		case "{{.Name}}":
 			browser = webui.{{.Name}}

@@ -5,12 +5,11 @@ package biblioseeq
 import (
 	"fmt"
 
-	"github.com/huandu/xstrings"
 	"github.com/webui-dev/go-webui/v2"
 )
 
 func StrToBrowser(s string) (browser webui.Browser, err error) {
-	switch xstrings.ToCamelCase(s) {
+	switch s {
 	case "NoBrowser":
 		browser = webui.NoBrowser
 	case "AnyBrowser":

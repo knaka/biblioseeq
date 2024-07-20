@@ -19,44 +19,70 @@ import (
 const doc = `<!DOCTYPE html>
 <html>
 	<head>
-		<title>Call Go from JavaScript Example</title>
 		<script src="webui.js"></script>
 		<style>
-			body {
-				background: linear-gradient(to left, #36265a, #654da9);
-				color: AliceBlue;
-				font: 16px sans-serif;
-				text-align: center;
-				margin-top: 30px;
+			html, body {
+				height: 100%;
+				margin: 0;
+				padding: 0;
 			}
-			button {
-				margin: 5px 0 10px;
+			iframe {
+				border: none;
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
 			}
 		</style>
 	</head>
 	<body>
-		<h1>WebUI - Call Go from JavaScript</h1>
-		<br>
-		<p>Call Go functions with arguments (<em>See the logs in your terminal</em>)</p>
-		<button onclick="webui.handleStr('Hello', 'World');">Call handle_str()</button>
-		<br>
-		<button onclick="webui.handleInt(123, 456, 789);">Call handle_int()</button>
-		<br>
-		<button onclick="webui.handleBool(true, false);">Call handle_bool()</button>
-		<br>
-		<p>Call a Go function that returns a response</p>
-		<button onclick="getRespFromGo();">Call get_response()</button>
-		<div>Double: <input type="text" id="my-input" value="2"></div>
-		<script>
-			async function getRespFromGo() {
-				const myInput = document.getElementById("my-input");
-				const number = myInput.value;
-				const result = await webui.handleResp(number);
-				myInput.value = result;
-			}
-		</script>
+		<iframe src="https://www.example.com" />
 	</body>
-</html>`
+</html>
+`
+
+//		`<!DOCTYPE html>
+//<html>
+//	<head>
+//		<title>Call Go from JavaScript Example</title>
+//		<script src="webui.js"></script>
+//		<style>
+//			body {
+//				background: linear-gradient(to left, #36265a, #654da9);
+//				color: AliceBlue;
+//				font: 16px sans-serif;
+//				text-align: center;
+//				margin-top: 30px;
+//			}
+//			button {
+//				margin: 5px 0 10px;
+//			}
+//		</style>
+//	</head>
+//	<body>
+//		<h1>WebUI - Call Go from JavaScript</h1>
+//		<br>
+//		<p>Call Go functions with arguments (<em>See the logs in your terminal</em>)</p>
+//		<button onclick="webui.handleStr('Hello', 'World');">Call handle_str()</button>
+//		<br>
+//		<button onclick="webui.handleInt(123, 456, 789);">Call handle_int()</button>
+//		<br>
+//		<button onclick="webui.handleBool(true, false);">Call handle_bool()</button>
+//		<br>
+//		<p>Call a Go function that returns a response</p>
+//		<button onclick="getRespFromGo();">Call get_response()</button>
+//		<div>Double: <input type="text" id="my-input" value="2"></div>
+//		<script>
+//			async function getRespFromGo() {
+//				const myInput = document.getElementById("my-input");
+//				const number = myInput.value;
+//				const result = await webui.handleResp(number);
+//				myInput.value = result;
+//			}
+//		</script>
+//	</body>
+//</html>`
 
 // JavaScript: `webui.handleStr('Hello', 'World');`
 func handleStr(e ui.Event) ui.Void {
@@ -119,9 +145,15 @@ func doIt() {
 	ui.Bind(w, "handleBool", handleBool)
 	ui.Bind(w, "handleResp", handleResp)
 
-	preferredBrowser := "Chromium"
-	preferredBrowserId := V(biblioseeq.StrToBrowser(preferredBrowser))
-	V0(w.ShowBrowser(doc, preferredBrowserId))
+	preferredBrowserStr := "Chrome"
+	preferredBrowser := V(biblioseeq.StrToBrowser(preferredBrowserStr))
+	// An empty `name` and `path` means the default user profile.
+	// Needs to be called before `webui_show()`.
+	w.SetProfile("", "")
+	log.Println(doc)
+	V0(w.ShowBrowser(doc, preferredBrowser))
+	//V0(w.Show(doc))
+
 	ui.Wait()
 }
 
