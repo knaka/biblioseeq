@@ -24,7 +24,7 @@ desc("Generate protocol-buffer connector");
 task("bufgen", async () => {
     const sh = require("shelljs");
     sh.mkdir("-p", "src/pbgen");
-    sh.exec("buf generate ../../ap/proto/");
+    sh.exec("buf generate ../proto/");
 });
 
 desc("Start development server");

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	_ "embed"
 	"fmt"
 	"github.com/knaka/biblioseeq"
 	"github.com/knaka/biblioseeq/db"
@@ -16,31 +17,8 @@ import (
 	. "github.com/knaka/go-utils"
 )
 
-const doc = `<!DOCTYPE html>
-<html>
-	<head>
-		<script src="webui.js"></script>
-		<style>
-			html, body {
-				height: 100%;
-				margin: 0;
-				padding: 0;
-			}
-			iframe {
-				border: none;
-				width: 100%;
-				height: 100%;
-				position: absolute;
-				top: 0;
-				left: 0;
-			}
-		</style>
-	</head>
-	<body>
-		<iframe src="https://www.example.com" />
-	</body>
-</html>
-`
+//go:embed index.html
+var doc string
 
 //		`<!DOCTYPE html>
 //<html>
