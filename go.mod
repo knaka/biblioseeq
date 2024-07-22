@@ -10,8 +10,10 @@ require (
 	github.com/knaka/gobin v0.0.2024072210
 	github.com/magefile/mage v1.15.0
 	github.com/mattn/go-sqlite3 v1.14.22
+	github.com/rs/cors v1.11.0
 	github.com/sqldef/sqldef v0.17.11
 	github.com/webui-dev/go-webui/v2 v2.4.3
+	golang.org/x/net v0.20.0
 	google.golang.org/protobuf v1.33.0
 )
 

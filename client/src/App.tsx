@@ -1,8 +1,21 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { client } from "./client";
 
 function App() {
+  const [version, setVersion] = useState<string>("");
+  useEffect(() => {
+    (async () => {
+      const response = await client.getVersionInfo({});
+      if (! response.versionInfo) {
+        console.error("Failed to get version info");
+        return;
+      }
+      setVersion(response.versionInfo.version);
+    })();
+  }, []);
+    
   return (
     <div className="App">
       <header className="App-header">
@@ -18,6 +31,9 @@ function App() {
         >
           Learn React
         </a>
+        <p>
+          d: {version}
+        </p>
       </header>
     </div>
   );

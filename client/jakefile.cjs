@@ -1,3 +1,6 @@
+require('shelljs/global');
+config.fatal = true;
+
 const { desc, task, namespace } = require("jake");
 const sh = require("shelljs");
 const { hasNewerFile } = require("./jakelib/lib/incremental.cjs");
