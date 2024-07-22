@@ -8,6 +8,7 @@ import (
 	"github.com/knaka/biblioseeq"
 	"github.com/knaka/biblioseeq/db"
 	"github.com/knaka/biblioseeq/db/sqlcgen"
+	"github.com/knaka/biblioseeq/web"
 	_ "github.com/mattn/go-sqlite3"
 	ui "github.com/webui-dev/go-webui/v2"
 	"log"
@@ -145,6 +146,12 @@ func main() {
 		version := V(store.GetVersion(ctx))
 		log.Printf("sqlite version: %s", version)
 	}
-
+	go func() {
+		ctx := context.Background()
+		_ = web.ListenAndServe(
+			ctx,
+			":3000",
+		)
+	}()
 	doIt()
 }
