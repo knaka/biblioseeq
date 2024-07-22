@@ -7,10 +7,10 @@
 package v1connect
 
 import (
-	v1 "app/pbgen/v1"
 	context "context"
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
+	v1 "github.com/knaka/biblioseeq/pbgen/v1"
 	http "net/http"
 	strings "strings"
 )
