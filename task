@@ -1,0 +1,25 @@
+#!/bin/bash
+set -o nounset -o errexit -o pipefail
+
+DOTENV_DIR="${DOTENV_DIR:-$PWD}"
+export DOTENV_DIR
+basedir="$(readlink -f "$(dirname "$0")")"
+cd "$basedir"
+gobin="$basedir/.gobin"
+mkdir -p "$gobin"
+if ! test -x "$gobin"/mage
+then
+  GOBIN="$gobin" go install github.com/magefile/mage@latest
+fi
+args=()
+if grep -q '[][]' <<< "${@+"${@}"}"
+then
+  for arg in "${@+"${@}"}"
+  do
+    IFS=,[] read -r -a task_args <<< "$arg"
+    args+=("${task_args[@]}")
+  done
+else
+  args=("${@+"${@}"}")
+fi
+exec "$gobin"/mage -v "${args[@]+"${args[@]}"}"

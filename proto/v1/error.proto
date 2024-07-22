@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package v1;
+
+enum ErrorCode {
+  // Zero value is required and UNSPECIFIED is a convention.
+  // Enum value names should be unique since they are global.
+  //
+  // ゼロは必須で UNSPECIFIED にする慣習。デフォルト値なので
+  // enum 値名は unique である必要がある。プレフィクスをつけた方が良くはある
+  ERROR_CODE_UNSPECIFIED = 0;
+  // よく分からない時はこれを返せ
+  ERROR_CODE_INTERNAL = 1;
+
+  // 1～15 の 4 ビットは高効率
+  // 上限 536,870,911 は 29 ビット unsigned
+  // Field numbers 19,000 to 19,999 are reserved for the Protocol Buffers implementation.
+
+  // ログイン
+  ERROR_CODE_USER_NOT_EXISTS = 20000;
+
+  // 認証
+  ERROR_CODE_TOKEN_INVALID = 20102;
+  ERROR_CODE_TOKEN_EXPIRED = 20101;
+
+  // 認可
+  ERROR_CODE_PERMISSION_DENIED = 20201;
+
+  // その他
+  ERROR_CODE_INVALID_ARGUMENT = 20301;
+};
