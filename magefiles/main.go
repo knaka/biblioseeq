@@ -3,25 +3,33 @@ package main
 
 import (
 	. "github.com/knaka/go-utils"
+	gobin "github.com/knaka/gobin/lib"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/target"
 )
 
 type Pb mg.Namespace
 
-func Gobin(name string) string {
-}
-
 // Gen generates protocol buffer binding code.
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Pb) Gen() (err error) {
-	V0(Gobin("protoc-gen-connect-go"))
-	V0(Gobin("protoc-gen-go"))
-	source := V(target.NewestModTime("proto"))
-	dest := V(target.NewestModTime("pbgen"))
-	if dest.Compare(source) > 0 {
-		return nil
+	defer Catch(&err)
+	V0(gobin.Install("protoc-gen-connect-go", "protoc-gen-go"))
+	if V(target.NewestModTime("pbgen")).Compare(
+		V(target.NewestModTime("proto"))) > 0 {
+		return
 	}
-	return RunWith("", nil, "buf", "generate", "proto/")
+	return gobin.Run("buf", "generate", "proto")
+}
+
+// Gen generates code.
+//
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
+func Gen() (err error) {
+	defer Catch(&err)
+	mg.Deps(
+		Pb.Gen,
+	)
+	return gobin.Run("go-generate-fast")
 }
