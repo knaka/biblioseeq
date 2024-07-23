@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"github.com/knaka/biblioseeq/web"
+	neturl "net/url"
+	"strings"
 )
 
 // App struct
@@ -52,6 +54,15 @@ func (a *App) Greet2(name string) (ret struct {
 }
 
 func (a *App) GetAccessInfo() string {
-	log.Println("524f861")
-	return "https://google.com/"
+	url := neturl.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%d", host, port),
+		Path:   "/login",
+		RawQuery: strings.Join([]string{
+			fmt.Sprintf("password=%s", web.LocalPassword),
+			"path=/ap/",
+		}, "&"),
+	}
+	url.Path = "/login"
+	return url.String()
 }

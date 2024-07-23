@@ -15,7 +15,7 @@ import (
 //go:embed index.html
 var webUiTop string
 
-func openWindowAndWait(port int) {
+func openWindowAndWait(host string, port int) {
 	// Create a new window.
 	w := ui.NewWindow()
 	defer w.Destroy()
@@ -25,7 +25,7 @@ func openWindowAndWait(port int) {
 	}) {
 		url := neturl.URL{
 			Scheme: "http",
-			Host:   fmt.Sprintf("localhost:%d", port),
+			Host:   fmt.Sprintf("%s:%d", host, port),
 			Path:   "/login",
 			RawQuery: strings.Join([]string{
 				fmt.Sprintf("password=%s", web.LocalPassword),
@@ -50,12 +50,10 @@ func openWindowAndWait(port int) {
 }
 
 func main() {
+	ctx := context.Background()
+	server, host, port := V3(web.NewServer(ctx, "", 0))
 	go func() {
-		ctx := context.Background()
-		_ = web.ListenAndServe(
-			ctx,
-			fmt.Sprintf(":%d", port),
-		)
+		_ = server.ListenAndServe()
 	}()
-	openWindowAndWait(port)
+	openWindowAndWait(host, port)
 }

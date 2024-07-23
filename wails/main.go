@@ -1,14 +1,18 @@
 package main
 
 import (
+	"context"
 	"embed"
-	"github.com/knaka/biblioseeq"
+	"github.com/knaka/biblioseeq/web"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 	"log"
+	"net/http"
+
+	. "github.com/knaka/go-utils"
 )
 
 //go:embed frontend/src
@@ -17,8 +21,17 @@ var assets embed.FS
 //go:embed build/appicon.png
 var icon []byte
 
+var host string
+var port int
+
 func main() {
-	//utils.WaitForDebugger()
+	ctx := context.Background()
+	var server *http.Server
+	server, host, port = V3(web.NewServer(ctx, "", 0))
+	go func() {
+		_ = server.ListenAndServe()
+	}()
+
 	// Create an instance of the app structure
 	app := NewApp()
 
@@ -75,8 +88,6 @@ func main() {
 			},
 		},
 	})
-
-	log.Println("7d70657", biblioseeq.Client)
 
 	if err != nil {
 		log.Fatal(err)

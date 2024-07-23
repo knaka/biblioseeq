@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/knaka/biblioseeq"
@@ -16,12 +17,46 @@ import (
 	"net/http"
 )
 
-func ListenAndServe(ctx context.Context, addr string) error {
-	server := &http.Server{Addr: addr, Handler: GetWrappedRouter()}
+func GetFreePort() (port int, err error) {
+	var addr *net.TCPAddr
+	if addr, err = net.ResolveTCPAddr("tcp", "127.0.0.1:0"); err != nil {
+		return
+	}
+	var listener *net.TCPListener
+	if listener, err = net.ListenTCP("tcp", addr); err != nil {
+		return
+	}
+	defer (func() { _ = listener.Close() })()
+	return listener.Addr().(*net.TCPAddr).Port, nil
+}
+
+func NewServer(
+	ctx context.Context,
+	host string,
+	port int,
+) (
+	server *http.Server,
+	hostRet string,
+	portRet int,
+	err error,
+) {
+	defer Catch(&err)
+	if port == 0 {
+		port = V(GetFreePort())
+	}
+	portRet = port
+	if host == "" {
+		hostRet = "localhost"
+	}
+	addr := fmt.Sprintf("%s:%d", host, port)
+	server = &http.Server{
+		Addr:    addr,
+		Handler: GetWrappedRouter(),
+	}
 	server.BaseContext = func(_ net.Listener) context.Context {
 		return ctx
 	}
-	return server.ListenAndServe()
+	return
 }
 
 const TokenName = "BiblioSeeQToken"
