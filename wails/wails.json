@@ -1,0 +1,10 @@
+{
+  "name": "BiblioSeeQ",
+  "outputfilename": "biblioseeq",
+  "frontend:install": "",
+  "frontend:build": "",
+  "author": {
+    "name": "Kiichiro Kyle NAKA",
+    "email": "knaka@ayutaya.com"
+  }
+}

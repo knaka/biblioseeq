@@ -4,3 +4,5 @@ golang.org/x/tools/cmd/stringer@latest
 github.com/bufbuild/buf/cmd/buf@v1.9.0
 github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@v1.9.0
 google.golang.org/protobuf/cmd/protoc-gen-go@v1.31.0
+
+github.com/wailsapp/wails/v2/cmd/wails@latest
