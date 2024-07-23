@@ -2,6 +2,16 @@
 <html lang="en">
 <head>
     <script src="webui.js"></script>
+    <script>
+        addEventListener("load", async () => {
+            while (true) {
+                if (webui.isConnected()) break;
+                await new Promise((resolve) => setTimeout(resolve, 100));
+            }
+            const { url } = JSON.parse(await webui.call("getAccessInfo"));
+            const frame = document.getElementById("frame").src = url;
+        });
+    </script>
     <style>
         html, body {
             height: 100%;
@@ -20,6 +30,6 @@
     <title>Temporary Title</title>
 </head>
 <body>
-    <iframe src="http://127.0.0.1:3000/ap/"></iframe>
+    <iframe id="frame"></iframe>
 </body>
 </html>
