@@ -47,6 +47,7 @@ github.com/knaka/go-pinfomap v0.0.2024070745 h1:OuUdjmYt5Ghq0TtwvReqMtFeAf2GDpU8
 github.com/knaka/go-pinfomap v0.0.2024070745/go.mod h1:MESHMBPPP5MIxuF8BrxNpaTa1PMiT891lZbgV2EjvWo=
 github.com/knaka/go-utils v0.0.2024072004 h1:V7l11AWCys+7Yt+F4zvTZlioLKA69/oMqy26f0IDPgs=
 github.com/knaka/go-utils v0.0.2024072004/go.mod h1:pPo2tS2TMayST0eq5PamI6rYk32xsysDHFhdJ2MbwIE=
+github.com/knaka/go-utils v0.0.2024072420/go.mod h1:pPo2tS2TMayST0eq5PamI6rYk32xsysDHFhdJ2MbwIE=
 github.com/knz/go-libedit v1.10.1/go.mod h1:MZTVkCWyz0oBc7JOWP3wNAzd002ZbM/5hgShxwh4x8M=
 github.com/kr/pretty v0.1.0 h1:L/CwN0zerZDmRFUapSPitk6f+Q3+0za1rQkzVuMiMFI=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=

@@ -13,7 +13,7 @@ func Main(host string, port int) (err error) {
 	server := V(web.NewServer(context.Background(), host, port))
 	host, port = V2(web.ParseServerAddr(server.Addr))
 	log.Printf("Listening on http://%s:%d .",
-		Ternary(host != "", host, "localhost"),
+		Elvis(host, "localhost"),
 		port,
 	)
 	V0(server.ListenAndServe())

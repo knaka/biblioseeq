@@ -6,9 +6,10 @@ require (
 	github.com/bufbuild/connect-go v1.10.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/google/uuid v1.6.0
-	github.com/knaka/go-utils v0.0.2024070250
+	github.com/knaka/go-utils v0.0.2024072420
 	github.com/knaka/gobin v0.0.2024072210
 	github.com/magefile/mage v1.15.0
+	github.com/rjeczalik/notify v0.9.3
 	github.com/rs/cors v1.11.0
 	github.com/sqldef/sqldef v0.17.11
 	golang.org/x/net v0.25.0

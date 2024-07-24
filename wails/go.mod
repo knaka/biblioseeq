@@ -6,7 +6,7 @@ toolchain go1.22.5
 
 require (
 	github.com/knaka/biblioseeq v0.0.0-00010101000000-000000000000
-	github.com/knaka/go-utils v0.0.2024070250
+	github.com/knaka/go-utils v0.0.2024072420
 	github.com/wailsapp/wails/v2 v2.9.1
 )
 

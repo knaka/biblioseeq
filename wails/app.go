@@ -20,7 +20,7 @@ type App struct {
 // NewApp creates a new App application struct
 func NewApp(host string, port int) *App {
 	return &App{
-		host: Ternary(host != "", host, "localhost"),
+		host: Elvis(host, "localhost"),
 		port: port,
 	}
 }

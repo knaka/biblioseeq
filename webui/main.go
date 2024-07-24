@@ -25,7 +25,7 @@ func openWindowAndWait(host string, port int) (err error) {
 	}) {
 		url := neturl.URL{
 			Scheme: "http",
-			Host:   fmt.Sprintf("%s:%d", Ternary(host != "", host, "localhost"), port),
+			Host:   fmt.Sprintf("%s:%d", Elvis(host, "localhost"), port),
 			Path:   "/login",
 			RawQuery: strings.Join([]string{
 				fmt.Sprintf("password=%s", web.LocalPassword),

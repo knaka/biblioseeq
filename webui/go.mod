@@ -10,7 +10,7 @@ require (
 	github.com/incu6us/goimports-reviser/v3 v3.6.5
 	github.com/knaka/biblioseeq v0.0.0-20210819101307-3b3b3b3b3b3b
 	github.com/knaka/go-pinfomap v0.0.2024070745
-	github.com/knaka/go-utils v0.0.2024072004
+	github.com/knaka/go-utils v0.0.2024072420
 	github.com/webui-dev/go-webui/v2 v2.4.3
 )
 
