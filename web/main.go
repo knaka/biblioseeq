@@ -15,6 +15,8 @@ import (
 	"io/fs"
 	"net"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 func GetFreePort() (port int, err error) {
@@ -30,31 +32,45 @@ func GetFreePort() (port int, err error) {
 	return listener.Addr().(*net.TCPAddr).Port, nil
 }
 
+type ctxKey struct{}
+
+type CtxValue struct{}
+
+func GetCtxValue(ctx context.Context) (ctxValue *CtxValue, err error) {
+	defer Catch(&err)
+	var ok bool
+	if ctxValue, ok = ctx.Value(ctxKey{}).(*CtxValue); !ok {
+		return nil, fmt.Errorf("invalid context")
+	}
+	return
+}
+
+func ParseServerAddr(addr string) (host string, port int, err error) {
+	defer Catch(&err)
+	divs := strings.SplitN(addr, ":", 2)
+	host = divs[0]
+	port = V(strconv.Atoi(divs[1]))
+	return
+}
+
 func NewServer(
 	ctx context.Context,
 	host string,
 	port int,
 ) (
 	server *http.Server,
-	hostRet string,
-	portRet int,
 	err error,
 ) {
 	defer Catch(&err)
 	if port == 0 {
 		port = V(GetFreePort())
 	}
-	portRet = port
-	if host == "" {
-		hostRet = "localhost"
-	}
 	addr := fmt.Sprintf("%s:%d", host, port)
+	ctxNew := context.WithValue(ctx, ctxKey{}, &CtxValue{})
 	server = &http.Server{
-		Addr:    addr,
-		Handler: GetWrappedRouter(),
-	}
-	server.BaseContext = func(_ net.Listener) context.Context {
-		return ctx
+		Addr:        addr,
+		Handler:     GetWrappedRouter(),
+		BaseContext: func(_ net.Listener) context.Context { return ctxNew },
 	}
 	return
 }

@@ -4,39 +4,27 @@ import (
 	"context"
 	"embed"
 	"github.com/knaka/biblioseeq/web"
+	. "github.com/knaka/go-utils"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
+	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
-	"log"
-	"net/http"
-
-	. "github.com/knaka/go-utils"
 )
 
 //go:embed frontend/src
 var assets embed.FS
 
 //go:embed build/appicon.png
-var icon []byte
+var macIcon []byte
 
-var host string
-var port int
-
-func main() {
-	ctx := context.Background()
-	var server *http.Server
-	server, host, port = V3(web.NewServer(ctx, "", 0))
-	go func() {
-		_ = server.ListenAndServe()
-	}()
-
+func openWindowAndWait(host string, port int) (err error) {
+	defer Catch(&err)
 	// Create an instance of the app structure
-	app := NewApp()
-
+	app := NewApp(host, port)
 	// Create application with options
-	err := wails.Run(&options.App{
+	V0(wails.Run(&options.App{
 		Title:             "BiblioSeeQ",
 		Width:             1024,
 		Height:            768,
@@ -48,19 +36,21 @@ func main() {
 		StartHidden:       false,
 		HideWindowOnClose: false,
 		BackgroundColour:  &options.RGBA{R: 255, G: 255, B: 255, A: 255},
-		Assets:            assets,
-		Menu:              nil,
-		Logger:            nil,
-		LogLevel:          logger.DEBUG,
-		OnStartup:         app.startup,
-		OnDomReady:        app.domReady,
-		OnBeforeClose:     app.beforeClose,
-		OnShutdown:        app.shutdown,
-		WindowStartState:  options.Normal,
-		Bind: []interface{}{
+		AssetServer: &assetserver.Options{
+			Assets: assets,
+		},
+		Menu:             nil,
+		Logger:           nil,
+		LogLevel:         logger.DEBUG,
+		OnStartup:        app.startup,
+		OnDomReady:       app.domReady,
+		OnBeforeClose:    app.beforeClose,
+		OnShutdown:       app.shutdown,
+		WindowStartState: options.Normal,
+		Bind: []any{
 			app,
 		},
-		// Windows platform specific options
+		// Windows platform specific options.
 		Windows: &windows.Options{
 			WebviewIsTransparent: false,
 			WindowIsTranslucent:  false,
@@ -68,7 +58,7 @@ func main() {
 			// DisableFramelessWindowDecorations: false,
 			WebviewUserDataPath: "",
 		},
-		// Mac platform specific options
+		// Mac platform specific options.
 		Mac: &mac.Options{
 			TitleBar: &mac.TitleBar{
 				TitlebarAppearsTransparent: false,
@@ -84,12 +74,17 @@ func main() {
 			About: &mac.AboutInfo{
 				Title:   "BiblioSeeQ",
 				Message: "",
-				Icon:    icon,
+				Icon:    macIcon,
 			},
 		},
-	})
+		// Linux platform specific options.
+		Linux: nil,
+	}))
+	return
+}
 
-	if err != nil {
-		log.Fatal(err)
-	}
+func main() {
+	server := V(web.NewServer(context.Background(), "", 0))
+	go func() { V0(server.ListenAndServe()) }()
+	V0(openWindowAndWait(V2(web.ParseServerAddr(server.Addr))))
 }

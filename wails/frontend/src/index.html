@@ -5,9 +5,13 @@
     <script>
         addEventListener("load", async function() {
             const url = await window.go.main.App.GetAccessInfo()
-            // const frame = document.getElementById('frame');
-            // frame.src = url;
-            window.location = url;
+            const redirect = true;
+            if (redirect) {
+                window.location = url;
+            } else {
+                const frame = document.getElementById('frame');
+                frame.src = url;
+            }
         });
     </script>
     <style>

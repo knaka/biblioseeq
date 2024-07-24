@@ -5,7 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/knaka/biblioseeq/web"
-	ui "github.com/webui-dev/go-webui/v2"
+	"github.com/webui-dev/go-webui/v2"
 	neturl "net/url"
 	"strings"
 
@@ -15,45 +15,40 @@ import (
 //go:embed index.html
 var webUiTop string
 
-func openWindowAndWait(host string, port int) {
+func openWindowAndWait(host string, port int) (err error) {
+	defer Catch(&err)
 	// Create a new window.
-	w := ui.NewWindow()
-	defer w.Destroy()
-
-	ui.Bind(w, "getAccessInfo", func(_ ui.Event) (ret struct {
+	win := webui.NewWindow()
+	defer win.Destroy()
+	webui.Bind(win, "getAccessInfo", func(_ webui.Event) (ret struct {
 		URL string `json:"url"`
 	}) {
 		url := neturl.URL{
 			Scheme: "http",
-			Host:   fmt.Sprintf("%s:%d", host, port),
+			Host:   fmt.Sprintf("%s:%d", Ternary(host != "", host, "localhost"), port),
 			Path:   "/login",
 			RawQuery: strings.Join([]string{
 				fmt.Sprintf("password=%s", web.LocalPassword),
 				"path=/ap/",
 			}, "&"),
 		}
-		url.Path = "/login"
 		ret.URL = url.String()
 		return
 	})
-
 	preferredBrowserStr := "AnyBrowser"
 	//preferredBrowserStr := "Chrome"
 	//preferredBrowserStr := "Chromium"
 	preferredBrowser := V(StrToBrowser(preferredBrowserStr))
 	// An empty `name` and `path` means the default user profile.
 	// Needs to be called before `webui_show()`.
-	w.SetProfile("", "")
-	V0(w.ShowBrowser(webUiTop, preferredBrowser))
-
-	ui.Wait()
+	win.SetProfile("", "")
+	V0(win.ShowBrowser(webUiTop, preferredBrowser))
+	webui.Wait()
+	return
 }
 
 func main() {
-	ctx := context.Background()
-	server, host, port := V3(web.NewServer(ctx, "", 0))
-	go func() {
-		_ = server.ListenAndServe()
-	}()
-	openWindowAndWait(host, port)
+	server := V(web.NewServer(context.Background(), "", 0))
+	go (func() { V0(server.ListenAndServe()) })()
+	V0(openWindowAndWait(V2(web.ParseServerAddr(server.Addr))))
 }
