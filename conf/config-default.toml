@@ -1,0 +1,3 @@
+[[directories]]
+path = "$HOME/doc"
+file_extensions = [".md", ".txt", ".csv"]

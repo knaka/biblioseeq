@@ -9,7 +9,6 @@ import (
 )
 
 type Document struct {
-	ID    string
 	Title string
 	Body  string
 }
@@ -17,7 +16,8 @@ type Document struct {
 type File struct {
 	Path       string
 	DocumentID int64
-	Modtime    time.Time
+	ModifiedAt time.Time
+	Size       int64
 	UpdatedAt  time.Time
 }
 

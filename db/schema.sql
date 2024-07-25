@@ -5,16 +5,16 @@ CREATE TABLE logs (
 );
 
 CREATE VIRTUAL TABLE documents USING fts5(
-  id integer PRIMARY KEY,
-  title text,
-  body text,
+  title,
+  body,
   tokenize=unicode61
 );
 
 CREATE TABLE files(
   path text PRIMARY KEY,
-  document_id int NOT NULL REFERENCES documents (id),
-  modtime datetime NOT NULL,
+  document_id int NOT NULL REFERENCES documents (docid),
+  modified_at datetime NOT NULL,
+  size integer NOT NULL DEFAULT 0,
   updated_at datetime NOT NULL DEFAULT current_timestamp
 );
 

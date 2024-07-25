@@ -1,3 +1,5 @@
+//go:build sqlite_fts5 || fts5
+
 package db
 
 import (
