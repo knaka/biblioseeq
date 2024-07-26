@@ -16,19 +16,19 @@ ORDER BY id DESC
 LIMIT 10
 `
 
-func (q *Queries) GetLogs(ctx context.Context) ([]Log, error) {
+func (q *Queries) GetLogs(ctx context.Context) ([]*Log, error) {
 	rows, err := q.db.QueryContext(ctx, getLogs)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Log
+	var items []*Log
 	for rows.Next() {
 		var i Log
 		if err := rows.Scan(&i.ID, &i.Message, &i.CreatedAt); err != nil {
 			return nil, err
 		}
-		items = append(items, i)
+		items = append(items, &i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

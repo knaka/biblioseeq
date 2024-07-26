@@ -53,8 +53,8 @@ github.com/k0kubun/pp/v3 v3.2.0/go.mod h1:ODtJQbQcIRfAD3N+theGCV1m/CBxweERz2dapd
 github.com/klauspost/cpuid/v2 v2.0.9/go.mod h1:FInQzS24/EEf25PyTYn52gqo7WaD8xa0213Md/qVLRg=
 github.com/klauspost/cpuid/v2 v2.2.7 h1:ZWSB3igEs+d0qvnxR/ZBzXVmxkgt8DdzP6m9pfuVLDM=
 github.com/klauspost/cpuid/v2 v2.2.7/go.mod h1:Lcz8mBdAVJIBVzewtcLocK12l3Y+JytZYpaMropDUws=
-github.com/knaka/go-utils v0.0.2024072420 h1:edd5ktShj11+QEPpAKyRpg0P6JUJatTER4RiaWJ4ZBc=
-github.com/knaka/go-utils v0.0.2024072420/go.mod h1:pPo2tS2TMayST0eq5PamI6rYk32xsysDHFhdJ2MbwIE=
+github.com/knaka/go-utils v0.0.2024072645 h1:6GRQhLZx7wLtmPTugT5o1WEF8e8zh6P4KMIFq40HCdE=
+github.com/knaka/go-utils v0.0.2024072645/go.mod h1:pPo2tS2TMayST0eq5PamI6rYk32xsysDHFhdJ2MbwIE=
 github.com/knaka/gobin v0.0.2024072210 h1:IkuyIEzIbLOPg5/SB4q3gY/IoQIQ1HLt6vLSABxEXgg=
 github.com/knaka/gobin v0.0.2024072210/go.mod h1:s5gdafOKACICA/O5b9SzPRkYgGORjvogBdBq9SwXXgk=
 github.com/knz/go-libedit v1.10.1/go.mod h1:MZTVkCWyz0oBc7JOWP3wNAzd002ZbM/5hgShxwh4x8M=

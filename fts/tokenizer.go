@@ -30,20 +30,20 @@ func wordsJapanese(s string) []string {
 const zwsp = "\u200B"
 
 // 日本語とは、ZWSP で分かち書きされた言語であると
-func divideJapaneseToWordsWithZwsp(text string) string {
+func tokenizeJapanese(text string) string {
 	return strings.Join(wordsJapanese(text), zwsp)
 }
 
 // todo: 初期呼び出しの、良い方法は？
 func init() {
-	divideJapaneseToWords("")
+	DivideJapaneseToWords("")
 }
 
 // クエリとして渡すにはスペースでも良いか
-func divideJapaneseToWords(text string) string {
+func DivideJapaneseToWords(text string) string {
 	return strings.Join(wordsJapanese(text), " ")
 }
 
-func removeZwsp(s string) string {
+func RemoveZwsp(s string) string {
 	return strings.ReplaceAll(s, zwsp, "")
 }

@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/ikawaha/kagome-dict/ipa v1.2.0
 	github.com/ikawaha/kagome/v2 v2.9.11
-	github.com/knaka/go-utils v0.0.2024072420
+	github.com/knaka/go-utils v0.0.2024072645
 	github.com/knaka/gobin v0.0.2024072210
 	github.com/magefile/mage v1.15.0
 	github.com/mattn/go-sqlite3 v1.14.22
