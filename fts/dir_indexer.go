@@ -129,13 +129,13 @@ func (dirIndexer *DirIndexer) WatchContinuously() {
 	defer notify.Stop(ch)
 	defer close(ch)
 	dirIndexer.watchingCh <- "watching"
-loop:
+root:
 	for {
 		select {
 		case eventInfo := <-ch:
 			dirIndexer.onEvent(eventInfo)
 		case <-dirIndexer.watcherCh:
-			break loop
+			break root
 		}
 	}
 }

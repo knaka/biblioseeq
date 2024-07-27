@@ -36,11 +36,11 @@ func tokenizeJapanese(text string) string {
 
 // todo: 初期呼び出しの、良い方法は？
 func init() {
-	DivideJapaneseToWords("")
+	SeparateJapanese("")
 }
 
 // クエリとして渡すにはスペースでも良いか
-func DivideJapaneseToWords(text string) string {
+func SeparateJapanese(text string) string {
 	return strings.Join(wordsJapanese(text), " ")
 }
 

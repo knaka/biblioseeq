@@ -1,15 +1,15 @@
 package main
 
 import (
-	"bufio"
-	"database/sql"
 	"flag"
 	"fmt"
+	"github.com/chzyer/readline"
 	"github.com/knaka/biblioseeq/conf"
 	"github.com/knaka/biblioseeq/db"
 	"github.com/knaka/biblioseeq/fts"
+	"github.com/knaka/biblioseeq/log"
 	_ "github.com/mattn/go-sqlite3"
-	"log"
+	"io"
 	"os"
 	"strings"
 
@@ -17,54 +17,61 @@ import (
 )
 
 func main() {
+	Debugger()
 	verbose := flag.Bool("v", false, "verbose")
 	flag.Parse()
+	log.SetOutput(Ternary[io.Writer](*verbose, os.Stderr, io.Discard))
 
-	if *verbose {
-		AddLogWriter(os.Stderr)
-	}
+	config := V(conf.ReadConfig())
 
-	//ctx := context.Background()
 	dbFilePath := "/tmp/tmp.db"
 	db.Migrate(dbFilePath)
 
-	config := V(conf.ReadConfig())
-	opts := []fts.Option{}
-	for _, directory := range config.Directories {
-		opts = append(opts, fts.WithDirectory(directory.Path, directory.FileExtensions))
+	ftsOpts := []fts.Option{
+		fts.WithDbFile(dbFilePath),
 	}
-	dbConn := V(sql.Open("sqlite3", dbFilePath))
-	indexer := fts.NewIndexer(dbConn, opts...)
-	LogPrintln("Starting indexer.")
+	for _, confDir := range config.Directories {
+		ftsOpts = append(ftsOpts, fts.WithDirectory(
+			confDir.Path,
+			confDir.FileExtensions))
+	}
+	indexer := fts.NewIndexer(ftsOpts...)
+
+	log.Println("Starting indexer.")
 	go indexer.WatchContinuously()
-	LogPrintln("Waiting for initial scan to finish.")
+
+	log.Println("Waiting for initial scan to finish.")
 	indexer.WaitForInitialScanFinished()
-	LogPrintln("Initial scan finished.")
-root:
+	log.Println("Initial scan finished.")
+
+	rl := V(readline.NewEx(&readline.Config{
+		Prompt: "> ",
+	}))
+	defer (func() { V0(rl.Close()) })()
+	rl.CaptureExitSignal()
 	for {
-		scanner := bufio.NewScanner(os.Stdin)
-		V0(os.Stdout.WriteString("> "))
-		for scanner.Scan() {
-			query := strings.TrimSpace(scanner.Text())
-			if query == "" {
-				break root
-			}
-			query = fts.DivideJapaneseToWords(query)
-			log.Println("Query:", query)
-			results, err := indexer.Query(query)
-			if err != nil {
-				log.Println("Error:", err)
-				V0(os.Stdout.WriteString("> "))
-				continue
-			}
-			for _, result := range results {
-				snippet := result.Snippet
-				snippet = strings.ReplaceAll(snippet, "\r", "")
-				snippet = strings.ReplaceAll(snippet, "\n", " ")
-				snippet = fts.RemoveZwsp(snippet)
-				V0(os.Stdout.WriteString(fmt.Sprintln(result.Path, snippet)))
-			}
+		line := PR(rl.Readline()).NilIf(io.EOF)
+		if line == nil {
+			break
+		}
+		*line = strings.TrimSpace(*line)
+		if *line == "" {
+			continue
+		}
+		query := fts.SeparateJapanese(*line)
+		log.Println("query:", query)
+		results, err := indexer.Query(query)
+		if err != nil {
+			log.Println("Error:", err)
 			V0(os.Stdout.WriteString("> "))
+			continue
+		}
+		for _, result := range results {
+			snippet := result.Snippet
+			snippet = strings.ReplaceAll(snippet, "\r", "")
+			snippet = strings.ReplaceAll(snippet, "\n", " ")
+			snippet = fts.RemoveZwsp(snippet)
+			V0(os.Stdout.WriteString(fmt.Sprintln(result.Path, snippet)))
 		}
 	}
 }
