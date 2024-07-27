@@ -5,7 +5,6 @@
 package sqlcgen
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -17,10 +16,6 @@ type File struct {
 	UpdatedAt  time.Time
 }
 
-type Ft struct {
-	B string
-}
-
 type FtsFile struct {
 	Body string
 }
@@ -29,19 +24,6 @@ type Log struct {
 	ID        int64
 	Message   string
 	CreatedAt time.Time
-}
-
-type Tbl struct {
-	A int64
-	B sql.NullString
-	C sql.NullString
-	D sql.NullString
-	E sql.NullInt64
-}
-
-type TblFt struct {
-	B string
-	C string
 }
 
 type User struct {

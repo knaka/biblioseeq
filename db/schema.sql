@@ -1,9 +1,3 @@
-CREATE TABLE tbl(a INTEGER PRIMARY KEY, b TEXT, c TEXT, d TEXT, e INTEGER);
-
-CREATE VIRTUAL TABLE tbl_ft USING fts5(b, c UNINDEXED, content='tbl', content_rowid='a');
-
-CREATE VIRTUAL TABLE ft USING fts5(b);
-
 CREATE TABLE logs (
   id integer PRIMARY KEY,
   message text NOT NULL,
