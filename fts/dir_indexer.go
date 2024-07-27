@@ -17,19 +17,17 @@ type DirIndexer struct {
 	fileExtensions []string
 	indexMutex     sync.Mutex
 	dbConn         *sql.DB
-	eventCh        chan notify.EventInfo
-	watcherCh      chan any
-	watchingCh     chan any
-	scannedCh      chan any
+	chStop         chan any
+	chStarted      chan any
+	chScanned      chan any
 }
 
 func NewDirIndexer(dbConn *sql.DB, path string, fileExtensions []string) *DirIndexer {
 	return &DirIndexer{
 		dbConn:         dbConn,
-		eventCh:        make(chan notify.EventInfo),
-		watcherCh:      make(chan any),
-		watchingCh:     make(chan any, 2),
-		scannedCh:      make(chan any, 2),
+		chStop:         make(chan any),
+		chStarted:      make(chan any, 2),
+		chScanned:      make(chan any, 2),
 		path:           path,
 		fileExtensions: fileExtensions,
 	}
@@ -119,37 +117,43 @@ func (dirIndexer *DirIndexer) IndexAll() {
 	dirIndexer.indexMutex.Lock()
 	defer dirIndexer.indexMutex.Unlock()
 	dirIndexer.indexDirectory(dirIndexer.path)
-	dirIndexer.scannedCh <- "scanned"
+	dirIndexer.chScanned <- "scanned"
 }
 
 func (dirIndexer *DirIndexer) WatchContinuously() {
-	ch := make(chan notify.EventInfo)
+	ch := make(chan notify.EventInfo, 10)
 	V0(notify.Watch(filepath.Join(dirIndexer.path, "..."), ch,
 		notify.Write, notify.Remove, notify.Rename))
 	defer notify.Stop(ch)
 	defer close(ch)
-	dirIndexer.watchingCh <- "watching"
-root:
+	dirIndexer.chStarted <- "started"
+outer:
 	for {
 		select {
 		case eventInfo := <-ch:
 			dirIndexer.onEvent(eventInfo)
-		case <-dirIndexer.watcherCh:
-			break root
+		case <-dirIndexer.chStop:
+			break outer
 		}
 	}
 }
 
 func (dirIndexer *DirIndexer) WaitForWatchingStarted() {
-	<-dirIndexer.watchingCh
-	dirIndexer.watchingCh <- "watching"
+	dirIndexer.chStarted <- <-dirIndexer.chStarted
 }
 
 func (dirIndexer *DirIndexer) StopWatching() {
-	close(dirIndexer.watcherCh)
+	dirIndexer.chStop <- "stop"
+}
+
+func (dirIndexer *DirIndexer) Watching() bool {
+	return len(dirIndexer.chStop) == 0 && len(dirIndexer.chStarted) > 0
 }
 
 func (dirIndexer *DirIndexer) WaitForInitialScanFinished() {
-	<-dirIndexer.scannedCh
-	dirIndexer.scannedCh <- "scanned"
+	dirIndexer.chScanned <- <-dirIndexer.chScanned
+}
+
+func (dirIndexer *DirIndexer) InitialScanFinished() bool {
+	return len(dirIndexer.chScanned) > 0
 }

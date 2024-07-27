@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/chzyer/readline"
 	"github.com/knaka/biblioseeq/conf"
-	"github.com/knaka/biblioseeq/db"
 	"github.com/knaka/biblioseeq/fts"
 	"github.com/knaka/biblioseeq/log"
 	_ "github.com/mattn/go-sqlite3"
@@ -17,31 +16,31 @@ import (
 )
 
 func main() {
-	Debugger()
+	//Debugger()
+
 	verbose := flag.Bool("v", false, "verbose")
 	flag.Parse()
 	log.SetOutput(Ternary[io.Writer](*verbose, os.Stderr, io.Discard))
 
 	config := V(conf.ReadConfig())
 
-	dbFilePath := "/tmp/tmp.db"
-	db.Migrate(dbFilePath)
-
 	ftsOpts := []fts.Option{
-		fts.WithDbFile(dbFilePath),
+		fts.WithDefaultDBFilePath(),
+		fts.MigratesDB(),
 	}
 	for _, confDir := range config.Directories {
-		ftsOpts = append(ftsOpts, fts.WithDirectory(
+		ftsOpts = append(ftsOpts, fts.WithTargetDirectory(
 			confDir.Path,
-			confDir.FileExtensions))
+			confDir.FileExtensions,
+		))
 	}
-	indexer := fts.NewIndexer(ftsOpts...)
+	ftsIndexer := fts.NewIndexer(ftsOpts...)
 
 	log.Println("Starting indexer.")
-	go indexer.WatchContinuously()
+	go ftsIndexer.WatchContinuously()
 
 	log.Println("Waiting for initial scan to finish.")
-	indexer.WaitForInitialScanFinished()
+	ftsIndexer.WaitForInitialScanFinished()
 	log.Println("Initial scan finished.")
 
 	rl := V(readline.NewEx(&readline.Config{
@@ -60,7 +59,7 @@ func main() {
 		}
 		query := fts.SeparateJapanese(*line)
 		log.Println("query:", query)
-		results, err := indexer.Query(query)
+		results, err := ftsIndexer.Query(query)
 		if err != nil {
 			log.Println("Error:", err)
 			V0(os.Stdout.WriteString("> "))

@@ -12,12 +12,22 @@ import (
 	"github.com/sqldef/sqldef/database/sqlite3"
 	"github.com/sqldef/sqldef/parser"
 	"github.com/sqldef/sqldef/schema"
+	"os"
+	"path/filepath"
 )
 
 //go:embed schema.sql
 var dbSchema string
 
+func EnsureDBFile(dbFilePath string) {
+	if E(os.Stat(dbFilePath)) != nil {
+		V0(os.MkdirAll(filepath.Dir(dbFilePath), 0755))
+		V0(V(sql.Open("sqlite3", dbFilePath)).Close())
+	}
+}
+
 func Migrate(dbFilePath string) {
+	EnsureDBFile(dbFilePath)
 	db := V(sqlite3.NewDatabase(database.Config{DbName: dbFilePath}))
 	defer (func() { V0(db.Close()) })()
 	sqldef.Run(schema.GeneratorModeSQLite3, db,

@@ -3,6 +3,7 @@ package fts
 import (
 	"context"
 	"database/sql"
+	"github.com/knaka/biblioseeq/db"
 	"github.com/knaka/biblioseeq/db/sqlcgen"
 	"github.com/samber/lo"
 	"path/filepath"
@@ -12,26 +13,39 @@ import (
 )
 
 type Indexer struct {
-	dbConn      *sql.DB
-	dirIndexers []*DirIndexer
+	dbConn          *sql.DB
+	dirIndexers     []*DirIndexer
+	shouldMigrateDB bool
 }
 
 type Option func(*Indexer)
 
-func WithDirectory(path string, fileExtensions []string) Option {
+func WithTargetDirectory(path string, fileExtensions []string) Option {
 	return func(e *Indexer) {
 		e.dirIndexers = append(e.dirIndexers, NewDirIndexer(e.dbConn, path, fileExtensions))
 	}
 }
 
-func WithDbConn(dbConn *sql.DB) Option {
+func WithDBConn(dbConn *sql.DB) Option {
 	return func(e *Indexer) {
 		e.dbConn = dbConn
 	}
 }
 
-func WithDbFile(path string) Option {
-	return WithDbConn(V(sql.Open("sqlite3", path)))
+func MigratesDB() Option {
+	return func(e *Indexer) {
+		e.shouldMigrateDB = true
+	}
+}
+
+func WithDefaultDBFilePath() Option {
+	return func(e *Indexer) {
+		e.dbConn = V(sql.Open("sqlite3", V(GetDefaultDBFilePath())))
+	}
+}
+
+func WithDBFile(path string) Option {
+	return WithDBConn(V(sql.Open("sqlite3", path)))
 }
 
 func NewIndexer(opts ...Option) (ret *Indexer) {
@@ -39,8 +53,12 @@ func NewIndexer(opts ...Option) (ret *Indexer) {
 	for _, opt := range opts {
 		opt(ret)
 	}
+	if ret.shouldMigrateDB {
+		dbPath := V(GetDefaultDBFilePath())
+		db.Migrate(dbPath)
+	}
 	if ret.dbConn == nil {
-		panic("dbConn is required")
+		panic("dbConn is not set")
 	}
 	return
 }
