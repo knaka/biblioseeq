@@ -6,9 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/knaka/biblioseeq"
+	"github.com/knaka/biblioseeq/fts"
 	"github.com/knaka/biblioseeq/pbgen/v1/v1connect"
+	weblib "github.com/knaka/biblioseeq/web/lib"
 	"github.com/knaka/biblioseeq/web/rpc"
-	. "github.com/knaka/go-utils"
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -17,6 +18,8 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	. "github.com/knaka/go-utils"
 )
 
 func GetFreePort() (port int, err error) {
@@ -32,49 +35,6 @@ func GetFreePort() (port int, err error) {
 	return listener.Addr().(*net.TCPAddr).Port, nil
 }
 
-type ctxKey struct{}
-
-type CtxValue struct{}
-
-func GetCtxValue(ctx context.Context) (ctxValue *CtxValue, err error) {
-	defer Catch(&err)
-	var ok bool
-	if ctxValue, ok = ctx.Value(ctxKey{}).(*CtxValue); !ok {
-		return nil, fmt.Errorf("invalid context")
-	}
-	return
-}
-
-func ParseServerAddr(addr string) (host string, port int, err error) {
-	defer Catch(&err)
-	divs := strings.SplitN(addr, ":", 2)
-	host = divs[0]
-	port = V(strconv.Atoi(divs[1]))
-	return
-}
-
-func NewServer(
-	ctx context.Context,
-	host string,
-	port int,
-) (
-	server *http.Server,
-	err error,
-) {
-	defer Catch(&err)
-	if port == 0 {
-		port = V(GetFreePort())
-	}
-	addr := fmt.Sprintf("%s:%d", host, port)
-	ctxNew := context.WithValue(ctx, ctxKey{}, &CtxValue{})
-	server = &http.Server{
-		Addr:        addr,
-		Handler:     GetWrappedRouter(),
-		BaseContext: func(_ net.Listener) context.Context { return ctxNew },
-	}
-	return
-}
-
 const TokenName = "BiblioSeeQToken"
 
 var LocalPassword string = uuid.New().String()
@@ -87,6 +47,39 @@ func AuthRequired(c *gin.Context) {
 		return
 	}
 	c.Next()
+}
+
+func ParseServerAddr(addr string) (host string, port int, err error) {
+	defer Catch(&err)
+	divs := strings.SplitN(addr, ":", 2)
+	host = divs[0]
+	port = V(strconv.Atoi(divs[1]))
+	return
+}
+
+func NewServer(
+	host string,
+	port int,
+	ftsIndexer *fts.Indexer,
+) (
+	server *http.Server,
+	err error,
+) {
+	defer Catch(&err)
+	if port == 0 {
+		port = V(GetFreePort())
+	}
+	addr := fmt.Sprintf("%s:%d", host, port)
+	ctxNew := context.WithValue(context.Background(), weblib.CtxKey{}, &weblib.CtxValue{
+		FtsIndexer: ftsIndexer,
+	})
+	V0(weblib.GetCtxValue(ctxNew))
+	server = &http.Server{
+		Addr:        addr,
+		Handler:     GetWrappedRouter(),
+		BaseContext: func(_ net.Listener) context.Context { return ctxNew },
+	}
+	return
 }
 
 func getApiRouter() http.Handler {

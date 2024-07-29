@@ -15,6 +15,7 @@ func main() {
 	httpClt := &http.Client{Transport: &http.Transport{}}
 	clt := v1connect.NewMainServiceClient(httpClt, "http://127.0.0.1:3000")
 	ctx := context.Background()
+	ctx.Done()
 	x := V(clt.GetVersionInfo(ctx,
 		&connect.Request[v1.GetVersionInfoRequest]{Msg: &v1.GetVersionInfoRequest{}},
 	))

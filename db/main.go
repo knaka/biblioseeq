@@ -1,12 +1,10 @@
-//go:build sqlite_fts5 || fts5
-
 package db
 
 import (
-	"context"
 	"database/sql"
 	_ "embed"
-	. "github.com/knaka/go-utils"
+	_ "github.com/knaka/go-sqlite3-fts5"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/sqldef/sqldef"
 	"github.com/sqldef/sqldef/database"
 	"github.com/sqldef/sqldef/database/sqlite3"
@@ -14,6 +12,8 @@ import (
 	"github.com/sqldef/sqldef/schema"
 	"os"
 	"path/filepath"
+
+	. "github.com/knaka/go-utils"
 )
 
 //go:embed schema.sql
@@ -37,14 +37,4 @@ func Migrate(dbFilePath string) {
 			Config:      database.GeneratorConfig{},
 		},
 	)
-}
-
-// UpdateDocument updates a document in the database.
-// Unfortunately, sqlcgen does not support rowid of FTS5 table.
-func UpdateDocument(ctx context.Context, db *sql.DB, body string, rowid int64) (err error) {
-	_, err = db.ExecContext(ctx,
-		"UPDATE documents SET body = ? WHERE rowid = ?",
-		body, rowid,
-	)
-	return
 }

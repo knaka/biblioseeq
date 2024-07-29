@@ -15,6 +15,13 @@ message GetVersionInfoResponse {
   VersionInfo version_info = 1;
 }
 
+message GetStatusRequest {}
+
+message GetStatusResponse {
+  bool InitialScanFinished = 1;
+}
+
 service MainService {
   rpc GetVersionInfo (GetVersionInfoRequest) returns (GetVersionInfoResponse);
+  rpc GetStatus (GetStatusRequest) returns (GetStatusResponse);
 }

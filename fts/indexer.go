@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"github.com/knaka/biblioseeq/db"
 	"github.com/knaka/biblioseeq/db/sqlcgen"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/samber/lo"
 	"path/filepath"
 	"sync"
@@ -63,25 +64,27 @@ func NewIndexer(opts ...Option) (ret *Indexer) {
 	return
 }
 
-func (indexer *Indexer) WatchContinuously() {
+func (indexer *Indexer) WatchContinuously(ctx context.Context) {
 	wg := sync.WaitGroup{}
 	for _, dirIndexer := range indexer.dirIndexers {
 		wg.Add(1)
 		go (func() {
-			dirIndexer.WatchContinuously()
+			dirIndexer.WatchContinuously(ctx)
 			wg.Done()
 		})()
-		dirIndexer.WaitForWatchingStarted()
+		dirIndexer.WaitForWatchingStarted(ctx)
+		wg.Add(1)
 		go (func() {
 			dirIndexer.IndexAll()
+			wg.Done()
 		})()
 	}
 	wg.Wait()
 }
 
-func (indexer *Indexer) WaitForInitialScanFinished() {
+func (indexer *Indexer) WaitForInitialScanFinished(ctx context.Context) {
 	for _, dirIndexer := range indexer.dirIndexers {
-		dirIndexer.WaitForInitialScanFinished()
+		dirIndexer.WaitForInitialScanFinished(ctx)
 	}
 }
 
@@ -123,4 +126,10 @@ func (indexer *Indexer) Query(query string) (results []*QueryResult, err error) 
 			Snippet: item.Snippet,
 		}
 	}), nil
+}
+
+func (indexer *Indexer) InitialScanFinished() bool {
+	return lo.EveryBy(indexer.dirIndexers, func(dirIndexer *DirIndexer) bool {
+		return dirIndexer.InitialScanFinished()
+	})
 }

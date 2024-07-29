@@ -1,10 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -13,15 +14,15 @@ import (
 )
 
 func usage(w io.Writer) {
-	io.WriteString(w, "commands:\n")
-	io.WriteString(w, completer.Tree("    "))
+	_, _ = io.WriteString(w, "commands:\n")
+	_, _ = io.WriteString(w, completer.Tree("    "))
 }
 
 // Function constructor - constructs new function for listing given directory
 func listFiles(path string) func(string) []string {
 	return func(line string) []string {
 		names := make([]string, 0)
-		files, _ := ioutil.ReadDir(path)
+		files, _ := os.ReadDir(path)
 		for _, f := range files {
 			names = append(names, f.Name())
 		}
@@ -84,7 +85,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer l.Close()
+	defer (func() { _ = l.Close() })()
 	l.CaptureExitSignal()
 
 	setPasswordCfg := l.GenPasswordConfig()
@@ -97,7 +98,7 @@ func main() {
 	log.SetOutput(l.Stderr())
 	for {
 		line, err := l.Readline()
-		if err == readline.ErrInterrupt {
+		if errors.Is(err, readline.ErrInterrupt) {
 			if len(line) == 0 {
 				break
 			} else {

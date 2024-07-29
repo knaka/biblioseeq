@@ -120,7 +120,7 @@ func (dirIndexer *DirIndexer) IndexAll() {
 	dirIndexer.chScanned <- "scanned"
 }
 
-func (dirIndexer *DirIndexer) WatchContinuously() {
+func (dirIndexer *DirIndexer) WatchContinuously(ctx context.Context) {
 	ch := make(chan notify.EventInfo, 10)
 	V0(notify.Watch(filepath.Join(dirIndexer.path, "..."), ch,
 		notify.Write, notify.Remove, notify.Rename))
@@ -134,12 +134,19 @@ outer:
 			dirIndexer.onEvent(eventInfo)
 		case <-dirIndexer.chStop:
 			break outer
+		case <-ctx.Done():
+			break outer
 		}
 	}
 }
 
-func (dirIndexer *DirIndexer) WaitForWatchingStarted() {
-	dirIndexer.chStarted <- <-dirIndexer.chStarted
+func (dirIndexer *DirIndexer) WaitForWatchingStarted(ctx context.Context) {
+	select {
+	case started := <-dirIndexer.chStarted:
+		dirIndexer.chStarted <- started
+	case <-ctx.Done():
+	}
+
 }
 
 func (dirIndexer *DirIndexer) StopWatching() {
@@ -150,8 +157,12 @@ func (dirIndexer *DirIndexer) Watching() bool {
 	return len(dirIndexer.chStop) == 0 && len(dirIndexer.chStarted) > 0
 }
 
-func (dirIndexer *DirIndexer) WaitForInitialScanFinished() {
-	dirIndexer.chScanned <- <-dirIndexer.chScanned
+func (dirIndexer *DirIndexer) WaitForInitialScanFinished(ctx context.Context) {
+	select {
+	case scanned := <-dirIndexer.chScanned:
+		dirIndexer.chScanned <- scanned
+	case <-ctx.Done():
+	}
 }
 
 func (dirIndexer *DirIndexer) InitialScanFinished() bool {

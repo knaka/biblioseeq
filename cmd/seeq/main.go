@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	//Debugger()
+	Debugger()
 
 	verbose := flag.Bool("v", false, "verbose")
 	flag.Parse()

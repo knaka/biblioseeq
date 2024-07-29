@@ -72,6 +72,8 @@ github.com/k0kubun/pp/v3 v3.2.0/go.mod h1:ODtJQbQcIRfAD3N+theGCV1m/CBxweERz2dapd
 github.com/klauspost/cpuid/v2 v2.0.9/go.mod h1:FInQzS24/EEf25PyTYn52gqo7WaD8xa0213Md/qVLRg=
 github.com/klauspost/cpuid/v2 v2.2.7 h1:ZWSB3igEs+d0qvnxR/ZBzXVmxkgt8DdzP6m9pfuVLDM=
 github.com/klauspost/cpuid/v2 v2.2.7/go.mod h1:Lcz8mBdAVJIBVzewtcLocK12l3Y+JytZYpaMropDUws=
+github.com/knaka/go-sqlite3-fts5 v0.0.0-20240729034955-57b867b89cca h1:gFeBZXjekTBx+ny95xt3GAXeB9kGTXBMNH0xce+iLCs=
+github.com/knaka/go-sqlite3-fts5 v0.0.0-20240729034955-57b867b89cca/go.mod h1:kDHCqub/PNhQnqg8ur7OYO49jpZ+pM0mqBQ768DE3UU=
 github.com/knaka/go-utils v0.0.2024072645 h1:6GRQhLZx7wLtmPTugT5o1WEF8e8zh6P4KMIFq40HCdE=
 github.com/knaka/go-utils v0.0.2024072645/go.mod h1:pPo2tS2TMayST0eq5PamI6rYk32xsysDHFhdJ2MbwIE=
 github.com/knaka/gobin v0.0.2024072210 h1:IkuyIEzIbLOPg5/SB4q3gY/IoQIQ1HLt6vLSABxEXgg=

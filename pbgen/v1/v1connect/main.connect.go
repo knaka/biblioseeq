@@ -38,11 +38,14 @@ const (
 	// MainServiceGetVersionInfoProcedure is the fully-qualified name of the MainService's
 	// GetVersionInfo RPC.
 	MainServiceGetVersionInfoProcedure = "/v1.MainService/GetVersionInfo"
+	// MainServiceGetStatusProcedure is the fully-qualified name of the MainService's GetStatus RPC.
+	MainServiceGetStatusProcedure = "/v1.MainService/GetStatus"
 )
 
 // MainServiceClient is a client for the v1.MainService service.
 type MainServiceClient interface {
 	GetVersionInfo(context.Context, *connect_go.Request[v1.GetVersionInfoRequest]) (*connect_go.Response[v1.GetVersionInfoResponse], error)
+	GetStatus(context.Context, *connect_go.Request[v1.GetStatusRequest]) (*connect_go.Response[v1.GetStatusResponse], error)
 }
 
 // NewMainServiceClient constructs a client for the v1.MainService service. By default, it uses the
@@ -60,12 +63,18 @@ func NewMainServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 			baseURL+MainServiceGetVersionInfoProcedure,
 			opts...,
 		),
+		getStatus: connect_go.NewClient[v1.GetStatusRequest, v1.GetStatusResponse](
+			httpClient,
+			baseURL+MainServiceGetStatusProcedure,
+			opts...,
+		),
 	}
 }
 
 // mainServiceClient implements MainServiceClient.
 type mainServiceClient struct {
 	getVersionInfo *connect_go.Client[v1.GetVersionInfoRequest, v1.GetVersionInfoResponse]
+	getStatus      *connect_go.Client[v1.GetStatusRequest, v1.GetStatusResponse]
 }
 
 // GetVersionInfo calls v1.MainService.GetVersionInfo.
@@ -73,9 +82,15 @@ func (c *mainServiceClient) GetVersionInfo(ctx context.Context, req *connect_go.
 	return c.getVersionInfo.CallUnary(ctx, req)
 }
 
+// GetStatus calls v1.MainService.GetStatus.
+func (c *mainServiceClient) GetStatus(ctx context.Context, req *connect_go.Request[v1.GetStatusRequest]) (*connect_go.Response[v1.GetStatusResponse], error) {
+	return c.getStatus.CallUnary(ctx, req)
+}
+
 // MainServiceHandler is an implementation of the v1.MainService service.
 type MainServiceHandler interface {
 	GetVersionInfo(context.Context, *connect_go.Request[v1.GetVersionInfoRequest]) (*connect_go.Response[v1.GetVersionInfoResponse], error)
+	GetStatus(context.Context, *connect_go.Request[v1.GetStatusRequest]) (*connect_go.Response[v1.GetStatusResponse], error)
 }
 
 // NewMainServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -89,10 +104,17 @@ func NewMainServiceHandler(svc MainServiceHandler, opts ...connect_go.HandlerOpt
 		svc.GetVersionInfo,
 		opts...,
 	)
+	mainServiceGetStatusHandler := connect_go.NewUnaryHandler(
+		MainServiceGetStatusProcedure,
+		svc.GetStatus,
+		opts...,
+	)
 	return "/v1.MainService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case MainServiceGetVersionInfoProcedure:
 			mainServiceGetVersionInfoHandler.ServeHTTP(w, r)
+		case MainServiceGetStatusProcedure:
+			mainServiceGetStatusHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -104,4 +126,8 @@ type UnimplementedMainServiceHandler struct{}
 
 func (UnimplementedMainServiceHandler) GetVersionInfo(context.Context, *connect_go.Request[v1.GetVersionInfoRequest]) (*connect_go.Response[v1.GetVersionInfoResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.GetVersionInfo is not implemented"))
+}
+
+func (UnimplementedMainServiceHandler) GetStatus(context.Context, *connect_go.Request[v1.GetStatusRequest]) (*connect_go.Response[v1.GetStatusResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.GetStatus is not implemented"))
 }
