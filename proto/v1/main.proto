@@ -3,25 +3,34 @@ syntax = "proto3";
 
 package v1;
 
+import "google/protobuf/timestamp.proto";
+
 import public "v1/error.proto";
 
 message VersionInfo {
   string version = 1;
 }
 
-message GetVersionInfoRequest {}
+message VersionInfoRequest {}
 
-message GetVersionInfoResponse {
+message VersionInfoResponse {
   VersionInfo version_info = 1;
 }
 
-message GetStatusRequest {}
+message StatusRequest {}
 
-message GetStatusResponse {
+message StatusResponse {
   bool InitialScanFinished = 1;
 }
 
+message CurrentTimeRequest {}
+
+message CurrentTimeResponse {
+  google.protobuf.Timestamp timestamp = 1;
+}
+
 service MainService {
-  rpc GetVersionInfo (GetVersionInfoRequest) returns (GetVersionInfoResponse);
-  rpc GetStatus (GetStatusRequest) returns (GetStatusResponse);
+  rpc VersionInfo(VersionInfoRequest) returns (VersionInfoResponse);
+  rpc Status(StatusRequest) returns (StatusResponse);
+  rpc CurrentTime(CurrentTimeRequest) returns (CurrentTimeResponse);
 }

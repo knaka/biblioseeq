@@ -35,17 +35,19 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// MainServiceGetVersionInfoProcedure is the fully-qualified name of the MainService's
-	// GetVersionInfo RPC.
-	MainServiceGetVersionInfoProcedure = "/v1.MainService/GetVersionInfo"
-	// MainServiceGetStatusProcedure is the fully-qualified name of the MainService's GetStatus RPC.
-	MainServiceGetStatusProcedure = "/v1.MainService/GetStatus"
+	// MainServiceVersionInfoProcedure is the fully-qualified name of the MainService's VersionInfo RPC.
+	MainServiceVersionInfoProcedure = "/v1.MainService/VersionInfo"
+	// MainServiceStatusProcedure is the fully-qualified name of the MainService's Status RPC.
+	MainServiceStatusProcedure = "/v1.MainService/Status"
+	// MainServiceCurrentTimeProcedure is the fully-qualified name of the MainService's CurrentTime RPC.
+	MainServiceCurrentTimeProcedure = "/v1.MainService/CurrentTime"
 )
 
 // MainServiceClient is a client for the v1.MainService service.
 type MainServiceClient interface {
-	GetVersionInfo(context.Context, *connect_go.Request[v1.GetVersionInfoRequest]) (*connect_go.Response[v1.GetVersionInfoResponse], error)
-	GetStatus(context.Context, *connect_go.Request[v1.GetStatusRequest]) (*connect_go.Response[v1.GetStatusResponse], error)
+	VersionInfo(context.Context, *connect_go.Request[v1.VersionInfoRequest]) (*connect_go.Response[v1.VersionInfoResponse], error)
+	Status(context.Context, *connect_go.Request[v1.StatusRequest]) (*connect_go.Response[v1.StatusResponse], error)
+	CurrentTime(context.Context, *connect_go.Request[v1.CurrentTimeRequest]) (*connect_go.Response[v1.CurrentTimeResponse], error)
 }
 
 // NewMainServiceClient constructs a client for the v1.MainService service. By default, it uses the
@@ -58,14 +60,19 @@ type MainServiceClient interface {
 func NewMainServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) MainServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &mainServiceClient{
-		getVersionInfo: connect_go.NewClient[v1.GetVersionInfoRequest, v1.GetVersionInfoResponse](
+		versionInfo: connect_go.NewClient[v1.VersionInfoRequest, v1.VersionInfoResponse](
 			httpClient,
-			baseURL+MainServiceGetVersionInfoProcedure,
+			baseURL+MainServiceVersionInfoProcedure,
 			opts...,
 		),
-		getStatus: connect_go.NewClient[v1.GetStatusRequest, v1.GetStatusResponse](
+		status: connect_go.NewClient[v1.StatusRequest, v1.StatusResponse](
 			httpClient,
-			baseURL+MainServiceGetStatusProcedure,
+			baseURL+MainServiceStatusProcedure,
+			opts...,
+		),
+		currentTime: connect_go.NewClient[v1.CurrentTimeRequest, v1.CurrentTimeResponse](
+			httpClient,
+			baseURL+MainServiceCurrentTimeProcedure,
 			opts...,
 		),
 	}
@@ -73,24 +80,31 @@ func NewMainServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 
 // mainServiceClient implements MainServiceClient.
 type mainServiceClient struct {
-	getVersionInfo *connect_go.Client[v1.GetVersionInfoRequest, v1.GetVersionInfoResponse]
-	getStatus      *connect_go.Client[v1.GetStatusRequest, v1.GetStatusResponse]
+	versionInfo *connect_go.Client[v1.VersionInfoRequest, v1.VersionInfoResponse]
+	status      *connect_go.Client[v1.StatusRequest, v1.StatusResponse]
+	currentTime *connect_go.Client[v1.CurrentTimeRequest, v1.CurrentTimeResponse]
 }
 
-// GetVersionInfo calls v1.MainService.GetVersionInfo.
-func (c *mainServiceClient) GetVersionInfo(ctx context.Context, req *connect_go.Request[v1.GetVersionInfoRequest]) (*connect_go.Response[v1.GetVersionInfoResponse], error) {
-	return c.getVersionInfo.CallUnary(ctx, req)
+// VersionInfo calls v1.MainService.VersionInfo.
+func (c *mainServiceClient) VersionInfo(ctx context.Context, req *connect_go.Request[v1.VersionInfoRequest]) (*connect_go.Response[v1.VersionInfoResponse], error) {
+	return c.versionInfo.CallUnary(ctx, req)
 }
 
-// GetStatus calls v1.MainService.GetStatus.
-func (c *mainServiceClient) GetStatus(ctx context.Context, req *connect_go.Request[v1.GetStatusRequest]) (*connect_go.Response[v1.GetStatusResponse], error) {
-	return c.getStatus.CallUnary(ctx, req)
+// Status calls v1.MainService.Status.
+func (c *mainServiceClient) Status(ctx context.Context, req *connect_go.Request[v1.StatusRequest]) (*connect_go.Response[v1.StatusResponse], error) {
+	return c.status.CallUnary(ctx, req)
+}
+
+// CurrentTime calls v1.MainService.CurrentTime.
+func (c *mainServiceClient) CurrentTime(ctx context.Context, req *connect_go.Request[v1.CurrentTimeRequest]) (*connect_go.Response[v1.CurrentTimeResponse], error) {
+	return c.currentTime.CallUnary(ctx, req)
 }
 
 // MainServiceHandler is an implementation of the v1.MainService service.
 type MainServiceHandler interface {
-	GetVersionInfo(context.Context, *connect_go.Request[v1.GetVersionInfoRequest]) (*connect_go.Response[v1.GetVersionInfoResponse], error)
-	GetStatus(context.Context, *connect_go.Request[v1.GetStatusRequest]) (*connect_go.Response[v1.GetStatusResponse], error)
+	VersionInfo(context.Context, *connect_go.Request[v1.VersionInfoRequest]) (*connect_go.Response[v1.VersionInfoResponse], error)
+	Status(context.Context, *connect_go.Request[v1.StatusRequest]) (*connect_go.Response[v1.StatusResponse], error)
+	CurrentTime(context.Context, *connect_go.Request[v1.CurrentTimeRequest]) (*connect_go.Response[v1.CurrentTimeResponse], error)
 }
 
 // NewMainServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -99,22 +113,29 @@ type MainServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewMainServiceHandler(svc MainServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
-	mainServiceGetVersionInfoHandler := connect_go.NewUnaryHandler(
-		MainServiceGetVersionInfoProcedure,
-		svc.GetVersionInfo,
+	mainServiceVersionInfoHandler := connect_go.NewUnaryHandler(
+		MainServiceVersionInfoProcedure,
+		svc.VersionInfo,
 		opts...,
 	)
-	mainServiceGetStatusHandler := connect_go.NewUnaryHandler(
-		MainServiceGetStatusProcedure,
-		svc.GetStatus,
+	mainServiceStatusHandler := connect_go.NewUnaryHandler(
+		MainServiceStatusProcedure,
+		svc.Status,
+		opts...,
+	)
+	mainServiceCurrentTimeHandler := connect_go.NewUnaryHandler(
+		MainServiceCurrentTimeProcedure,
+		svc.CurrentTime,
 		opts...,
 	)
 	return "/v1.MainService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case MainServiceGetVersionInfoProcedure:
-			mainServiceGetVersionInfoHandler.ServeHTTP(w, r)
-		case MainServiceGetStatusProcedure:
-			mainServiceGetStatusHandler.ServeHTTP(w, r)
+		case MainServiceVersionInfoProcedure:
+			mainServiceVersionInfoHandler.ServeHTTP(w, r)
+		case MainServiceStatusProcedure:
+			mainServiceStatusHandler.ServeHTTP(w, r)
+		case MainServiceCurrentTimeProcedure:
+			mainServiceCurrentTimeHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -124,10 +145,14 @@ func NewMainServiceHandler(svc MainServiceHandler, opts ...connect_go.HandlerOpt
 // UnimplementedMainServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedMainServiceHandler struct{}
 
-func (UnimplementedMainServiceHandler) GetVersionInfo(context.Context, *connect_go.Request[v1.GetVersionInfoRequest]) (*connect_go.Response[v1.GetVersionInfoResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.GetVersionInfo is not implemented"))
+func (UnimplementedMainServiceHandler) VersionInfo(context.Context, *connect_go.Request[v1.VersionInfoRequest]) (*connect_go.Response[v1.VersionInfoResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.VersionInfo is not implemented"))
 }
 
-func (UnimplementedMainServiceHandler) GetStatus(context.Context, *connect_go.Request[v1.GetStatusRequest]) (*connect_go.Response[v1.GetStatusResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.GetStatus is not implemented"))
+func (UnimplementedMainServiceHandler) Status(context.Context, *connect_go.Request[v1.StatusRequest]) (*connect_go.Response[v1.StatusResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.Status is not implemented"))
+}
+
+func (UnimplementedMainServiceHandler) CurrentTime(context.Context, *connect_go.Request[v1.CurrentTimeRequest]) (*connect_go.Response[v1.CurrentTimeResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.CurrentTime is not implemented"))
 }

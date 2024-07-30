@@ -5,7 +5,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
+import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage, Timestamp } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
 
 /**
@@ -33,45 +33,131 @@ export declare class VersionInfo extends Message<VersionInfo> {
 }
 
 /**
- * @generated from message v1.GetVersionInfoRequest
+ * @generated from message v1.VersionInfoRequest
  */
-export declare class GetVersionInfoRequest extends Message<GetVersionInfoRequest> {
-  constructor(data?: PartialMessage<GetVersionInfoRequest>);
+export declare class VersionInfoRequest extends Message<VersionInfoRequest> {
+  constructor(data?: PartialMessage<VersionInfoRequest>);
 
   static readonly runtime: typeof proto3;
-  static readonly typeName = "v1.GetVersionInfoRequest";
+  static readonly typeName = "v1.VersionInfoRequest";
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetVersionInfoRequest;
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): VersionInfoRequest;
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetVersionInfoRequest;
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): VersionInfoRequest;
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetVersionInfoRequest;
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): VersionInfoRequest;
 
-  static equals(a: GetVersionInfoRequest | PlainMessage<GetVersionInfoRequest> | undefined, b: GetVersionInfoRequest | PlainMessage<GetVersionInfoRequest> | undefined): boolean;
+  static equals(a: VersionInfoRequest | PlainMessage<VersionInfoRequest> | undefined, b: VersionInfoRequest | PlainMessage<VersionInfoRequest> | undefined): boolean;
 }
 
 /**
- * @generated from message v1.GetVersionInfoResponse
+ * @generated from message v1.VersionInfoResponse
  */
-export declare class GetVersionInfoResponse extends Message<GetVersionInfoResponse> {
+export declare class VersionInfoResponse extends Message<VersionInfoResponse> {
   /**
    * @generated from field: v1.VersionInfo version_info = 1;
    */
   versionInfo?: VersionInfo;
 
-  constructor(data?: PartialMessage<GetVersionInfoResponse>);
+  constructor(data?: PartialMessage<VersionInfoResponse>);
 
   static readonly runtime: typeof proto3;
-  static readonly typeName = "v1.GetVersionInfoResponse";
+  static readonly typeName = "v1.VersionInfoResponse";
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetVersionInfoResponse;
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): VersionInfoResponse;
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetVersionInfoResponse;
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): VersionInfoResponse;
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetVersionInfoResponse;
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): VersionInfoResponse;
 
-  static equals(a: GetVersionInfoResponse | PlainMessage<GetVersionInfoResponse> | undefined, b: GetVersionInfoResponse | PlainMessage<GetVersionInfoResponse> | undefined): boolean;
+  static equals(a: VersionInfoResponse | PlainMessage<VersionInfoResponse> | undefined, b: VersionInfoResponse | PlainMessage<VersionInfoResponse> | undefined): boolean;
+}
+
+/**
+ * @generated from message v1.StatusRequest
+ */
+export declare class StatusRequest extends Message<StatusRequest> {
+  constructor(data?: PartialMessage<StatusRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.StatusRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): StatusRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): StatusRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): StatusRequest;
+
+  static equals(a: StatusRequest | PlainMessage<StatusRequest> | undefined, b: StatusRequest | PlainMessage<StatusRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message v1.StatusResponse
+ */
+export declare class StatusResponse extends Message<StatusResponse> {
+  /**
+   * @generated from field: bool InitialScanFinished = 1;
+   */
+  InitialScanFinished: boolean;
+
+  constructor(data?: PartialMessage<StatusResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.StatusResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): StatusResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): StatusResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): StatusResponse;
+
+  static equals(a: StatusResponse | PlainMessage<StatusResponse> | undefined, b: StatusResponse | PlainMessage<StatusResponse> | undefined): boolean;
+}
+
+/**
+ * @generated from message v1.CurrentTimeRequest
+ */
+export declare class CurrentTimeRequest extends Message<CurrentTimeRequest> {
+  constructor(data?: PartialMessage<CurrentTimeRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.CurrentTimeRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CurrentTimeRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CurrentTimeRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CurrentTimeRequest;
+
+  static equals(a: CurrentTimeRequest | PlainMessage<CurrentTimeRequest> | undefined, b: CurrentTimeRequest | PlainMessage<CurrentTimeRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message v1.CurrentTimeResponse
+ */
+export declare class CurrentTimeResponse extends Message<CurrentTimeResponse> {
+  /**
+   * @generated from field: google.protobuf.Timestamp timestamp = 1;
+   */
+  timestamp?: Timestamp;
+
+  constructor(data?: PartialMessage<CurrentTimeResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.CurrentTimeResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CurrentTimeResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CurrentTimeResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CurrentTimeResponse;
+
+  static equals(a: CurrentTimeResponse | PlainMessage<CurrentTimeResponse> | undefined, b: CurrentTimeResponse | PlainMessage<CurrentTimeResponse> | undefined): boolean;
 }
 

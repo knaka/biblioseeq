@@ -5,7 +5,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { GetVersionInfoRequest, GetVersionInfoResponse } from "./main_pb.js";
+import { CurrentTimeRequest, CurrentTimeResponse, StatusRequest, StatusResponse, VersionInfoRequest, VersionInfoResponse } from "./main_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -15,12 +15,30 @@ export const MainService = {
   typeName: "v1.MainService",
   methods: {
     /**
-     * @generated from rpc v1.MainService.GetVersionInfo
+     * @generated from rpc v1.MainService.VersionInfo
      */
-    getVersionInfo: {
-      name: "GetVersionInfo",
-      I: GetVersionInfoRequest,
-      O: GetVersionInfoResponse,
+    versionInfo: {
+      name: "VersionInfo",
+      I: VersionInfoRequest,
+      O: VersionInfoResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc v1.MainService.Status
+     */
+    status: {
+      name: "Status",
+      I: StatusRequest,
+      O: StatusResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc v1.MainService.CurrentTime
+     */
+    currentTime: {
+      name: "CurrentTime",
+      I: CurrentTimeRequest,
+      O: CurrentTimeResponse,
       kind: MethodKind.Unary,
     },
   }

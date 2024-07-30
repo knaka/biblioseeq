@@ -5,7 +5,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { proto3 } from "@bufbuild/protobuf";
+import { proto3, Timestamp } from "@bufbuild/protobuf";
 
 /**
  * @generated from message v1.VersionInfo
@@ -18,20 +18,56 @@ export const VersionInfo = /*@__PURE__*/ proto3.makeMessageType(
 );
 
 /**
- * @generated from message v1.GetVersionInfoRequest
+ * @generated from message v1.VersionInfoRequest
  */
-export const GetVersionInfoRequest = /*@__PURE__*/ proto3.makeMessageType(
-  "v1.GetVersionInfoRequest",
+export const VersionInfoRequest = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.VersionInfoRequest",
   [],
 );
 
 /**
- * @generated from message v1.GetVersionInfoResponse
+ * @generated from message v1.VersionInfoResponse
  */
-export const GetVersionInfoResponse = /*@__PURE__*/ proto3.makeMessageType(
-  "v1.GetVersionInfoResponse",
+export const VersionInfoResponse = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.VersionInfoResponse",
   () => [
     { no: 1, name: "version_info", kind: "message", T: VersionInfo },
+  ],
+);
+
+/**
+ * @generated from message v1.StatusRequest
+ */
+export const StatusRequest = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.StatusRequest",
+  [],
+);
+
+/**
+ * @generated from message v1.StatusResponse
+ */
+export const StatusResponse = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.StatusResponse",
+  () => [
+    { no: 1, name: "InitialScanFinished", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+  ],
+);
+
+/**
+ * @generated from message v1.CurrentTimeRequest
+ */
+export const CurrentTimeRequest = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.CurrentTimeRequest",
+  [],
+);
+
+/**
+ * @generated from message v1.CurrentTimeResponse
+ */
+export const CurrentTimeResponse = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.CurrentTimeResponse",
+  () => [
+    { no: 1, name: "timestamp", kind: "message", T: Timestamp },
   ],
 );
 

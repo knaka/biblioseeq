@@ -6,6 +6,8 @@ import (
 	v1 "github.com/knaka/biblioseeq/pbgen/v1"
 	"github.com/knaka/biblioseeq/pbgen/v1/v1connect"
 	weblib "github.com/knaka/biblioseeq/web/lib"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
 
 	. "github.com/knaka/go-utils"
 )
@@ -21,7 +23,7 @@ func newResponseWithMsg[T any](_ *connect.Response[T]) *connect.Response[T] {
 	return connect.NewResponse(&msg)
 }
 
-func (s *MainServiceHandlerImpl) GetVersionInfo(ctx context.Context, req *connect.Request[v1.GetVersionInfoRequest]) (resp *connect.Response[v1.GetVersionInfoResponse], err error) {
+func (s *MainServiceHandlerImpl) VersionInfo(ctx context.Context, req *connect.Request[v1.VersionInfoRequest]) (resp *connect.Response[v1.VersionInfoResponse], err error) {
 	resp = newResponseWithMsg(resp)
 
 	resp.Msg.VersionInfo = &v1.VersionInfo{
@@ -31,11 +33,29 @@ func (s *MainServiceHandlerImpl) GetVersionInfo(ctx context.Context, req *connec
 	return
 }
 
-func (s *MainServiceHandlerImpl) GetStatus(ctx context.Context, req *connect.Request[v1.GetStatusRequest]) (resp *connect.Response[v1.GetStatusResponse], err error) {
+func (s *MainServiceHandlerImpl) Status(ctx context.Context, req *connect.Request[v1.StatusRequest]) (resp *connect.Response[v1.StatusResponse], err error) {
 	resp = newResponseWithMsg(resp)
 	ctxValue := V(weblib.GetCtxValue(ctx))
 
 	resp.Msg.InitialScanFinished = ctxValue.FtsIndexer.InitialScanFinished()
+
+	return
+}
+
+type User struct {
+}
+
+var defaultUser User
+
+func DefaultUser() *User {
+	return &defaultUser
+}
+
+// CurrentTime returns the current time.
+func (s *MainServiceHandlerImpl) CurrentTime(ctx context.Context, req *connect.Request[v1.CurrentTimeRequest]) (resp *connect.Response[v1.CurrentTimeResponse], err error) {
+	resp = newResponseWithMsg(resp)
+
+	resp.Msg.Timestamp = timestamppb.New(time.Now())
 
 	return
 }
