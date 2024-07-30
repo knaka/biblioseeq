@@ -161,3 +161,85 @@ export declare class CurrentTimeResponse extends Message<CurrentTimeResponse> {
   static equals(a: CurrentTimeResponse | PlainMessage<CurrentTimeResponse> | undefined, b: CurrentTimeResponse | PlainMessage<CurrentTimeResponse> | undefined): boolean;
 }
 
+/**
+ * @generated from message v1.QueryRequest
+ */
+export declare class QueryRequest extends Message<QueryRequest> {
+  /**
+   * @generated from field: string query = 1;
+   */
+  query: string;
+
+  constructor(data?: PartialMessage<QueryRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.QueryRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): QueryRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): QueryRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): QueryRequest;
+
+  static equals(a: QueryRequest | PlainMessage<QueryRequest> | undefined, b: QueryRequest | PlainMessage<QueryRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message v1.QueryResult
+ */
+export declare class QueryResult extends Message<QueryResult> {
+  /**
+   * @generated from field: int64 id = 1;
+   */
+  id: bigint;
+
+  /**
+   * @generated from field: string path = 2;
+   */
+  path: string;
+
+  /**
+   * @generated from field: string snippet = 3;
+   */
+  snippet: string;
+
+  constructor(data?: PartialMessage<QueryResult>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.QueryResult";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): QueryResult;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): QueryResult;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): QueryResult;
+
+  static equals(a: QueryResult | PlainMessage<QueryResult> | undefined, b: QueryResult | PlainMessage<QueryResult> | undefined): boolean;
+}
+
+/**
+ * @generated from message v1.QueryResponse
+ */
+export declare class QueryResponse extends Message<QueryResponse> {
+  /**
+   * @generated from field: repeated v1.QueryResult results = 1;
+   */
+  results: QueryResult[];
+
+  constructor(data?: PartialMessage<QueryResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.QueryResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): QueryResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): QueryResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): QueryResponse;
+
+  static equals(a: QueryResponse | PlainMessage<QueryResponse> | undefined, b: QueryResponse | PlainMessage<QueryResponse> | undefined): boolean;
+}
+

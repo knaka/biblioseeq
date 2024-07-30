@@ -5,7 +5,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CurrentTimeRequest, CurrentTimeResponse, StatusRequest, StatusResponse, VersionInfoRequest, VersionInfoResponse } from "./main_pb.js";
+import { CurrentTimeRequest, CurrentTimeResponse, QueryRequest, QueryResponse, StatusRequest, StatusResponse, VersionInfoRequest, VersionInfoResponse } from "./main_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -39,6 +39,15 @@ export declare const MainService: {
       readonly name: "CurrentTime",
       readonly I: typeof CurrentTimeRequest,
       readonly O: typeof CurrentTimeResponse,
+      readonly kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc v1.MainService.Query
+     */
+    readonly query: {
+      readonly name: "Query",
+      readonly I: typeof QueryRequest,
+      readonly O: typeof QueryResponse,
       readonly kind: MethodKind.Unary,
     },
   }

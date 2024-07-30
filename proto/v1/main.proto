@@ -29,8 +29,24 @@ message CurrentTimeResponse {
   google.protobuf.Timestamp timestamp = 1;
 }
 
+message QueryRequest {
+  string query = 1;
+}
+
+message QueryResult {
+  int64 id = 1;
+  string path = 2;
+  string snippet = 3;
+
+}
+
+message QueryResponse {
+  repeated QueryResult results = 1;
+}
+
 service MainService {
   rpc VersionInfo(VersionInfoRequest) returns (VersionInfoResponse);
   rpc Status(StatusRequest) returns (StatusResponse);
   rpc CurrentTime(CurrentTimeRequest) returns (CurrentTimeResponse);
+  rpc Query(QueryRequest) returns (QueryResponse);
 }

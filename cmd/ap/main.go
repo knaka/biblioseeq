@@ -51,14 +51,13 @@ func main() {
 	})()
 	server := V(web.NewServer(host, port, ftsIndexer))
 	host, port = V2(web.ParseServerAddr(server.Addr))
-	serverUrl := fmt.Sprintf("http://%s:%d", host, port)
+	serverUrl := fmt.Sprintf("http://%s:%d", Elvis(host, "localhost"), port)
 	log.Printf("Listening on %s .", serverUrl)
 	wg.Add(1)
 	go (func() {
-		Ignore(server.ListenAndServe())
+		Expect(server.ListenAndServe(), http.ErrServerClosed)
 		wg.Done()
 	})()
-
 	httpClt := &http.Client{Transport: &http.Transport{}}
 	clt := v1connect.NewMainServiceClient(httpClt, serverUrl)
 	ctx.Done()
@@ -66,8 +65,6 @@ func main() {
 		&connect.Request[v1.CurrentTimeRequest]{Msg: &v1.CurrentTimeRequest{}},
 	))
 	log.Println("e289984", currentTime.Msg.Timestamp.AsTime())
-
-	//ftsIndexer.WaitForInitialScanFinished(ctx)
 	for {
 		status := V(clt.Status(ctx, &connect.Request[v1.StatusRequest]{Msg: &v1.StatusRequest{}}))
 		if status.Msg.InitialScanFinished {
@@ -75,7 +72,6 @@ func main() {
 		}
 		time.Sleep(1 * time.Second)
 	}
-
 	rl := V(readline.NewEx(&readline.Config{
 		Prompt: "> ",
 	}))
@@ -90,15 +86,13 @@ func main() {
 		if *line == "" {
 			break
 		}
-		query := fts.SeparateJapanese(*line)
-		log.Println("query:", query)
-		results, err := ftsIndexer.Query(query)
+		queryResult, err := clt.Query(ctx, &connect.Request[v1.QueryRequest]{Msg: &v1.QueryRequest{Query: *line}})
 		if err != nil {
 			log.Println("Error:", err)
 			V0(os.Stdout.WriteString("> "))
 			continue
 		}
-		for _, result := range results {
+		for _, result := range queryResult.Msg.Results {
 			snippet := result.Snippet
 			snippet = strings.ReplaceAll(snippet, "\r", "")
 			snippet = strings.ReplaceAll(snippet, "\n", " ")

@@ -20,7 +20,7 @@ import (
 var dbSchema string
 
 func EnsureDBFile(dbFilePath string) {
-	if E(os.Stat(dbFilePath)) != nil {
+	if _, err := os.Stat(dbFilePath); err != nil && os.IsNotExist(err) {
 		V0(os.MkdirAll(filepath.Dir(dbFilePath), 0755))
 		V0(V(sql.Open("sqlite3", dbFilePath)).Close())
 	}

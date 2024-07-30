@@ -71,3 +71,35 @@ export const CurrentTimeResponse = /*@__PURE__*/ proto3.makeMessageType(
   ],
 );
 
+/**
+ * @generated from message v1.QueryRequest
+ */
+export const QueryRequest = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.QueryRequest",
+  () => [
+    { no: 1, name: "query", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
+);
+
+/**
+ * @generated from message v1.QueryResult
+ */
+export const QueryResult = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.QueryResult",
+  () => [
+    { no: 1, name: "id", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+    { no: 2, name: "path", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "snippet", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
+);
+
+/**
+ * @generated from message v1.QueryResponse
+ */
+export const QueryResponse = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.QueryResponse",
+  () => [
+    { no: 1, name: "results", kind: "message", T: QueryResult, repeated: true },
+  ],
+);
+

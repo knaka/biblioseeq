@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"github.com/bufbuild/connect-go"
+	"github.com/knaka/biblioseeq/fts"
 	v1 "github.com/knaka/biblioseeq/pbgen/v1"
 	"github.com/knaka/biblioseeq/pbgen/v1/v1connect"
 	weblib "github.com/knaka/biblioseeq/web/lib"
@@ -56,6 +57,24 @@ func (s *MainServiceHandlerImpl) CurrentTime(ctx context.Context, req *connect.R
 	resp = newResponseWithMsg(resp)
 
 	resp.Msg.Timestamp = timestamppb.New(time.Now())
+
+	return
+}
+
+// Query
+func (s *MainServiceHandlerImpl) Query(ctx context.Context, req *connect.Request[v1.QueryRequest]) (resp *connect.Response[v1.QueryResponse], err error) {
+	resp = newResponseWithMsg(resp)
+	ctxValue := V(weblib.GetCtxValue(ctx))
+
+	queryRaw := req.Msg.Query
+	query := fts.SeparateJapanese(queryRaw)
+	results := V(ctxValue.FtsIndexer.Query(query))
+	for _, result := range results {
+		resp.Msg.Results = append(resp.Msg.Results, &v1.QueryResult{
+			Path:    result.Path,
+			Snippet: result.Snippet,
+		})
+	}
 
 	return
 }
