@@ -5,7 +5,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CurrentTimeRequest, CurrentTimeResponse, QueryRequest, QueryResponse, StatusRequest, StatusResponse, VersionInfoRequest, VersionInfoResponse } from "./main_pb.js";
+import { ContentRequest, ContentResponse, CurrentTimeRequest, CurrentTimeResponse, LaunchPathRequest, LaunchPathResponse, QueryRequest, QueryResponse, StatusRequest, StatusResponse, VersionInfoRequest, VersionInfoResponse } from "./main_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -48,6 +48,24 @@ export declare const MainService: {
       readonly name: "Query",
       readonly I: typeof QueryRequest,
       readonly O: typeof QueryResponse,
+      readonly kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc v1.MainService.Content
+     */
+    readonly content: {
+      readonly name: "Content",
+      readonly I: typeof ContentRequest,
+      readonly O: typeof ContentResponse,
+      readonly kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc v1.MainService.LaunchPath
+     */
+    readonly launchPath: {
+      readonly name: "LaunchPath",
+      readonly I: typeof LaunchPathRequest,
+      readonly O: typeof LaunchPathResponse,
       readonly kind: MethodKind.Unary,
     },
   }

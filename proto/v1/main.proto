@@ -44,9 +44,26 @@ message QueryResponse {
   repeated QueryResult results = 1;
 }
 
+message ContentRequest {
+  string path = 1;
+}
+
+message ContentResponse {
+  string content = 1;
+}
+
+message LaunchPathRequest {
+  string path = 1;
+}
+
+message LaunchPathResponse {
+}
+
 service MainService {
   rpc VersionInfo(VersionInfoRequest) returns (VersionInfoResponse);
   rpc Status(StatusRequest) returns (StatusResponse);
   rpc CurrentTime(CurrentTimeRequest) returns (CurrentTimeResponse);
   rpc Query(QueryRequest) returns (QueryResponse);
+  rpc Content(ContentRequest) returns (ContentResponse);
+  rpc LaunchPath(LaunchPathRequest) returns (LaunchPathResponse);
 }

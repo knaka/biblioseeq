@@ -4,8 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"github.com/knaka/biblioseeq/db/sqlcgen"
+	ftslog "github.com/knaka/biblioseeq/log"
 	. "github.com/knaka/go-utils"
 	"github.com/rjeczalik/notify"
+	"github.com/samber/lo"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -36,9 +38,22 @@ func NewDirIndexer(dbConn *sql.DB, path string, fileExtensions []string) *DirInd
 func (dirIndexer *DirIndexer) IndexFile(path string) {
 	ctx := context.Background()
 	store := sqlcgen.New(dirIndexer.dbConn)
-	stat := V(os.Stat(path))
+	if lo.NoneBy(dirIndexer.fileExtensions, func(ext string) bool {
+		return filepath.Ext(path) == ext
+	}) {
+		return
+	}
+	stat, err := os.Stat(path)
+	// broken symlink?
+	if err != nil {
+		return
+	}
+	if stat.IsDir() {
+		return
+	}
 	body := tokenizeJapanese(string(V(os.ReadFile(path))))
-	if file := PR(store.GetFile(ctx, &sqlcgen.GetFileParams{Path: path})).NilIf(sql.ErrNoRows); file == nil {
+	if file := R(store.GetFile(ctx, &sqlcgen.GetFileParams{Path: path})).NilIf(sql.ErrNoRows); file == nil {
+		ftslog.Println("Adding index for file:", path)
 		idFtsFile := V(store.AddFtsFile(ctx, &sqlcgen.AddFtsFileParams{
 			Body: body,
 		}))
@@ -49,6 +64,11 @@ func (dirIndexer *DirIndexer) IndexFile(path string) {
 			Size:       stat.Size(),
 		}))
 	} else {
+		if file.ModifiedAt.Equal(stat.ModTime()) && file.Size == stat.Size() {
+			ftslog.Println("Skipped file:", path)
+			return
+		}
+		ftslog.Println("Updating index for file:", path)
 		V0(store.UpdateFtsFile(context.Background(), &sqlcgen.UpdateFtsFileParams{
 			Path: path,
 			Body: body,
@@ -109,6 +129,32 @@ func (dirIndexer *DirIndexer) indexFile(path string, info fs.FileInfo, err error
 	return nil
 }
 
+func (dirIndexer *DirIndexer) removeNotExistingFiles() {
+	ctx := context.Background()
+	store := sqlcgen.New(dirIndexer.dbConn)
+	files, err := store.GetFiles(ctx)
+	if err != nil {
+		return
+	}
+	for _, file := range files {
+		var shouldRemove bool
+		if lo.NoneBy(dirIndexer.fileExtensions, func(ext string) bool {
+			return filepath.Ext(file.Path) == ext
+		}) {
+			shouldRemove = true
+		}
+		if _, err := os.Stat(file.Path); err != nil {
+			shouldRemove = true
+		}
+		if shouldRemove {
+			ftslog.Println("Removing index for file:", file.Path)
+			path := file.Path
+			V0(store.DeleteFtsFiles(ctx, &sqlcgen.DeleteFtsFilesParams{Path: path}))
+			V0(store.DeleteFiles(ctx, &sqlcgen.DeleteFilesParams{Path: path}))
+		}
+	}
+}
+
 func (dirIndexer *DirIndexer) indexDirectory(path string) {
 	V0(filepath.Walk(path, dirIndexer.indexFile))
 }
@@ -116,6 +162,7 @@ func (dirIndexer *DirIndexer) indexDirectory(path string) {
 func (dirIndexer *DirIndexer) IndexAll() {
 	dirIndexer.indexMutex.Lock()
 	defer dirIndexer.indexMutex.Unlock()
+	dirIndexer.removeNotExistingFiles()
 	dirIndexer.indexDirectory(dirIndexer.path)
 	dirIndexer.chScanned <- "scanned"
 }

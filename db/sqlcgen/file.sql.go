@@ -162,20 +162,55 @@ func (q *Queries) GetFileWithBody(ctx context.Context, arg *GetFileWithBodyParam
 	return &i, err
 }
 
+const getFiles = `-- name: GetFiles :many
+SELECT path, fts_file_id, modified_at, size, updated_at FROM files
+`
+
+func (q *Queries) GetFiles(ctx context.Context) ([]*File, error) {
+	rows, err := q.db.QueryContext(ctx, getFiles)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []*File
+	for rows.Next() {
+		var i File
+		if err := rows.Scan(
+			&i.Path,
+			&i.FtsFileID,
+			&i.ModifiedAt,
+			&i.Size,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const query = `-- name: Query :many
 ;
 
-SELECT files.path, files.fts_file_id, files.modified_at, files.size, files.updated_at, snippet(fts_files, 0, '<b>', '</b>', '...', 10) as snippet
+SELECT files.path, files.fts_file_id, files.modified_at, files.size, files.updated_at, snippet(fts_files, 0, '<b>', '</b>', '...', 30) as snippet
 FROM
   files INNER JOIN
   fts_files ON files.fts_file_id = fts_files.rowid
 WHERE
   fts_files.body MATCH ?1
 ORDER BY rank
+LIMIT CASE WHEN ?2 > 0 THEN ?2 ELSE 50 END
 `
 
 type QueryParams struct {
 	Query string
+	Limit interface{}
 }
 
 type QueryRow struct {
@@ -184,7 +219,7 @@ type QueryRow struct {
 }
 
 func (q *Queries) Query(ctx context.Context, arg *QueryParams) ([]*QueryRow, error) {
-	rows, err := q.db.QueryContext(ctx, query, arg.Query)
+	rows, err := q.db.QueryContext(ctx, query, arg.Query, arg.Limit)
 	if err != nil {
 		return nil, err
 	}

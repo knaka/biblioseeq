@@ -43,6 +43,10 @@ const (
 	MainServiceCurrentTimeProcedure = "/v1.MainService/CurrentTime"
 	// MainServiceQueryProcedure is the fully-qualified name of the MainService's Query RPC.
 	MainServiceQueryProcedure = "/v1.MainService/Query"
+	// MainServiceContentProcedure is the fully-qualified name of the MainService's Content RPC.
+	MainServiceContentProcedure = "/v1.MainService/Content"
+	// MainServiceLaunchPathProcedure is the fully-qualified name of the MainService's LaunchPath RPC.
+	MainServiceLaunchPathProcedure = "/v1.MainService/LaunchPath"
 )
 
 // MainServiceClient is a client for the v1.MainService service.
@@ -51,6 +55,8 @@ type MainServiceClient interface {
 	Status(context.Context, *connect_go.Request[v1.StatusRequest]) (*connect_go.Response[v1.StatusResponse], error)
 	CurrentTime(context.Context, *connect_go.Request[v1.CurrentTimeRequest]) (*connect_go.Response[v1.CurrentTimeResponse], error)
 	Query(context.Context, *connect_go.Request[v1.QueryRequest]) (*connect_go.Response[v1.QueryResponse], error)
+	Content(context.Context, *connect_go.Request[v1.ContentRequest]) (*connect_go.Response[v1.ContentResponse], error)
+	LaunchPath(context.Context, *connect_go.Request[v1.LaunchPathRequest]) (*connect_go.Response[v1.LaunchPathResponse], error)
 }
 
 // NewMainServiceClient constructs a client for the v1.MainService service. By default, it uses the
@@ -83,6 +89,16 @@ func NewMainServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 			baseURL+MainServiceQueryProcedure,
 			opts...,
 		),
+		content: connect_go.NewClient[v1.ContentRequest, v1.ContentResponse](
+			httpClient,
+			baseURL+MainServiceContentProcedure,
+			opts...,
+		),
+		launchPath: connect_go.NewClient[v1.LaunchPathRequest, v1.LaunchPathResponse](
+			httpClient,
+			baseURL+MainServiceLaunchPathProcedure,
+			opts...,
+		),
 	}
 }
 
@@ -92,6 +108,8 @@ type mainServiceClient struct {
 	status      *connect_go.Client[v1.StatusRequest, v1.StatusResponse]
 	currentTime *connect_go.Client[v1.CurrentTimeRequest, v1.CurrentTimeResponse]
 	query       *connect_go.Client[v1.QueryRequest, v1.QueryResponse]
+	content     *connect_go.Client[v1.ContentRequest, v1.ContentResponse]
+	launchPath  *connect_go.Client[v1.LaunchPathRequest, v1.LaunchPathResponse]
 }
 
 // VersionInfo calls v1.MainService.VersionInfo.
@@ -114,12 +132,24 @@ func (c *mainServiceClient) Query(ctx context.Context, req *connect_go.Request[v
 	return c.query.CallUnary(ctx, req)
 }
 
+// Content calls v1.MainService.Content.
+func (c *mainServiceClient) Content(ctx context.Context, req *connect_go.Request[v1.ContentRequest]) (*connect_go.Response[v1.ContentResponse], error) {
+	return c.content.CallUnary(ctx, req)
+}
+
+// LaunchPath calls v1.MainService.LaunchPath.
+func (c *mainServiceClient) LaunchPath(ctx context.Context, req *connect_go.Request[v1.LaunchPathRequest]) (*connect_go.Response[v1.LaunchPathResponse], error) {
+	return c.launchPath.CallUnary(ctx, req)
+}
+
 // MainServiceHandler is an implementation of the v1.MainService service.
 type MainServiceHandler interface {
 	VersionInfo(context.Context, *connect_go.Request[v1.VersionInfoRequest]) (*connect_go.Response[v1.VersionInfoResponse], error)
 	Status(context.Context, *connect_go.Request[v1.StatusRequest]) (*connect_go.Response[v1.StatusResponse], error)
 	CurrentTime(context.Context, *connect_go.Request[v1.CurrentTimeRequest]) (*connect_go.Response[v1.CurrentTimeResponse], error)
 	Query(context.Context, *connect_go.Request[v1.QueryRequest]) (*connect_go.Response[v1.QueryResponse], error)
+	Content(context.Context, *connect_go.Request[v1.ContentRequest]) (*connect_go.Response[v1.ContentResponse], error)
+	LaunchPath(context.Context, *connect_go.Request[v1.LaunchPathRequest]) (*connect_go.Response[v1.LaunchPathResponse], error)
 }
 
 // NewMainServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -148,6 +178,16 @@ func NewMainServiceHandler(svc MainServiceHandler, opts ...connect_go.HandlerOpt
 		svc.Query,
 		opts...,
 	)
+	mainServiceContentHandler := connect_go.NewUnaryHandler(
+		MainServiceContentProcedure,
+		svc.Content,
+		opts...,
+	)
+	mainServiceLaunchPathHandler := connect_go.NewUnaryHandler(
+		MainServiceLaunchPathProcedure,
+		svc.LaunchPath,
+		opts...,
+	)
 	return "/v1.MainService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case MainServiceVersionInfoProcedure:
@@ -158,6 +198,10 @@ func NewMainServiceHandler(svc MainServiceHandler, opts ...connect_go.HandlerOpt
 			mainServiceCurrentTimeHandler.ServeHTTP(w, r)
 		case MainServiceQueryProcedure:
 			mainServiceQueryHandler.ServeHTTP(w, r)
+		case MainServiceContentProcedure:
+			mainServiceContentHandler.ServeHTTP(w, r)
+		case MainServiceLaunchPathProcedure:
+			mainServiceLaunchPathHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -181,4 +225,12 @@ func (UnimplementedMainServiceHandler) CurrentTime(context.Context, *connect_go.
 
 func (UnimplementedMainServiceHandler) Query(context.Context, *connect_go.Request[v1.QueryRequest]) (*connect_go.Response[v1.QueryResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.Query is not implemented"))
+}
+
+func (UnimplementedMainServiceHandler) Content(context.Context, *connect_go.Request[v1.ContentRequest]) (*connect_go.Response[v1.ContentResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.Content is not implemented"))
+}
+
+func (UnimplementedMainServiceHandler) LaunchPath(context.Context, *connect_go.Request[v1.LaunchPathRequest]) (*connect_go.Response[v1.LaunchPathResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.LaunchPath is not implemented"))
 }

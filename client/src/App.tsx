@@ -13,6 +13,8 @@ import { QueryResult } from './pbgen/v1/main_pb';
 
 const TopPane = styled(SplitPane)`
   height: 100%;
+  font-size: 16px; /* default */
+  background-color: white;
 `;
 
 const Sash = styled.div`
@@ -21,7 +23,7 @@ const Sash = styled.div`
   background-color: lightgrey;
   &:hover {
     background-color: grey;
-    color: #fff;
+    color: white;
   };
 `;
 
@@ -32,6 +34,8 @@ const ControlPane = styled(Pane)`
 `;
 
 const ContentPane = styled.div`
+  font-size: 14px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -47,15 +51,26 @@ const ResultsDiv = styled.div`
 const ResultItem = styled.div<{
   selected: boolean;
 }>`
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
+  font-size: 12px;
+  padding: 6px;
+  border-bottom: 1px solid grey;
   cursor: pointer;
   ${(props) => props.selected ? css`
-    background-color: #eee;
+    background-color: lightgrey;
   ` : css`
     background-color: white;
   `}
 `;
+
+const MyPre = styled.pre`
+  margin: 0;
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  white-space: pre-wrap;
+`; 
+
+async function launchPath(path: string) {
+  await client.launchPath({path: path});
+}
 
 function App() {
   const [imeActive, setImeActive] = useState(false);
@@ -64,15 +79,35 @@ function App() {
   const [sizes, setSizes] = useState([300, 'auto']);
   const [results, setResults] = useState<QueryResult[]>([]);
   const [selectedPath, setSelectedPath] = useState("");
+  const [body, setBody] = useState("");
 
   useEffect(() => {
     (async () => {
       console.log("Querying");
-      const resp = await client.query({query: query});
-      setResults(resp.results);
+      try {
+        const resp = await client.query({query: query});
+        if (! resp) {
+          return;
+        }
+        setResults(resp.results);
+      } catch (e) {
+        console.error("8706186", e);
+      };
     })();  
   }, [query]);
 
+  useEffect(() => {
+    (async () => {
+      if (selectedPath == "") {
+        return;
+      }
+      const resp = await client.content({path: selectedPath});
+      if (!resp) {
+        return;
+      }
+      setBody(resp.content);
+    })();
+  }, [selectedPath]);
 
   const handleResultClick = (snippet: string) => {
     setSelectedPath(snippet);
@@ -104,17 +139,17 @@ function App() {
         />
         <ResultsDiv>
           {results.map((result, index) => (
-            <ResultItem key={result.path} selected={result.path == selectedPath} onClick={() => setSelectedPath(result.path)}>
-              {result.snippet}
+            <ResultItem key={result.path} selected={result.path == selectedPath}
+              onClick={() => setSelectedPath(result.path)}
+              onDoubleClick={() => launchPath(result.path)}
+            >
+              <div dangerouslySetInnerHTML={{ __html: result.snippet }} />
             </ResultItem>
           ))}
         </ResultsDiv>
       </ControlPane>
       <ContentPane>
-        <div>
-          <h2>Selected Snippet</h2>
-          <p>{selectedPath}</p>
-        </div>
+        <MyPre>{body}</MyPre>
       </ContentPane>
     </TopPane>
   );

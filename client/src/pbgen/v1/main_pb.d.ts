@@ -243,3 +243,94 @@ export declare class QueryResponse extends Message<QueryResponse> {
   static equals(a: QueryResponse | PlainMessage<QueryResponse> | undefined, b: QueryResponse | PlainMessage<QueryResponse> | undefined): boolean;
 }
 
+/**
+ * @generated from message v1.ContentRequest
+ */
+export declare class ContentRequest extends Message<ContentRequest> {
+  /**
+   * @generated from field: string path = 1;
+   */
+  path: string;
+
+  constructor(data?: PartialMessage<ContentRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.ContentRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ContentRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ContentRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ContentRequest;
+
+  static equals(a: ContentRequest | PlainMessage<ContentRequest> | undefined, b: ContentRequest | PlainMessage<ContentRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message v1.ContentResponse
+ */
+export declare class ContentResponse extends Message<ContentResponse> {
+  /**
+   * @generated from field: string content = 1;
+   */
+  content: string;
+
+  constructor(data?: PartialMessage<ContentResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.ContentResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ContentResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ContentResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ContentResponse;
+
+  static equals(a: ContentResponse | PlainMessage<ContentResponse> | undefined, b: ContentResponse | PlainMessage<ContentResponse> | undefined): boolean;
+}
+
+/**
+ * @generated from message v1.LaunchPathRequest
+ */
+export declare class LaunchPathRequest extends Message<LaunchPathRequest> {
+  /**
+   * @generated from field: string path = 1;
+   */
+  path: string;
+
+  constructor(data?: PartialMessage<LaunchPathRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.LaunchPathRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): LaunchPathRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): LaunchPathRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): LaunchPathRequest;
+
+  static equals(a: LaunchPathRequest | PlainMessage<LaunchPathRequest> | undefined, b: LaunchPathRequest | PlainMessage<LaunchPathRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message v1.LaunchPathResponse
+ */
+export declare class LaunchPathResponse extends Message<LaunchPathResponse> {
+  constructor(data?: PartialMessage<LaunchPathResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.LaunchPathResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): LaunchPathResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): LaunchPathResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): LaunchPathResponse;
+
+  static equals(a: LaunchPathResponse | PlainMessage<LaunchPathResponse> | undefined, b: LaunchPathResponse | PlainMessage<LaunchPathResponse> | undefined): boolean;
+}
+

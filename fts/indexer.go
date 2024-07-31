@@ -5,10 +5,13 @@ import (
 	"database/sql"
 	"github.com/knaka/biblioseeq/db"
 	"github.com/knaka/biblioseeq/db/sqlcgen"
+	ftslog "github.com/knaka/biblioseeq/log"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/samber/lo"
 	"path/filepath"
+	"regexp"
 	"sync"
+	"unicode/utf8"
 
 	. "github.com/knaka/go-utils"
 )
@@ -73,11 +76,15 @@ func (indexer *Indexer) WatchContinuously(ctx context.Context) {
 			wg.Done()
 		})()
 		dirIndexer.WaitForWatchingStarted(ctx)
-		wg.Add(1)
-		go (func() {
-			dirIndexer.IndexAll()
-			wg.Done()
-		})()
+		if false {
+			wg.Add(1)
+			go (func() {
+				dirIndexer.IndexAll()
+				wg.Done()
+			})()
+		} else {
+			dirIndexer.chScanned <- "scanned"
+		}
 	}
 	wg.Wait()
 }
@@ -106,12 +113,15 @@ func (indexer *Indexer) indexFile(filePath string) {
 	}
 }
 
+var reSpaces = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`\s+`) })
+
 type QueryResult struct {
 	Path    string
 	Snippet string
 }
 
 func (indexer *Indexer) Query(query string) (results []*QueryResult, err error) {
+	defer Catch(&err)
 	ctx := context.Background()
 	store := sqlcgen.New(indexer.dbConn)
 	rows, err := store.Query(ctx, &sqlcgen.QueryParams{
@@ -121,11 +131,22 @@ func (indexer *Indexer) Query(query string) (results []*QueryResult, err error) 
 	if err != nil {
 		return nil, nil
 	}
-	return lo.Map(rows, func(item *sqlcgen.QueryRow, _ int) *QueryResult {
+	return lo.FilterMap(rows, func(item *sqlcgen.QueryRow, _ int) (*QueryResult, bool) {
+		snippet := item.Snippet
+		if !utf8.ValidString(snippet) {
+			ftslog.Println("Invalid UTF-8 snippet string", item.File.Path)
+			return nil, false
+		}
+		if !utf8.ValidString(item.File.Path) {
+			ftslog.Println("Invalid UTF-8 path string", item.File.Path)
+			return nil, false
+		}
+		snippet = RemoveZwsp(snippet)
+		snippet = reSpaces().ReplaceAllString(snippet, " ")
 		return &QueryResult{
 			Path:    item.File.Path,
-			Snippet: item.Snippet,
-		}
+			Snippet: snippet,
+		}, true
 	}), nil
 }
 

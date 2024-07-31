@@ -103,3 +103,41 @@ export const QueryResponse = /*@__PURE__*/ proto3.makeMessageType(
   ],
 );
 
+/**
+ * @generated from message v1.ContentRequest
+ */
+export const ContentRequest = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.ContentRequest",
+  () => [
+    { no: 1, name: "path", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
+);
+
+/**
+ * @generated from message v1.ContentResponse
+ */
+export const ContentResponse = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.ContentResponse",
+  () => [
+    { no: 1, name: "content", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
+);
+
+/**
+ * @generated from message v1.LaunchPathRequest
+ */
+export const LaunchPathRequest = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.LaunchPathRequest",
+  () => [
+    { no: 1, name: "path", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
+);
+
+/**
+ * @generated from message v1.LaunchPathResponse
+ */
+export const LaunchPathResponse = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.LaunchPathResponse",
+  [],
+);
+

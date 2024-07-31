@@ -8,6 +8,8 @@ import (
 	"github.com/knaka/biblioseeq/pbgen/v1/v1connect"
 	weblib "github.com/knaka/biblioseeq/web/lib"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"os"
+	"os/exec"
 	"time"
 
 	. "github.com/knaka/go-utils"
@@ -75,6 +77,25 @@ func (s *MainServiceHandlerImpl) Query(ctx context.Context, req *connect.Request
 			Snippet: result.Snippet,
 		})
 	}
+
+	return
+}
+
+func (s *MainServiceHandlerImpl) Content(ctx context.Context, req *connect.Request[v1.ContentRequest]) (resp *connect.Response[v1.ContentResponse], err error) {
+	resp = newResponseWithMsg(resp)
+
+	content := V(os.ReadFile(req.Msg.Path))
+	resp.Msg.Content = string(content)
+
+	return
+}
+
+// LaunchPath
+func (s *MainServiceHandlerImpl) LaunchPath(ctx context.Context, req *connect.Request[v1.LaunchPathRequest]) (resp *connect.Response[v1.LaunchPathResponse], err error) {
+	resp = newResponseWithMsg(resp)
+
+	cmd := exec.Command("open", req.Msg.Path)
+	V0(cmd.Run())
 
 	return
 }

@@ -1,8 +1,12 @@
 package main
 
+// f2af16d
+
 import (
 	"context"
 	"embed"
+	"github.com/knaka/biblioseeq/conf"
+	"github.com/knaka/biblioseeq/fts"
 	"github.com/knaka/biblioseeq/web"
 	. "github.com/knaka/go-utils"
 	"github.com/wailsapp/wails/v2"
@@ -84,7 +88,24 @@ func openWindowAndWait(host string, port int) (err error) {
 }
 
 func main() {
-	server := V(web.NewServer(context.Background(), "", 0))
+	host := ""
+	port := V(web.GetFreePort())
+	config := V(conf.ReadConfig())
+	ftsOpts := []fts.Option{
+		fts.WithDefaultDBFilePath(),
+		fts.MigratesDB(),
+	}
+	for _, confDir := range config.Directories {
+		ftsOpts = append(ftsOpts, fts.WithTargetDirectory(
+			confDir.Path,
+			confDir.FileExtensions,
+		))
+	}
+	ftsIndexer := fts.NewIndexer(ftsOpts...)
+	go (func() {
+		ftsIndexer.WatchContinuously(context.Background())
+	})()
+	server := V(web.NewServer(host, port, ftsIndexer))
 	go func() { V0(server.ListenAndServe()) }()
 	V0(openWindowAndWait(V2(web.ParseServerAddr(server.Addr))))
 }
