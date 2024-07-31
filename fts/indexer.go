@@ -117,8 +117,9 @@ func (indexer *Indexer) Query(query string) (results []*QueryResult, err error) 
 	rows, err := store.Query(ctx, &sqlcgen.QueryParams{
 		Query: query,
 	})
+	// ToDo: Should return error for syntax error?
 	if err != nil {
-		return
+		return nil, nil
 	}
 	return lo.Map(rows, func(item *sqlcgen.QueryRow, _ int) *QueryResult {
 		return &QueryResult{

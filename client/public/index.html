@@ -26,11 +26,19 @@
     -->
     <title>React App</title>
     <script>
-      addEventListener('load', () => {
-        document.body.addEventListener('contextmenu', (event) => event.preventDefault());
-        addRefreshableEventListener(document.body, 'input', 'contextmenu', (event) => event.stopPropagation());
-      });
+      // For ... WebUI? or Wails2?
+      // addEventListener('load', () => {
+      //   document.body.addEventListener('contextmenu', (event) => event.preventDefault());
+      //   addRefreshableEventListener(document.body, 'input', 'contextmenu', (event) => event.stopPropagation());
+      // });
     </script>
+    <!-- <style>
+      html, body {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+      }
+    </style> -->
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

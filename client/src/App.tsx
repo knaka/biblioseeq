@@ -1,41 +1,122 @@
-import { useEffect, useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+
+import SplitPane, { Pane } from 'split-pane-react';
+import 'split-pane-react/esm/themes/default.css';
+import styled, { css } from 'styled-components';
+
+import { SearchBox } from "./components/SearchBox";
+
 import { client } from "./client";
 
+import './App.css';
+import { QueryResult } from './pbgen/v1/main_pb';
+
+const TopPane = styled(SplitPane)`
+  height: 100%;
+`;
+
+const Sash = styled.div`
+  width: 4px;
+  height: 100%;
+  background-color: lightgrey;
+  &:hover {
+    background-color: grey;
+    color: #fff;
+  };
+`;
+
+const ControlPane = styled(Pane)`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
+const ContentPane = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+`;
+
+const ResultsDiv = styled.div`
+  overflow-y: auto;
+  flex: 1;
+`;
+
+const ResultItem = styled.div<{
+  selected: boolean;
+}>`
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+  ${(props) => props.selected ? css`
+    background-color: #eee;
+  ` : css`
+    background-color: white;
+  `}
+`;
+
 function App() {
-  const [version, setVersion] = useState<string>("");
+  const [imeActive, setImeActive] = useState(false);
+  const [query, setQuery] = useState("");
+  const [queryBuf, setQueryBuf] = useState("");
+  const [sizes, setSizes] = useState([300, 'auto']);
+  const [results, setResults] = useState<QueryResult[]>([]);
+  const [selectedPath, setSelectedPath] = useState("");
+
   useEffect(() => {
     (async () => {
-      const response = await client.getVersionInfo({});
-      if (! response.versionInfo) {
-        console.error("Failed to get version info");
-        return;
-      }
-      setVersion(response.versionInfo.version);
-    })();
-  }, []);
-    
+      console.log("Querying");
+      const resp = await client.query({query: query});
+      setResults(resp.results);
+    })();  
+  }, [query]);
+
+
+  const handleResultClick = (snippet: string) => {
+    setSelectedPath(snippet);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <p>
-          d: {version}
-        </p>
-      </header>
-    </div>
+    <TopPane
+      split='vertical'
+      sizes={sizes}
+      onChange={setSizes}
+      sashRender={() => <Sash />}
+    >
+      <ControlPane minSize={100} maxSize='50%'>
+        { /* <SearchTextInput /> */ }
+        <SearchBox
+          onChange={async (ev: React.ChangeEvent<HTMLInputElement>) => {
+            setQueryBuf(ev.target.value);
+            if (! imeActive) {
+              setQuery(ev.target.value);  
+            }
+          }}
+          onCompositionStart={(ev: React.CompositionEvent<HTMLInputElement>) => {
+            setImeActive(true);
+          }}
+          onCompositionEnd={async (ev: React.CompositionEvent<HTMLInputElement>) => {
+            setImeActive(false);
+            setQuery(queryBuf);
+          }}
+        />
+        <ResultsDiv>
+          {results.map((result, index) => (
+            <ResultItem key={result.path} selected={result.path == selectedPath} onClick={() => setSelectedPath(result.path)}>
+              {result.snippet}
+            </ResultItem>
+          ))}
+        </ResultsDiv>
+      </ControlPane>
+      <ContentPane>
+        <div>
+          <h2>Selected Snippet</h2>
+          <p>{selectedPath}</p>
+        </div>
+      </ContentPane>
+    </TopPane>
   );
 }
 

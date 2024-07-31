@@ -8,6 +8,25 @@ const version = packageJson.version || crypto.randomBytes(4).toString('hex').sub
 const hash = crypto.randomBytes(4).toString('hex').substring(0, 7);
 
 module.exports = {
+    // rules: [
+    //   {
+    //     test: /\.module\.css$/,
+    //     use: [
+    //       'style-loader',
+    //       {
+    //         loader: 'css-loader',
+    //         options: {
+    //           modules: true,
+    //         },
+    //       },
+    //     ],
+    //   },
+    //   {
+    //     test: /\.css$/,
+    //     exclude: /\.module\.css$/,
+    //     use: ['style-loader', 'css-loader'],
+    //   },
+    // ],
     webpack: {
         alias: {
             '@': path.resolve(__dirname, 'src'),

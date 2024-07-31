@@ -114,7 +114,6 @@ func GetWrappedRouter() http.Handler {
 		// “Credentials are cookies, authorization headers, or TLS client certificates.” とのことなので、credential を gRPC の request body にしか乗せないのであれば false でも良いか // Access-Control-Allow-Credentials - HTTP | MDN https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
 		AllowCredentials: true,
 		AllowedOrigins: []string{
-			"*",
 			"http://localhost:3000",
 			"http://localhost:8000",
 		},

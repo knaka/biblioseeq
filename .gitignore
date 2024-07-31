@@ -20,6 +20,6 @@
 # Go workspace file
 go.work
 go.work.sum
-/.idea
+.idea
 test.db
-/.gobin
+.gobin
