@@ -10,7 +10,9 @@ import (
 	"github.com/samber/lo"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"sync"
+	"time"
 	"unicode/utf8"
 
 	. "github.com/knaka/go-utils"
@@ -24,9 +26,9 @@ type Indexer struct {
 
 type Option func(*Indexer)
 
-func WithTargetDirectory(path string, fileExtensions []string) Option {
+func WithTargetDirectory(absPath string, evalPath string, fileExtensions []string) Option {
 	return func(e *Indexer) {
-		e.dirIndexers = append(e.dirIndexers, NewDirIndexer(e.dbConn, path, fileExtensions))
+		e.dirIndexers = append(e.dirIndexers, NewDirIndexer(e.dbConn, absPath, evalPath, fileExtensions))
 	}
 }
 
@@ -76,7 +78,7 @@ func (indexer *Indexer) WatchContinuously(ctx context.Context) {
 			wg.Done()
 		})()
 		dirIndexer.WaitForWatchingStarted(ctx)
-		if false {
+		if true {
 			wg.Add(1)
 			go (func() {
 				dirIndexer.IndexAll()
@@ -97,7 +99,7 @@ func (indexer *Indexer) WaitForInitialScanFinished(ctx context.Context) {
 
 func (indexer *Indexer) getDirectoryIndexer(path string) (directory *DirIndexer) {
 	for _, dir := range indexer.dirIndexers {
-		if _, errSub := filepath.Rel(dir.path, path); errSub == nil {
+		if _, errSub := filepath.Rel(dir.absPath, path); errSub == nil {
 			return dir
 		}
 	}
@@ -116,14 +118,41 @@ func (indexer *Indexer) indexFile(filePath string) {
 var reSpaces = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`\s+`) })
 
 type QueryResult struct {
-	Path    string
-	Snippet string
+	Path       string
+	Title      string
+	Tags       []string
+	DirPath    string
+	Snippet    string
+	ModifiedAt time.Time
 }
 
 func (indexer *Indexer) Query(query string) (results []*QueryResult, err error) {
 	defer Catch(&err)
 	ctx := context.Background()
 	store := sqlcgen.New(indexer.dbConn)
+	if query == "" {
+		rows, err := store.LatestEntries(ctx, &sqlcgen.LatestEntriesParams{})
+		if err != nil {
+			return nil, nil
+		}
+		dirPath := ""
+		for _, dirIndexer := range indexer.dirIndexers {
+			if _, errSub := filepath.Rel(dirIndexer.absPath, rows[0].Path); errSub == nil {
+				dirPath = dirIndexer.absPath
+				break
+			}
+		}
+		return lo.FilterMap(rows, func(item *sqlcgen.File, _ int) (result *QueryResult, ok bool) {
+			return &QueryResult{
+				Path:       item.Path,
+				Title:      item.Title,
+				Tags:       strings.Split(item.Tags, ","),
+				DirPath:    dirPath,
+				Snippet:    "",
+				ModifiedAt: item.ModifiedAt,
+			}, true
+		}), nil
+	}
 	rows, err := store.Query(ctx, &sqlcgen.QueryParams{
 		Query: query,
 	})
@@ -143,9 +172,20 @@ func (indexer *Indexer) Query(query string) (results []*QueryResult, err error) 
 		}
 		snippet = RemoveZwsp(snippet)
 		snippet = reSpaces().ReplaceAllString(snippet, " ")
+		dirPath := ""
+		for _, dirIndexer := range indexer.dirIndexers {
+			if _, errSub := filepath.Rel(dirIndexer.absPath, item.File.Path); errSub == nil {
+				dirPath = dirIndexer.absPath
+				break
+			}
+		}
 		return &QueryResult{
-			Path:    item.File.Path,
-			Snippet: snippet,
+			Path:       item.File.Path,
+			Title:      item.File.Title,
+			Tags:       strings.Split(item.File.Tags, ","),
+			DirPath:    dirPath,
+			Snippet:    snippet,
+			ModifiedAt: item.File.ModifiedAt,
 		}, true
 	}), nil
 }

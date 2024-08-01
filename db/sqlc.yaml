@@ -14,3 +14,5 @@ sql:
         emit_result_struct_pointers: true
         emit_params_struct_pointers: true
         query_parameter_limit: 0
+        overrides:
+          - {db_type: "text", go_type: {type: "*string"}, nullable: true}

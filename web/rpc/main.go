@@ -73,8 +73,12 @@ func (s *MainServiceHandlerImpl) Query(ctx context.Context, req *connect.Request
 	results := V(ctxValue.FtsIndexer.Query(query))
 	for _, result := range results {
 		resp.Msg.Results = append(resp.Msg.Results, &v1.QueryResult{
-			Path:    result.Path,
-			Snippet: result.Snippet,
+			Path:       result.Path,
+			Title:      result.Title,
+			Tags:       result.Tags,
+			DirPath:    result.DirPath,
+			Snippet:    result.Snippet,
+			ModifiedAt: timestamppb.New(result.ModifiedAt),
 		})
 	}
 

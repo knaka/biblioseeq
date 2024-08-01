@@ -36,7 +36,8 @@ func main() {
 	}
 	for _, confDir := range config.Directories {
 		ftsOpts = append(ftsOpts, fts.WithTargetDirectory(
-			confDir.Path,
+			confDir.AbsPath,
+			confDir.EvalPath,
 			confDir.FileExtensions,
 		))
 	}

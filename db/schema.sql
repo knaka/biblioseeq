@@ -11,6 +11,8 @@ CREATE VIRTUAL TABLE fts_files USING fts5(
 
 CREATE TABLE files(
   path text PRIMARY KEY,
+  title text NOT NULL DEFAULT '',
+  tags text NOT NULL DEFAULT ',',
   -- sqlite3def does not support foreign key constraints to virtual tables.
   fts_file_id integer NOT NULL, -- REFERENCES fts_files(rowid),
   modified_at datetime NOT NULL,

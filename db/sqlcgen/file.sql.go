@@ -13,6 +13,8 @@ import (
 const addFile = `-- name: AddFile :execlastid
 INSERT INTO files (
   path,
+  title,
+  tags,
   fts_file_id,
   modified_at,
   size,
@@ -23,12 +25,16 @@ VALUES (
   ?2,
   ?3,
   ?4,
+  ?5,
+  ?6,
   current_timestamp
 )
 `
 
 type AddFileParams struct {
 	Path       string
+	Title      string
+	Tags       string
 	FtsFileID  int64
 	ModifiedAt time.Time
 	Size       int64
@@ -37,6 +43,8 @@ type AddFileParams struct {
 func (q *Queries) AddFile(ctx context.Context, arg *AddFileParams) (int64, error) {
 	result, err := q.db.ExecContext(ctx, addFile,
 		arg.Path,
+		arg.Title,
+		arg.Tags,
 		arg.FtsFileID,
 		arg.ModifiedAt,
 		arg.Size,
@@ -68,17 +76,22 @@ const deleteFiles = `-- name: DeleteFiles :exec
 
 DELETE FROM files
 WHERE
-  path = ?1 or
-  path LIKE ?1 || '/%' or
-  path LIKE ?1 || '\%'
+  CASE WHEN CAST(?1 AS text) IS NOT NULL THEN path = ?1 ELSE false END OR
+  CASE WHEN CAST(?2 AS text) IS NOT NULL THEN
+    path LIKE ?2 || '/%' or
+    path LIKE ?2 || '\%'
+  ELSE
+    false
+  END
 `
 
 type DeleteFilesParams struct {
-	Path string
+	OptPath       *string
+	OptPathPrefix *string
 }
 
 func (q *Queries) DeleteFiles(ctx context.Context, arg *DeleteFilesParams) error {
-	_, err := q.db.ExecContext(ctx, deleteFiles, arg.Path)
+	_, err := q.db.ExecContext(ctx, deleteFiles, arg.OptPath, arg.OptPathPrefix)
 	return err
 }
 
@@ -91,25 +104,30 @@ WHERE rowid IN (
   SELECT fts_file_id
   FROM files
   WHERE
-    path = ?1 or
-    path LIKE ?1 || '/%' or
-    path LIKE ?1 || '\%'
+    CASE WHEN CAST(?1 AS text) IS NOT NULL THEN path = ?1 ELSE false END OR
+    CASE WHEN CAST(?2 AS text) IS NOT NULL THEN
+      path LIKE ?2 || '/%' or
+      path LIKE ?2 || '\%'
+    ELSE
+      false
+    END
 )
 `
 
 type DeleteFtsFilesParams struct {
-	Path string
+	OptPath       *string
+	OptPathPrefix *string
 }
 
 func (q *Queries) DeleteFtsFiles(ctx context.Context, arg *DeleteFtsFilesParams) error {
-	_, err := q.db.ExecContext(ctx, deleteFtsFiles, arg.Path)
+	_, err := q.db.ExecContext(ctx, deleteFtsFiles, arg.OptPath, arg.OptPathPrefix)
 	return err
 }
 
 const getFile = `-- name: GetFile :one
 ;
 
-SELECT path, fts_file_id, modified_at, size, updated_at FROM files WHERE path = ?1 LIMIT 1
+SELECT path, title, tags, fts_file_id, modified_at, size, updated_at FROM files WHERE path = ?1 LIMIT 1
 `
 
 type GetFileParams struct {
@@ -121,6 +139,8 @@ func (q *Queries) GetFile(ctx context.Context, arg *GetFileParams) (*File, error
 	var i File
 	err := row.Scan(
 		&i.Path,
+		&i.Title,
+		&i.Tags,
 		&i.FtsFileID,
 		&i.ModifiedAt,
 		&i.Size,
@@ -130,7 +150,7 @@ func (q *Queries) GetFile(ctx context.Context, arg *GetFileParams) (*File, error
 }
 
 const getFileWithBody = `-- name: GetFileWithBody :one
-SELECT files.path, files.fts_file_id, files.modified_at, files.size, files.updated_at, fts_files.body
+SELECT files.path, files.title, files.tags, files.fts_file_id, files.modified_at, files.size, files.updated_at, fts_files.body
 FROM
   files INNER JOIN
   fts_files ON files.fts_file_id = fts_files.rowid
@@ -153,6 +173,8 @@ func (q *Queries) GetFileWithBody(ctx context.Context, arg *GetFileWithBodyParam
 	var i GetFileWithBodyRow
 	err := row.Scan(
 		&i.File.Path,
+		&i.File.Title,
+		&i.File.Tags,
 		&i.File.FtsFileID,
 		&i.File.ModifiedAt,
 		&i.File.Size,
@@ -163,7 +185,7 @@ func (q *Queries) GetFileWithBody(ctx context.Context, arg *GetFileWithBodyParam
 }
 
 const getFiles = `-- name: GetFiles :many
-SELECT path, fts_file_id, modified_at, size, updated_at FROM files
+SELECT path, title, tags, fts_file_id, modified_at, size, updated_at FROM files
 `
 
 func (q *Queries) GetFiles(ctx context.Context) ([]*File, error) {
@@ -177,6 +199,52 @@ func (q *Queries) GetFiles(ctx context.Context) ([]*File, error) {
 		var i File
 		if err := rows.Scan(
 			&i.Path,
+			&i.Title,
+			&i.Tags,
+			&i.FtsFileID,
+			&i.ModifiedAt,
+			&i.Size,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const latestEntries = `-- name: LatestEntries :many
+;
+
+SELECT path, title, tags, fts_file_id, modified_at, size, updated_at
+FROM files
+ORDER BY files.modified_at DESC
+LIMIT CASE WHEN CAST(?1 AS integer) > 0 THEN ?1 ELSE 50 END
+`
+
+type LatestEntriesParams struct {
+	Limit int64
+}
+
+func (q *Queries) LatestEntries(ctx context.Context, arg *LatestEntriesParams) ([]*File, error) {
+	rows, err := q.db.QueryContext(ctx, latestEntries, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []*File
+	for rows.Next() {
+		var i File
+		if err := rows.Scan(
+			&i.Path,
+			&i.Title,
+			&i.Tags,
 			&i.FtsFileID,
 			&i.ModifiedAt,
 			&i.Size,
@@ -198,19 +266,19 @@ func (q *Queries) GetFiles(ctx context.Context) ([]*File, error) {
 const query = `-- name: Query :many
 ;
 
-SELECT files.path, files.fts_file_id, files.modified_at, files.size, files.updated_at, snippet(fts_files, 0, '<b>', '</b>', '...', 30) as snippet
+SELECT files.path, files.title, files.tags, files.fts_file_id, files.modified_at, files.size, files.updated_at, snippet(fts_files, 0, '<b>', '</b>', '...', 30) as snippet
 FROM
   files INNER JOIN
   fts_files ON files.fts_file_id = fts_files.rowid
 WHERE
   fts_files.body MATCH ?1
 ORDER BY rank
-LIMIT CASE WHEN ?2 > 0 THEN ?2 ELSE 50 END
+LIMIT CASE WHEN CAST(?2 AS integer) > 0 THEN ?2 ELSE 50 END
 `
 
 type QueryParams struct {
 	Query string
-	Limit interface{}
+	Limit int64
 }
 
 type QueryRow struct {
@@ -229,6 +297,8 @@ func (q *Queries) Query(ctx context.Context, arg *QueryParams) ([]*QueryRow, err
 		var i QueryRow
 		if err := rows.Scan(
 			&i.File.Path,
+			&i.File.Title,
+			&i.File.Tags,
 			&i.File.FtsFileID,
 			&i.File.ModifiedAt,
 			&i.File.Size,
@@ -253,21 +323,31 @@ const updateFile = `-- name: UpdateFile :exec
 
 UPDATE files
 SET
-  modified_at = ?1,
-  size = ?2,
+  title = ?1,
+  tags = ?2,
+  modified_at = ?3,
+  size = ?4,
   updated_at = current_timestamp
 WHERE
-  path = ?3
+  path = ?5
 `
 
 type UpdateFileParams struct {
+	Title      string
+	Tags       string
 	ModifiedAt time.Time
 	Size       int64
 	Path       string
 }
 
 func (q *Queries) UpdateFile(ctx context.Context, arg *UpdateFileParams) error {
-	_, err := q.db.ExecContext(ctx, updateFile, arg.ModifiedAt, arg.Size, arg.Path)
+	_, err := q.db.ExecContext(ctx, updateFile,
+		arg.Title,
+		arg.Tags,
+		arg.ModifiedAt,
+		arg.Size,
+		arg.Path,
+	)
 	return err
 }
 

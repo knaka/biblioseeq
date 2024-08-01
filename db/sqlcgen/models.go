@@ -10,6 +10,8 @@ import (
 
 type File struct {
 	Path       string
+	Title      string
+	Tags       string
 	FtsFileID  int64
 	ModifiedAt time.Time
 	Size       int64

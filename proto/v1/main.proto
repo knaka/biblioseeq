@@ -37,7 +37,10 @@ message QueryResult {
   int64 id = 1;
   string path = 2;
   string snippet = 3;
-
+  google.protobuf.Timestamp modified_at = 4;
+  string dir_path = 5;
+  string title = 6;
+  repeated string tags = 7;
 }
 
 message QueryResponse {

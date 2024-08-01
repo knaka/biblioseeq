@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, ComponentProps, useEffect, useState } from 'react';
 
-import SplitPane, { Pane } from 'split-pane-react';
+import SplitPane_, { Pane as Pane_ } from 'split-pane-react';
 import 'split-pane-react/esm/themes/default.css';
 import styled, { css } from 'styled-components';
 
 import { SearchBox } from "./components/SearchBox";
+import { Results, Result } from "./components/Results";
 
 import { client } from "./client";
 
 import './App.css';
 import { QueryResult } from './pbgen/v1/main_pb';
 
-const TopPane = styled(SplitPane)`
+const SplitPane = styled(SplitPane_)`
   height: 100%;
   font-size: 16px; /* default */
   background-color: white;
 `;
 
-const Sash = styled.div`
+const SplitSash_ = styled.div`
   width: 4px;
   height: 100%;
   background-color: lightgrey;
@@ -27,13 +28,17 @@ const Sash = styled.div`
   };
 `;
 
-const ControlPane = styled(Pane)`
+const SplitSash: FC<ComponentProps<typeof SplitSash_> & { foo?: string }> = ({ foo, ...props }) => {
+  return <SplitSash_ {...props} />;
+}
+
+const Pane = styled(Pane_)`
   display: flex;
   flex-direction: column;
   height: 100%;
 `;
 
-const ContentPane = styled.div`
+const ContentPane_ = styled.div`
   font-size: 14px;
   overflow-y: auto;
   display: flex;
@@ -43,26 +48,15 @@ const ContentPane = styled.div`
   box-sizing: border-box;
 `;
 
-const ResultsDiv = styled.div`
-  overflow-y: auto;
-  flex: 1;
-`;
+const ContentPane = (props: ComponentProps<typeof ContentPane_>) =>
+  <ContentPane_>
+    {props.children}
+  </ContentPane_>
+;
 
-const ResultItem = styled.div<{
-  selected: boolean;
-}>`
-  font-size: 12px;
-  padding: 6px;
-  border-bottom: 1px solid grey;
-  cursor: pointer;
-  ${(props) => props.selected ? css`
-    background-color: lightgrey;
-  ` : css`
-    background-color: white;
-  `}
-`;
+  //   {/* <ResultInfo>{result.modifiedAt ? result.modifiedAt.toDate().toLocaleDateString("ja-JP", {year: "numeric",month: "2-digit", day: "2-digit"}).replaceAll('/', '-') :  ""} {"..." + result.path.substring(result.path.length - 30)}</ResultInfo> */}
 
-const MyPre = styled.pre`
+const MyPre = styled.div`
   margin: 0;
   font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
   white-space: pre-wrap;
@@ -72,7 +66,21 @@ async function launchPath(path: string) {
   await client.launchPath({path: path});
 }
 
-function App() {
+function linkify(inputText: string): string {
+  var replacedText, replacePattern1
+
+  //URLs starting with http://, https://, or ftp://
+  replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+.\/&@#%?=~_|!:,;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+  replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
+
+  return replacedText;
+}
+
+const escapeHtml = (unsafe: string): string => {
+  return unsafe.replaceAll('&', '<wbr>&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '<wbr>&quot;').replaceAll("'", '<wbr>&#039;');
+}
+
+export default () => {
   const [imeActive, setImeActive] = useState(false);
   const [query, setQuery] = useState("");
   const [queryBuf, setQueryBuf] = useState("");
@@ -105,54 +113,47 @@ function App() {
       if (!resp) {
         return;
       }
-      setBody(resp.content);
+      const body = escapeHtml(resp.content)
+      setBody(linkify(body));
     })();
   }, [selectedPath]);
 
-  const handleResultClick = (snippet: string) => {
-    setSelectedPath(snippet);
-  };
-
-  return (
-    <TopPane
-      split='vertical'
-      sizes={sizes}
-      onChange={setSizes}
-      sashRender={() => <Sash />}
-    >
-      <ControlPane minSize={100} maxSize='50%'>
-        { /* <SearchTextInput /> */ }
-        <SearchBox
-          onChange={async (ev: React.ChangeEvent<HTMLInputElement>) => {
-            setQueryBuf(ev.target.value);
-            if (! imeActive) {
-              setQuery(ev.target.value);  
-            }
-          }}
-          onCompositionStart={(ev: React.CompositionEvent<HTMLInputElement>) => {
-            setImeActive(true);
-          }}
-          onCompositionEnd={async (ev: React.CompositionEvent<HTMLInputElement>) => {
-            setImeActive(false);
-            setQuery(queryBuf);
-          }}
-        />
-        <ResultsDiv>
-          {results.map((result, index) => (
-            <ResultItem key={result.path} selected={result.path == selectedPath}
-              onClick={() => setSelectedPath(result.path)}
-              onDoubleClick={() => launchPath(result.path)}
-            >
-              <div dangerouslySetInnerHTML={{ __html: result.snippet }} />
-            </ResultItem>
-          ))}
-        </ResultsDiv>
-      </ControlPane>
-      <ContentPane>
-        <MyPre>{body}</MyPre>
-      </ContentPane>
-    </TopPane>
-  );
+  return <SplitPane
+    split='vertical'
+    sizes={sizes}
+    onChange={setSizes}
+    sashRender={() => <SplitSash onClick={() => null} />}
+  >
+    <Pane minSize={100} maxSize='50%'>
+      <SearchBox
+        onChange={async (ev: React.ChangeEvent<HTMLInputElement>) => {
+          setQueryBuf(ev.target.value);
+          if (! imeActive) {
+            setQuery(ev.target.value);  
+          }
+        }}
+        onCompositionStart={(ev: React.CompositionEvent<HTMLInputElement>) => {
+          setImeActive(true);
+        }}
+        onCompositionEnd={async (ev: React.CompositionEvent<HTMLInputElement>) => {
+          setImeActive(false);
+          setQuery(queryBuf);
+        }}
+      />
+      <Results>
+        {results.map((result, index) =>
+          <Result 
+            key={result.path} 
+            selected={result.path == selectedPath}
+            onClick={() => setSelectedPath(result.path)}
+            onDoubleClick={() => launchPath(result.path)}
+            result={result}
+          />
+        )}
+      </Results>
+    </Pane>
+    <ContentPane>
+      <MyPre dangerouslySetInnerHTML={{ __html: body }}></MyPre>
+    </ContentPane>
+  </SplitPane>
 }
-
-export default App;

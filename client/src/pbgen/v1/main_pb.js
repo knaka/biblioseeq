@@ -90,6 +90,10 @@ export const QueryResult = /*@__PURE__*/ proto3.makeMessageType(
     { no: 1, name: "id", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
     { no: 2, name: "path", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "snippet", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "modified_at", kind: "message", T: Timestamp },
+    { no: 5, name: "dir_path", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 7, name: "tags", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
   ],
 );
 

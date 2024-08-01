@@ -8,5 +8,5 @@ import (
 )
 
 func GetDefaultDBFilePath() (string, error) {
-	return filepath.Join(V(os.UserCacheDir()), fmt.Sprintf("%s.sqlite3"), appName), nil
+	return filepath.Join(V(os.UserCacheDir()), fmt.Sprintf("%s.sqlite3", appName)), nil
 }

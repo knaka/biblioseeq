@@ -204,6 +204,26 @@ export declare class QueryResult extends Message<QueryResult> {
    */
   snippet: string;
 
+  /**
+   * @generated from field: google.protobuf.Timestamp modified_at = 4;
+   */
+  modifiedAt?: Timestamp;
+
+  /**
+   * @generated from field: string dir_path = 5;
+   */
+  dirPath: string;
+
+  /**
+   * @generated from field: string title = 6;
+   */
+  title: string;
+
+  /**
+   * @generated from field: repeated string tags = 7;
+   */
+  tags: string[];
+
   constructor(data?: PartialMessage<QueryResult>);
 
   static readonly runtime: typeof proto3;

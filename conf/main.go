@@ -19,7 +19,9 @@ func getConfigFilePath() (string, error) {
 }
 
 type Directory struct {
-	Path           string   `toml:"path"`
+	Path           string `toml:"path"`
+	AbsPath        string
+	EvalPath       string
 	FileExtensions []string `toml:"file_extensions"`
 }
 
@@ -28,6 +30,8 @@ type Config struct {
 }
 
 var reHomeVariable = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`\$HOME\b`) })
+
+var reTrailingSlashes = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`[/\\]+$`) })
 
 //go:embed config-default.toml
 var defaultConfigToml []byte
@@ -48,11 +52,9 @@ func ReadConfig() (config *Config, err error) {
 	V0(toml.Unmarshal(configToml, config))
 	homeDir := V(os.UserHomeDir())
 	config.Directories = lo.Map(config.Directories, func(dir *Directory, index int) *Directory {
-		dir.Path = V(filepath.EvalSymlinks(
-			V(filepath.Abs(
-				reHomeVariable().ReplaceAllString(dir.Path, homeDir),
-			)),
-		))
+		dir.Path = reHomeVariable().ReplaceAllString(reTrailingSlashes().ReplaceAllString(dir.Path, ""), homeDir)
+		dir.AbsPath = V(filepath.Abs(dir.Path))
+		dir.EvalPath = V(filepath.EvalSymlinks(dir.AbsPath))
 		dir.FileExtensions = lo.Map(dir.FileExtensions, func(ext string, index int) string {
 			// Todo: Use sync value.
 			ext = regexp.MustCompile(`^\*\.`).ReplaceAllString(ext, ".")
