@@ -1,6 +1,6 @@
 //go:build !darwin
 
-package conf
+package config
 
 import "os"
 

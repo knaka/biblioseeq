@@ -3,7 +3,7 @@ package search
 import (
 	"context"
 	"fmt"
-	"github.com/knaka/biblioseeq/conf"
+	"github.com/knaka/biblioseeq/config"
 	"github.com/knaka/biblioseeq/db"
 	"github.com/knaka/biblioseeq/log"
 	"github.com/knaka/biblioseeq/search/internal"
@@ -45,7 +45,7 @@ func NewEngine(opts ...Option) (se *Engine) {
 		db.Migrate(dbFilePath)
 	}
 	se.idxMgr = internal.NewIdxMgr(dbFilePath)
-	conf_ := V(conf.Read(se.confFilePath))
+	conf_ := V(config.Read(se.confFilePath))
 	for _, confDir := range conf_.Directories {
 		se.dirWatchers = append(se.dirWatchers, internal.NewDirWatcher(
 			confDir.Path,
