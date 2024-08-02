@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/knaka/biblioseeq"
-	"github.com/knaka/biblioseeq/fts"
 	"github.com/knaka/biblioseeq/pbgen/v1/v1connect"
+	"github.com/knaka/biblioseeq/search"
 	weblib "github.com/knaka/biblioseeq/web/lib"
 	"github.com/knaka/biblioseeq/web/rpc"
 	"github.com/rs/cors"
@@ -60,7 +60,7 @@ func ParseServerAddr(addr string) (host string, port int, err error) {
 func NewServer(
 	host string,
 	port int,
-	se *fts.SearchEngine,
+	searchEngine *search.Engine,
 ) (
 	server *http.Server,
 	err error,
@@ -71,7 +71,7 @@ func NewServer(
 	}
 	addr := fmt.Sprintf("%s:%d", host, port)
 	ctxNew := context.WithValue(context.Background(), weblib.CtxKey{}, &weblib.CtxValue{
-		SearchEngine: se,
+		SearchEngine: searchEngine,
 	})
 	V0(weblib.GetCtxValue(ctxNew))
 	server = &http.Server{

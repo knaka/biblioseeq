@@ -17,13 +17,13 @@ func getConfigFilePath() (string, error) {
 	return filepath.Join(V(userConfigDir()), "biblioseeq.toml"), nil
 }
 
-type Directory struct {
+type directory struct {
 	Path           string   `toml:"path"`
 	FileExtensions []string `toml:"file_extensions"`
 }
 
-type Config struct {
-	Directories []*Directory `toml:"directories"`
+type data struct {
+	Directories []*directory `toml:"directories"`
 }
 
 //go:embed config-default.toml
@@ -33,7 +33,8 @@ var reHomeVariable = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCo
 var reTrailingSlashes = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`[/\\]+$`) })
 var reExtWildcard = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`^\*\.`) })
 
-func ReadConfig(configFilePath string) (config *Config, err error) {
+//goland:noinspection GoExportedFuncWithUnexportedType
+func Read(configFilePath string) (dat *data, err error) {
 	if configFilePath == "" {
 		configFilePath = V(getConfigFilePath())
 	}
@@ -47,10 +48,10 @@ func ReadConfig(configFilePath string) (config *Config, err error) {
 		}()
 	}
 	configToml := V(os.ReadFile(configFilePath))
-	config = &Config{}
-	V0(toml.Unmarshal(configToml, config))
+	dat = &data{}
+	V0(toml.Unmarshal(configToml, dat))
 	homeDir := V(os.UserHomeDir())
-	config.Directories = lo.Map(config.Directories, func(dir *Directory, index int) *Directory {
+	dat.Directories = lo.Map(dat.Directories, func(dir *directory, index int) *directory {
 		dir.Path = filepath.Clean(V(filepath.EvalSymlinks(
 			V(filepath.Abs(
 				reHomeVariable().ReplaceAllString(

@@ -3,14 +3,14 @@ package lib
 import (
 	"context"
 	"fmt"
-	"github.com/knaka/biblioseeq/fts"
+	"github.com/knaka/biblioseeq/search"
 	"github.com/knaka/go-utils"
 )
 
 type CtxKey struct{}
 
 type CtxValue struct {
-	SearchEngine *fts.SearchEngine
+	SearchEngine *search.Engine
 }
 
 func GetCtxValue(ctx context.Context) (ctxValue *CtxValue, err error) {

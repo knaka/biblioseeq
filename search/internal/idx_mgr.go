@@ -1,10 +1,11 @@
-package fts
+package internal
 
 import (
 	"context"
 	"database/sql"
 	"github.com/knaka/biblioseeq/db/sqlcgen"
 	"github.com/knaka/biblioseeq/log"
+	"github.com/knaka/biblioseeq/tokenizer"
 	"github.com/rjeczalik/notify"
 	"github.com/samber/lo"
 	"io/fs"
@@ -31,13 +32,13 @@ type IdxMgr struct {
 	mu              sync.Mutex
 }
 
-func (im *IdxMgr) addTarget(absPath string, fileExtensions []string) {
+func (im *IdxMgr) AddTarget(absPath string, fileExtensions []string) {
 	im.targetDirs = append(im.targetDirs,
 		&idxTargetDir{path: absPath, fileExtensions: fileExtensions},
 	)
 }
 
-func newIdxMgr(dbFilePath string) (im *IdxMgr) {
+func NewIdxMgr(dbFilePath string) (im *IdxMgr) {
 	return &IdxMgr{
 		dbConn: V(sql.Open("sqlite3", dbFilePath)),
 	}
@@ -78,7 +79,7 @@ func (im *IdxMgr) indexExistingFile(pathFile string) {
 	}
 }
 
-func (im *IdxMgr) onNotifyEvent(eventInfo notify.EventInfo) {
+func (im *IdxMgr) OnNotifyEvent(eventInfo notify.EventInfo) {
 	im.mu.Lock()
 	defer im.mu.Unlock()
 	event := eventInfo.Event()
@@ -147,7 +148,7 @@ func (im *IdxMgr) addCache(path string, stat os.FileInfo) {
 	}
 	body := string(bodyBytes)
 	title, tags := extractTitleAndTags(path, &body)
-	bodyTokenized := tokenizeJapanese(body)
+	bodyTokenized := tokenizer.SeparateJapaneseWithZWSP(body)
 	log.Println("Adding index for file:", path)
 	idFtsFile := V(store.AddFtsFile(context.Background(), &sqlcgen.AddFtsFileParams{
 		Body: bodyTokenized,
@@ -174,7 +175,7 @@ func (im *IdxMgr) updateCacheIfModified(file *sqlcgen.File, stat os.FileInfo) {
 	log.Println("Updating index for file:", file.Path)
 	body := string(V(os.ReadFile(file.Path)))
 	title, tags := extractTitleAndTags(file.Path, &body)
-	bodyTokenized := tokenizeJapanese(body)
+	bodyTokenized := tokenizer.SeparateJapaneseWithZWSP(body)
 	V0(store.UpdateFtsFile(ctx, &sqlcgen.UpdateFtsFileParams{
 		Path: file.Path,
 		Body: bodyTokenized,
@@ -189,8 +190,8 @@ func (im *IdxMgr) updateCacheIfModified(file *sqlcgen.File, stat os.FileInfo) {
 	store.commit()
 }
 
-// synchronizeIndexesToFiles removes indexes for files that do not exist and updates indexes for files that exist. This make consistency between the file system and the database.
-func (im *IdxMgr) synchronizeIndexesToFiles() {
+// SynchronizeIndexesToFiles removes indexes for files that do not exist and updates indexes for files that exist. This make consistency between the file system and the database.
+func (im *IdxMgr) SynchronizeIndexesToFiles() {
 	ctx := context.Background()
 	store := sqlcgen.New(im.dbConn)
 	chFileIndex := make(chan *sqlcgen.File)
@@ -347,7 +348,7 @@ func (im *IdxMgr) Query(query string) (results []*QueryResult, err error) {
 			log.Println("Invalid UTF-8 path string", item.File.Path)
 			return nil, false
 		}
-		snippet = RemoveZwsp(snippet)
+		snippet = tokenizer.RemoveZWSP(snippet)
 		snippet = reSpaces().ReplaceAllString(snippet, " ")
 		dirPath := ""
 		for _, dir := range im.targetDirs {

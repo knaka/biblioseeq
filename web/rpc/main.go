@@ -3,9 +3,9 @@ package rpc
 import (
 	"context"
 	"github.com/bufbuild/connect-go"
-	"github.com/knaka/biblioseeq/fts"
-	v1 "github.com/knaka/biblioseeq/pbgen/v1"
+	"github.com/knaka/biblioseeq/pbgen/v1"
 	"github.com/knaka/biblioseeq/pbgen/v1/v1connect"
+	"github.com/knaka/biblioseeq/tokenizer"
 	weblib "github.com/knaka/biblioseeq/web/lib"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
@@ -69,7 +69,7 @@ func (s *MainServiceHandlerImpl) Query(ctx context.Context, req *connect.Request
 	ctxValue := V(weblib.GetCtxValue(ctx))
 
 	queryRaw := req.Msg.Query
-	query := fts.SeparateJapanese(queryRaw)
+	query := tokenizer.SeparateJapanese(queryRaw)
 	results := V(ctxValue.SearchEngine.Query(query))
 	for _, result := range results {
 		resp.Msg.Results = append(resp.Msg.Results, &v1.QueryResult{

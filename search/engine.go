@@ -1,4 +1,4 @@
-package fts
+package search
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"github.com/knaka/biblioseeq/conf"
 	"github.com/knaka/biblioseeq/db"
 	"github.com/knaka/biblioseeq/log"
+	"github.com/knaka/biblioseeq/search/internal"
 	"os"
 	"path/filepath"
 	"sync"
@@ -13,25 +14,24 @@ import (
 	. "github.com/knaka/go-utils"
 )
 
-type SearchEngine struct {
+type Engine struct {
 	confFilePath    string
-	idxMgr          *IdxMgr
-	dirWatchers     []*DirWatcher
+	idxMgr          *internal.IdxMgr
+	dirWatchers     []*internal.DirWatcher
 	shouldMigrateDB bool
 	chSynchronized  chan any
 }
 
-type Option func(*SearchEngine)
+type Option func(*Engine)
 
-//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func ShouldMigratesDB(f bool) Option {
-	return func(se *SearchEngine) {
+	return func(se *Engine) {
 		se.shouldMigrateDB = f
 	}
 }
 
-func NewSearchEngine(opts ...Option) (se *SearchEngine) {
-	se = &SearchEngine{
+func NewEngine(opts ...Option) (se *Engine) {
+	se = &Engine{
 		chSynchronized: make(chan any, 2),
 	}
 	for _, opt := range opts {
@@ -44,19 +44,19 @@ func NewSearchEngine(opts ...Option) (se *SearchEngine) {
 	if se.shouldMigrateDB {
 		db.Migrate(dbFilePath)
 	}
-	se.idxMgr = newIdxMgr(dbFilePath)
-	confFile := V(conf.ReadConfig(se.confFilePath))
-	for _, confDir := range confFile.Directories {
-		se.dirWatchers = append(se.dirWatchers, newDirWatcher(
+	se.idxMgr = internal.NewIdxMgr(dbFilePath)
+	conf_ := V(conf.Read(se.confFilePath))
+	for _, confDir := range conf_.Directories {
+		se.dirWatchers = append(se.dirWatchers, internal.NewDirWatcher(
 			confDir.Path,
-			se.idxMgr.onNotifyEvent,
+			se.idxMgr.OnNotifyEvent,
 		))
-		se.idxMgr.addTarget(confDir.Path, confDir.FileExtensions)
+		se.idxMgr.AddTarget(confDir.Path, confDir.FileExtensions)
 	}
 	return
 }
 
-func (se *SearchEngine) Serve(ctx context.Context) {
+func (se *Engine) Serve(ctx context.Context) {
 	wg := sync.WaitGroup{}
 	for _, dirWatcher := range se.dirWatchers {
 		wg.Add(1)
@@ -64,26 +64,26 @@ func (se *SearchEngine) Serve(ctx context.Context) {
 			dirWatcher.WatchContinuously(ctx)
 			wg.Done()
 		})()
-		dirWatcher.waitForWatchingStarted(ctx)
-		log.Println("Started watching for directory", dirWatcher.dirPath)
+		dirWatcher.WaitForWatchingStarted(ctx)
+		log.Println("Started watching for directory", dirWatcher.DirPath())
 	}
-	se.idxMgr.synchronizeIndexesToFiles()
+	se.idxMgr.SynchronizeIndexesToFiles()
 	se.chSynchronized <- "yes"
 	log.Println("Finished initial file index update")
 	wg.Wait()
 }
 
-func (se *SearchEngine) Query(query string) ([]*QueryResult, error) {
+func (se *Engine) Query(query string) ([]*internal.QueryResult, error) {
 	return se.idxMgr.Query(query)
 }
 
 // InitialScanFinished returns true if all directories have been scanned at least once.
-func (se *SearchEngine) InitialScanFinished() bool {
+func (se *Engine) InitialScanFinished() bool {
 	return len(se.chSynchronized) > 0
 }
 
 // WaitForInitialScanFinished blocks until all directories have been scanned at least once.
-func (se *SearchEngine) WaitForInitialScanFinished(ctx context.Context) {
+func (se *Engine) WaitForInitialScanFinished(ctx context.Context) {
 	select {
 	case <-ctx.Done():
 	case <-se.chSynchronized:

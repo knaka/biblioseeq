@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"github.com/chzyer/readline"
 	"github.com/knaka/biblioseeq/conf"
-	"github.com/knaka/biblioseeq/fts"
 	"github.com/knaka/biblioseeq/log"
+	"github.com/knaka/biblioseeq/search"
+	"github.com/knaka/biblioseeq/search/internal/tokenizer"
 	_ "github.com/mattn/go-sqlite3"
 	"io"
 	"os"
@@ -22,19 +23,19 @@ func main() {
 	flag.Parse()
 	log.SetOutput(Ternary[io.Writer](*verbose, os.Stderr, io.Discard))
 
-	config := V(conf.ReadConfig())
+	config := V(conf.Read())
 
-	ftsOpts := []fts.Option{
-		fts.WithDefaultDBFilePath(),
-		fts.MigratesDB(),
+	ftsOpts := []search.Option{
+		search.WithDefaultDBFilePath(),
+		search.MigratesDB(),
 	}
 	for _, confDir := range config.Directories {
-		ftsOpts = append(ftsOpts, fts.WithTargetDirectory(
+		ftsOpts = append(ftsOpts, search.WithTargetDirectory(
 			confDir.AbsPath,
 			confDir.FileExtensions,
 		))
 	}
-	ftsIndexer := fts.NewIndexer(ftsOpts...)
+	ftsIndexer := search.NewIndexer(ftsOpts...)
 
 	log.Println("Starting indexer.")
 	go ftsIndexer.WatchDirsContinuously()
@@ -57,7 +58,7 @@ func main() {
 		if *line == "" {
 			continue
 		}
-		query := fts.SeparateJapanese(*line)
+		query := tokenizer.SeparateJapanese(*line)
 		log.Println("query:", query)
 		results, err := ftsIndexer.Query(query)
 		if err != nil {
@@ -69,7 +70,7 @@ func main() {
 			snippet := result.Snippet
 			snippet = strings.ReplaceAll(snippet, "\r", "")
 			snippet = strings.ReplaceAll(snippet, "\n", " ")
-			snippet = fts.RemoveZwsp(snippet)
+			snippet = tokenizer.RemoveZwsp(snippet)
 			V0(os.Stdout.WriteString(fmt.Sprintln(result.Path, snippet)))
 		}
 	}

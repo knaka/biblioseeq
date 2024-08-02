@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"github.com/bufbuild/connect-go"
 	"github.com/chzyer/readline"
-	"github.com/knaka/biblioseeq/fts"
 	ftslog "github.com/knaka/biblioseeq/log"
 	v1 "github.com/knaka/biblioseeq/pbgen/v1"
 	"github.com/knaka/biblioseeq/pbgen/v1/v1connect"
+	"github.com/knaka/biblioseeq/search"
+	"github.com/knaka/biblioseeq/tokenizer"
 	"github.com/knaka/biblioseeq/web"
 	. "github.com/knaka/go-utils"
 	"io"
@@ -28,8 +29,10 @@ func main() {
 	host := *hostArg
 	port := *portArg
 	ftslog.SetOutput(os.Stderr)
-	ftsOpts := []fts.Option{}
-	searchEngine := fts.NewSearchEngine(ftsOpts...)
+	ftsOpts := []search.Option{
+		search.ShouldMigratesDB(true),
+	}
+	searchEngine := search.NewEngine(ftsOpts...)
 	wg := sync.WaitGroup{}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer (func() { cancel() })()
@@ -86,7 +89,7 @@ func main() {
 			snippet := result.Snippet
 			snippet = strings.ReplaceAll(snippet, "\r", "")
 			snippet = strings.ReplaceAll(snippet, "\n", " ")
-			snippet = fts.RemoveZwsp(snippet)
+			snippet = tokenizer.RemoveZWSP(snippet)
 			V0(os.Stdout.WriteString(fmt.Sprintln(result.Path, snippet)))
 		}
 	}

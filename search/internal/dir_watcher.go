@@ -1,4 +1,4 @@
-package fts
+package internal
 
 import (
 	"bufio"
@@ -17,7 +17,11 @@ type DirWatcher struct {
 	onEvent   func(eventInfo notify.EventInfo)
 }
 
-func newDirWatcher(dirPath string, onEvent func(info notify.EventInfo)) *DirWatcher {
+func (dw *DirWatcher) DirPath() string {
+	return dw.dirPath
+}
+
+func NewDirWatcher(dirPath string, onEvent func(info notify.EventInfo)) *DirWatcher {
 	return &DirWatcher{
 		dirPath:   dirPath,
 		chStarted: make(chan any, 2),
@@ -84,7 +88,7 @@ func extractTitleAndTags(path string, body *string) (title string, tags []string
 	return
 }
 
-func (dw *DirWatcher) waitForWatchingStarted(ctx context.Context) {
+func (dw *DirWatcher) WaitForWatchingStarted(ctx context.Context) {
 	select {
 	case started := <-dw.chStarted:
 		dw.chStarted <- started
