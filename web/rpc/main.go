@@ -40,7 +40,7 @@ func (s *MainServiceHandlerImpl) Status(ctx context.Context, req *connect.Reques
 	resp = newResponseWithMsg(resp)
 	ctxValue := V(weblib.GetCtxValue(ctx))
 
-	resp.Msg.InitialScanFinished = ctxValue.FtsIndexer.InitialScanFinished()
+	resp.Msg.InitialScanFinished = ctxValue.SearchEngine.InitialScanFinished()
 
 	return
 }
@@ -70,7 +70,7 @@ func (s *MainServiceHandlerImpl) Query(ctx context.Context, req *connect.Request
 
 	queryRaw := req.Msg.Query
 	query := fts.SeparateJapanese(queryRaw)
-	results := V(ctxValue.FtsIndexer.Query(query))
+	results := V(ctxValue.SearchEngine.Query(query))
 	for _, result := range results {
 		resp.Msg.Results = append(resp.Msg.Results, &v1.QueryResult{
 			Path:       result.Path,
@@ -94,11 +94,20 @@ func (s *MainServiceHandlerImpl) Content(ctx context.Context, req *connect.Reque
 	return
 }
 
-// LaunchPath
-func (s *MainServiceHandlerImpl) LaunchPath(ctx context.Context, req *connect.Request[v1.LaunchPathRequest]) (resp *connect.Response[v1.LaunchPathResponse], err error) {
+func (s *MainServiceHandlerImpl) OpenFile(ctx context.Context, req *connect.Request[v1.OpenFileRequest]) (resp *connect.Response[v1.OpenFileResponse], err error) {
 	resp = newResponseWithMsg(resp)
 
 	cmd := exec.Command("open", req.Msg.Path)
+	V0(cmd.Run())
+
+	return
+}
+
+// OpenURL
+func (s *MainServiceHandlerImpl) OpenURL(ctx context.Context, req *connect.Request[v1.OpenURLRequest]) (resp *connect.Response[v1.OpenURLResponse], err error) {
+	resp = newResponseWithMsg(resp)
+
+	cmd := exec.Command("open", req.Msg.Url)
 	V0(cmd.Run())
 
 	return

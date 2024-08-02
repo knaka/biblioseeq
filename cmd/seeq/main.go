@@ -37,7 +37,7 @@ func main() {
 	ftsIndexer := fts.NewIndexer(ftsOpts...)
 
 	log.Println("Starting indexer.")
-	go ftsIndexer.WatchContinuously()
+	go ftsIndexer.WatchDirsContinuously()
 
 	log.Println("Waiting for initial scan to finish.")
 	ftsIndexer.WaitForInitialScanFinished()

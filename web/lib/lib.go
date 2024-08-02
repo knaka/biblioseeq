@@ -10,7 +10,7 @@ import (
 type CtxKey struct{}
 
 type CtxValue struct {
-	FtsIndexer *fts.Indexer
+	SearchEngine *fts.SearchEngine
 }
 
 func GetCtxValue(ctx context.Context) (ctxValue *CtxValue, err error) {

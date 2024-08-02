@@ -53,10 +53,10 @@ WHERE rowid IN (
   SELECT fts_file_id
   FROM files
   WHERE
-    CASE WHEN CAST(sqlc.narg(opt_path) AS text) IS NOT NULL THEN path = sqlc.narg(opt_path) ELSE false END OR
-    CASE WHEN CAST(sqlc.narg(opt_path_prefix) AS text) IS NOT NULL THEN
-      path LIKE sqlc.narg(opt_path_prefix) || '/%' or
-      path LIKE sqlc.narg(opt_path_prefix) || '\%'
+    CASE WHEN CAST(sqlc.narg(opt_file_path) AS text) IS NOT NULL THEN path = sqlc.narg(opt_file_path) ELSE false END OR
+    CASE WHEN CAST(sqlc.narg(opt_dir_path) AS text) IS NOT NULL THEN
+      path LIKE sqlc.narg(opt_dir_path) || '/%' or
+      path LIKE sqlc.narg(opt_dir_path) || '\%'
     ELSE
       false
     END
@@ -66,10 +66,10 @@ WHERE rowid IN (
 -- name: DeleteFiles :exec
 DELETE FROM files
 WHERE
-  CASE WHEN CAST(sqlc.narg(opt_path) AS text) IS NOT NULL THEN path = sqlc.narg(opt_path) ELSE false END OR
-  CASE WHEN CAST(sqlc.narg(opt_path_prefix) AS text) IS NOT NULL THEN
-    path LIKE sqlc.narg(opt_path_prefix) || '/%' or
-    path LIKE sqlc.narg(opt_path_prefix) || '\%'
+  CASE WHEN CAST(sqlc.narg(opt_file_path) AS text) IS NOT NULL THEN path = sqlc.narg(opt_file_path) ELSE false END OR
+  CASE WHEN CAST(sqlc.narg(opt_dir_path) AS text) IS NOT NULL THEN
+    path LIKE sqlc.narg(opt_dir_path) || '/%' or
+    path LIKE sqlc.narg(opt_dir_path) || '\%'
   ELSE
     false
   END

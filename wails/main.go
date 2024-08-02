@@ -1,6 +1,6 @@
 package main
 
-// f2af16d
+// 2238e24
 
 import (
 	"context"
@@ -15,6 +15,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
+	"log"
 )
 
 //go:embed frontend/src
@@ -22,6 +23,8 @@ var assets embed.FS
 
 //go:embed build/appicon.png
 var macIcon []byte
+
+// e02a8bd
 
 func openWindowAndWait(host string, port int) (err error) {
 	defer Catch(&err)
@@ -88,6 +91,7 @@ func openWindowAndWait(host string, port int) (err error) {
 }
 
 func main() {
+	//ftslog.SetOutput(os.Stderr)
 	host := ""
 	port := V(web.GetFreePort())
 	config := V(conf.ReadConfig())
@@ -97,7 +101,7 @@ func main() {
 	}
 	for _, confDir := range config.Directories {
 		ftsOpts = append(ftsOpts, fts.WithTargetDirectory(
-			confDir.Path,
+			confDir.AbsPath,
 			confDir.FileExtensions,
 		))
 	}
@@ -105,6 +109,8 @@ func main() {
 	go (func() {
 		ftsIndexer.WatchContinuously(context.Background())
 	})()
+	ftsIndexer.WaitForInitialScanFinished(context.Background())
+	log.Println("c743caa Finished")
 	server := V(web.NewServer(host, port, ftsIndexer))
 	go func() { V0(server.ListenAndServe()) }()
 	V0(openWindowAndWait(V2(web.ParseServerAddr(server.Addr))))

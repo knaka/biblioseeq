@@ -19,7 +19,7 @@ import (
 //go:embed schema.sql
 var dbSchema string
 
-func EnsureDBFile(dbFilePath string) {
+func ensureDBFile(dbFilePath string) {
 	if _, err := os.Stat(dbFilePath); err != nil && os.IsNotExist(err) {
 		V0(os.MkdirAll(filepath.Dir(dbFilePath), 0755))
 		V0(V(sql.Open("sqlite3", dbFilePath)).Close())
@@ -27,7 +27,7 @@ func EnsureDBFile(dbFilePath string) {
 }
 
 func Migrate(dbFilePath string) {
-	EnsureDBFile(dbFilePath)
+	ensureDBFile(dbFilePath)
 	db := V(sqlite3.NewDatabase(database.Config{DbName: dbFilePath}))
 	defer (func() { V0(db.Close()) })()
 	sqldef.Run(schema.GeneratorModeSQLite3, db,

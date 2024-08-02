@@ -45,8 +45,10 @@ const (
 	MainServiceQueryProcedure = "/v1.MainService/Query"
 	// MainServiceContentProcedure is the fully-qualified name of the MainService's Content RPC.
 	MainServiceContentProcedure = "/v1.MainService/Content"
-	// MainServiceLaunchPathProcedure is the fully-qualified name of the MainService's LaunchPath RPC.
-	MainServiceLaunchPathProcedure = "/v1.MainService/LaunchPath"
+	// MainServiceOpenFileProcedure is the fully-qualified name of the MainService's OpenFile RPC.
+	MainServiceOpenFileProcedure = "/v1.MainService/OpenFile"
+	// MainServiceOpenURLProcedure is the fully-qualified name of the MainService's OpenURL RPC.
+	MainServiceOpenURLProcedure = "/v1.MainService/OpenURL"
 )
 
 // MainServiceClient is a client for the v1.MainService service.
@@ -56,7 +58,8 @@ type MainServiceClient interface {
 	CurrentTime(context.Context, *connect_go.Request[v1.CurrentTimeRequest]) (*connect_go.Response[v1.CurrentTimeResponse], error)
 	Query(context.Context, *connect_go.Request[v1.QueryRequest]) (*connect_go.Response[v1.QueryResponse], error)
 	Content(context.Context, *connect_go.Request[v1.ContentRequest]) (*connect_go.Response[v1.ContentResponse], error)
-	LaunchPath(context.Context, *connect_go.Request[v1.LaunchPathRequest]) (*connect_go.Response[v1.LaunchPathResponse], error)
+	OpenFile(context.Context, *connect_go.Request[v1.OpenFileRequest]) (*connect_go.Response[v1.OpenFileResponse], error)
+	OpenURL(context.Context, *connect_go.Request[v1.OpenURLRequest]) (*connect_go.Response[v1.OpenURLResponse], error)
 }
 
 // NewMainServiceClient constructs a client for the v1.MainService service. By default, it uses the
@@ -94,9 +97,14 @@ func NewMainServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 			baseURL+MainServiceContentProcedure,
 			opts...,
 		),
-		launchPath: connect_go.NewClient[v1.LaunchPathRequest, v1.LaunchPathResponse](
+		openFile: connect_go.NewClient[v1.OpenFileRequest, v1.OpenFileResponse](
 			httpClient,
-			baseURL+MainServiceLaunchPathProcedure,
+			baseURL+MainServiceOpenFileProcedure,
+			opts...,
+		),
+		openURL: connect_go.NewClient[v1.OpenURLRequest, v1.OpenURLResponse](
+			httpClient,
+			baseURL+MainServiceOpenURLProcedure,
 			opts...,
 		),
 	}
@@ -109,7 +117,8 @@ type mainServiceClient struct {
 	currentTime *connect_go.Client[v1.CurrentTimeRequest, v1.CurrentTimeResponse]
 	query       *connect_go.Client[v1.QueryRequest, v1.QueryResponse]
 	content     *connect_go.Client[v1.ContentRequest, v1.ContentResponse]
-	launchPath  *connect_go.Client[v1.LaunchPathRequest, v1.LaunchPathResponse]
+	openFile    *connect_go.Client[v1.OpenFileRequest, v1.OpenFileResponse]
+	openURL     *connect_go.Client[v1.OpenURLRequest, v1.OpenURLResponse]
 }
 
 // VersionInfo calls v1.MainService.VersionInfo.
@@ -137,9 +146,14 @@ func (c *mainServiceClient) Content(ctx context.Context, req *connect_go.Request
 	return c.content.CallUnary(ctx, req)
 }
 
-// LaunchPath calls v1.MainService.LaunchPath.
-func (c *mainServiceClient) LaunchPath(ctx context.Context, req *connect_go.Request[v1.LaunchPathRequest]) (*connect_go.Response[v1.LaunchPathResponse], error) {
-	return c.launchPath.CallUnary(ctx, req)
+// OpenFile calls v1.MainService.OpenFile.
+func (c *mainServiceClient) OpenFile(ctx context.Context, req *connect_go.Request[v1.OpenFileRequest]) (*connect_go.Response[v1.OpenFileResponse], error) {
+	return c.openFile.CallUnary(ctx, req)
+}
+
+// OpenURL calls v1.MainService.OpenURL.
+func (c *mainServiceClient) OpenURL(ctx context.Context, req *connect_go.Request[v1.OpenURLRequest]) (*connect_go.Response[v1.OpenURLResponse], error) {
+	return c.openURL.CallUnary(ctx, req)
 }
 
 // MainServiceHandler is an implementation of the v1.MainService service.
@@ -149,7 +163,8 @@ type MainServiceHandler interface {
 	CurrentTime(context.Context, *connect_go.Request[v1.CurrentTimeRequest]) (*connect_go.Response[v1.CurrentTimeResponse], error)
 	Query(context.Context, *connect_go.Request[v1.QueryRequest]) (*connect_go.Response[v1.QueryResponse], error)
 	Content(context.Context, *connect_go.Request[v1.ContentRequest]) (*connect_go.Response[v1.ContentResponse], error)
-	LaunchPath(context.Context, *connect_go.Request[v1.LaunchPathRequest]) (*connect_go.Response[v1.LaunchPathResponse], error)
+	OpenFile(context.Context, *connect_go.Request[v1.OpenFileRequest]) (*connect_go.Response[v1.OpenFileResponse], error)
+	OpenURL(context.Context, *connect_go.Request[v1.OpenURLRequest]) (*connect_go.Response[v1.OpenURLResponse], error)
 }
 
 // NewMainServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -183,9 +198,14 @@ func NewMainServiceHandler(svc MainServiceHandler, opts ...connect_go.HandlerOpt
 		svc.Content,
 		opts...,
 	)
-	mainServiceLaunchPathHandler := connect_go.NewUnaryHandler(
-		MainServiceLaunchPathProcedure,
-		svc.LaunchPath,
+	mainServiceOpenFileHandler := connect_go.NewUnaryHandler(
+		MainServiceOpenFileProcedure,
+		svc.OpenFile,
+		opts...,
+	)
+	mainServiceOpenURLHandler := connect_go.NewUnaryHandler(
+		MainServiceOpenURLProcedure,
+		svc.OpenURL,
 		opts...,
 	)
 	return "/v1.MainService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -200,8 +220,10 @@ func NewMainServiceHandler(svc MainServiceHandler, opts ...connect_go.HandlerOpt
 			mainServiceQueryHandler.ServeHTTP(w, r)
 		case MainServiceContentProcedure:
 			mainServiceContentHandler.ServeHTTP(w, r)
-		case MainServiceLaunchPathProcedure:
-			mainServiceLaunchPathHandler.ServeHTTP(w, r)
+		case MainServiceOpenFileProcedure:
+			mainServiceOpenFileHandler.ServeHTTP(w, r)
+		case MainServiceOpenURLProcedure:
+			mainServiceOpenURLHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -231,6 +253,10 @@ func (UnimplementedMainServiceHandler) Content(context.Context, *connect_go.Requ
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.Content is not implemented"))
 }
 
-func (UnimplementedMainServiceHandler) LaunchPath(context.Context, *connect_go.Request[v1.LaunchPathRequest]) (*connect_go.Response[v1.LaunchPathResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.LaunchPath is not implemented"))
+func (UnimplementedMainServiceHandler) OpenFile(context.Context, *connect_go.Request[v1.OpenFileRequest]) (*connect_go.Response[v1.OpenFileResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.OpenFile is not implemented"))
+}
+
+func (UnimplementedMainServiceHandler) OpenURL(context.Context, *connect_go.Request[v1.OpenURLRequest]) (*connect_go.Response[v1.OpenURLResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("v1.MainService.OpenURL is not implemented"))
 }

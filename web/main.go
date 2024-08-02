@@ -60,7 +60,7 @@ func ParseServerAddr(addr string) (host string, port int, err error) {
 func NewServer(
 	host string,
 	port int,
-	ftsIndexer *fts.Indexer,
+	se *fts.SearchEngine,
 ) (
 	server *http.Server,
 	err error,
@@ -71,7 +71,7 @@ func NewServer(
 	}
 	addr := fmt.Sprintf("%s:%d", host, port)
 	ctxNew := context.WithValue(context.Background(), weblib.CtxKey{}, &weblib.CtxValue{
-		FtsIndexer: ftsIndexer,
+		SearchEngine: se,
 	})
 	V0(weblib.GetCtxValue(ctxNew))
 	server = &http.Server{

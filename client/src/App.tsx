@@ -12,6 +12,11 @@ import { client } from "./client";
 import './App.css';
 import { QueryResult } from './pbgen/v1/main_pb';
 
+// Any better way to do this?
+(window as any).openURL = async (url: string) => {
+  await client.openURL({url: url});
+}
+
 const SplitPane = styled(SplitPane_)`
   height: 100%;
   font-size: 16px; /* default */
@@ -62,8 +67,8 @@ const MyPre = styled.div`
   white-space: pre-wrap;
 `; 
 
-async function launchPath(path: string) {
-  await client.launchPath({path: path});
+async function openFile(path: string) {
+  await client.openFile({path: path});
 }
 
 function linkify(inputText: string): string {
@@ -71,13 +76,14 @@ function linkify(inputText: string): string {
 
   //URLs starting with http://, https://, or ftp://
   replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+.\/&@#%?=~_|!:,;]*[-A-Z0-9+&@#\/%=~_|])/gim;
-  replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
+  replacedText = inputText.replace(replacePattern1, '<a href="javascript:openURL(\'$1\');void(0)">$1</a>');
 
   return replacedText;
 }
 
 const escapeHtml = (unsafe: string): string => {
-  return unsafe.replaceAll('&', '<wbr>&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '<wbr>&quot;').replaceAll("'", '<wbr>&#039;');
+  // todo: `linkify` との兼ね合いで、うまく動くように要調整
+  return unsafe.replaceAll('&', '<wbr>&amp;').replaceAll('<', '&lt;').replaceAll('>', '<wbr>&gt;').replaceAll('"', '<wbr>&quot;').replaceAll("'", '<wbr>&#039;');
 }
 
 export default () => {
@@ -146,7 +152,7 @@ export default () => {
             key={result.path} 
             selected={result.path == selectedPath}
             onClick={() => setSelectedPath(result.path)}
-            onDoubleClick={() => launchPath(result.path)}
+            onDoubleClick={() => openFile(result.path)}
             result={result}
           />
         )}

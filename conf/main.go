@@ -3,6 +3,7 @@ package conf
 import (
 	"bytes"
 	_ "embed"
+	. "github.com/knaka/go-utils"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/samber/lo"
 	"io"
@@ -10,8 +11,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"sync"
-
-	. "github.com/knaka/go-utils"
 )
 
 func getConfigFilePath() (string, error) {
@@ -19,9 +18,7 @@ func getConfigFilePath() (string, error) {
 }
 
 type Directory struct {
-	Path           string `toml:"path"`
-	AbsPath        string
-	EvalPath       string
+	Path           string   `toml:"path"`
 	FileExtensions []string `toml:"file_extensions"`
 }
 
@@ -29,15 +26,17 @@ type Config struct {
 	Directories []*Directory `toml:"directories"`
 }
 
-var reHomeVariable = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`\$HOME\b`) })
-
-var reTrailingSlashes = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`[/\\]+$`) })
-
 //go:embed config-default.toml
 var defaultConfigToml []byte
 
-func ReadConfig() (config *Config, err error) {
-	configFilePath := V(getConfigFilePath())
+var reHomeVariable = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`\$HOME\b`) })
+var reTrailingSlashes = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`[/\\]+$`) })
+var reExtWildcard = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`^\*\.`) })
+
+func ReadConfig(configFilePath string) (config *Config, err error) {
+	if configFilePath == "" {
+		configFilePath = V(getConfigFilePath())
+	}
 	V0(os.MkdirAll(filepath.Dir(configFilePath), 0755))
 	if _, err := os.Stat(configFilePath); err != nil {
 		func() {
@@ -52,12 +51,16 @@ func ReadConfig() (config *Config, err error) {
 	V0(toml.Unmarshal(configToml, config))
 	homeDir := V(os.UserHomeDir())
 	config.Directories = lo.Map(config.Directories, func(dir *Directory, index int) *Directory {
-		dir.Path = reHomeVariable().ReplaceAllString(reTrailingSlashes().ReplaceAllString(dir.Path, ""), homeDir)
-		dir.AbsPath = V(filepath.Abs(dir.Path))
-		dir.EvalPath = V(filepath.EvalSymlinks(dir.AbsPath))
+		dir.Path = V(filepath.EvalSymlinks(
+			V(filepath.Abs(
+				reHomeVariable().ReplaceAllString(
+					reTrailingSlashes().ReplaceAllString(dir.Path, ""),
+					homeDir,
+				),
+			)),
+		))
 		dir.FileExtensions = lo.Map(dir.FileExtensions, func(ext string, index int) string {
-			// Todo: Use sync value.
-			ext = regexp.MustCompile(`^\*\.`).ReplaceAllString(ext, ".")
+			ext = reExtWildcard().ReplaceAllString(ext, ".")
 			if len(ext) > 0 && ext[0] != '.' {
 				ext = "." + ext
 			}

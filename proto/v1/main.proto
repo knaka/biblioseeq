@@ -55,12 +55,17 @@ message ContentResponse {
   string content = 1;
 }
 
-message LaunchPathRequest {
+message OpenFileRequest {
   string path = 1;
 }
 
-message LaunchPathResponse {
+message OpenFileResponse {}
+
+message OpenURLRequest {
+  string url = 1;
 }
+
+message OpenURLResponse {}
 
 service MainService {
   rpc VersionInfo(VersionInfoRequest) returns (VersionInfoResponse);
@@ -68,5 +73,6 @@ service MainService {
   rpc CurrentTime(CurrentTimeRequest) returns (CurrentTimeResponse);
   rpc Query(QueryRequest) returns (QueryResponse);
   rpc Content(ContentRequest) returns (ContentResponse);
-  rpc LaunchPath(LaunchPathRequest) returns (LaunchPathResponse);
+  rpc OpenFile(OpenFileRequest) returns (OpenFileResponse);
+  rpc OpenURL(OpenURLRequest) returns (OpenURLResponse);
 }

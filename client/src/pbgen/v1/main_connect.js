@@ -5,7 +5,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { ContentRequest, ContentResponse, CurrentTimeRequest, CurrentTimeResponse, LaunchPathRequest, LaunchPathResponse, QueryRequest, QueryResponse, StatusRequest, StatusResponse, VersionInfoRequest, VersionInfoResponse } from "./main_pb.js";
+import { ContentRequest, ContentResponse, CurrentTimeRequest, CurrentTimeResponse, OpenFileRequest, OpenFileResponse, OpenURLRequest, OpenURLResponse, QueryRequest, QueryResponse, StatusRequest, StatusResponse, VersionInfoRequest, VersionInfoResponse } from "./main_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -60,12 +60,21 @@ export const MainService = {
       kind: MethodKind.Unary,
     },
     /**
-     * @generated from rpc v1.MainService.LaunchPath
+     * @generated from rpc v1.MainService.OpenFile
      */
-    launchPath: {
-      name: "LaunchPath",
-      I: LaunchPathRequest,
-      O: LaunchPathResponse,
+    openFile: {
+      name: "OpenFile",
+      I: OpenFileRequest,
+      O: OpenFileResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc v1.MainService.OpenURL
+     */
+    openURL: {
+      name: "OpenURL",
+      I: OpenURLRequest,
+      O: OpenURLResponse,
       kind: MethodKind.Unary,
     },
   }

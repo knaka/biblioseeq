@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/bufbuild/connect-go"
 	"github.com/chzyer/readline"
-	"github.com/knaka/biblioseeq/conf"
 	"github.com/knaka/biblioseeq/fts"
 	ftslog "github.com/knaka/biblioseeq/log"
 	v1 "github.com/knaka/biblioseeq/pbgen/v1"
@@ -29,28 +28,17 @@ func main() {
 	host := *hostArg
 	port := *portArg
 	ftslog.SetOutput(os.Stderr)
-	config := V(conf.ReadConfig())
-	ftsOpts := []fts.Option{
-		fts.WithDefaultDBFilePath(),
-		fts.MigratesDB(),
-	}
-	for _, confDir := range config.Directories {
-		ftsOpts = append(ftsOpts, fts.WithTargetDirectory(
-			confDir.AbsPath,
-			confDir.EvalPath,
-			confDir.FileExtensions,
-		))
-	}
-	ftsIndexer := fts.NewIndexer(ftsOpts...)
+	ftsOpts := []fts.Option{}
+	searchEngine := fts.NewSearchEngine(ftsOpts...)
 	wg := sync.WaitGroup{}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer (func() { cancel() })()
 	wg.Add(1)
 	go (func() {
-		ftsIndexer.WatchContinuously(ctx)
+		searchEngine.Serve(ctx)
 		wg.Done()
 	})()
-	server := V(web.NewServer(host, port, ftsIndexer))
+	server := V(web.NewServer(host, port, searchEngine))
 	host, port = V2(web.ParseServerAddr(server.Addr))
 	serverUrl := fmt.Sprintf("http://%s:%d", Elvis(host, "localhost"), port)
 	log.Printf("Listening on %s .", serverUrl)
@@ -66,6 +54,7 @@ func main() {
 		&connect.Request[v1.CurrentTimeRequest]{Msg: &v1.CurrentTimeRequest{}},
 	))
 	log.Println("e289984", currentTime.Msg.Timestamp.AsTime())
+	searchEngine.WaitForInitialScanFinished(ctx)
 	for {
 		status := V(clt.Status(ctx, &connect.Request[v1.StatusRequest]{Msg: &v1.StatusRequest{}}))
 		if status.Msg.InitialScanFinished {

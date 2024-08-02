@@ -312,45 +312,88 @@ export declare class ContentResponse extends Message<ContentResponse> {
 }
 
 /**
- * @generated from message v1.LaunchPathRequest
+ * @generated from message v1.OpenFileRequest
  */
-export declare class LaunchPathRequest extends Message<LaunchPathRequest> {
+export declare class OpenFileRequest extends Message<OpenFileRequest> {
   /**
    * @generated from field: string path = 1;
    */
   path: string;
 
-  constructor(data?: PartialMessage<LaunchPathRequest>);
+  constructor(data?: PartialMessage<OpenFileRequest>);
 
   static readonly runtime: typeof proto3;
-  static readonly typeName = "v1.LaunchPathRequest";
+  static readonly typeName = "v1.OpenFileRequest";
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): LaunchPathRequest;
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): OpenFileRequest;
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): LaunchPathRequest;
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): OpenFileRequest;
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): LaunchPathRequest;
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): OpenFileRequest;
 
-  static equals(a: LaunchPathRequest | PlainMessage<LaunchPathRequest> | undefined, b: LaunchPathRequest | PlainMessage<LaunchPathRequest> | undefined): boolean;
+  static equals(a: OpenFileRequest | PlainMessage<OpenFileRequest> | undefined, b: OpenFileRequest | PlainMessage<OpenFileRequest> | undefined): boolean;
 }
 
 /**
- * @generated from message v1.LaunchPathResponse
+ * @generated from message v1.OpenFileResponse
  */
-export declare class LaunchPathResponse extends Message<LaunchPathResponse> {
-  constructor(data?: PartialMessage<LaunchPathResponse>);
+export declare class OpenFileResponse extends Message<OpenFileResponse> {
+  constructor(data?: PartialMessage<OpenFileResponse>);
 
   static readonly runtime: typeof proto3;
-  static readonly typeName = "v1.LaunchPathResponse";
+  static readonly typeName = "v1.OpenFileResponse";
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): LaunchPathResponse;
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): OpenFileResponse;
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): LaunchPathResponse;
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): OpenFileResponse;
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): LaunchPathResponse;
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): OpenFileResponse;
 
-  static equals(a: LaunchPathResponse | PlainMessage<LaunchPathResponse> | undefined, b: LaunchPathResponse | PlainMessage<LaunchPathResponse> | undefined): boolean;
+  static equals(a: OpenFileResponse | PlainMessage<OpenFileResponse> | undefined, b: OpenFileResponse | PlainMessage<OpenFileResponse> | undefined): boolean;
+}
+
+/**
+ * @generated from message v1.OpenURLRequest
+ */
+export declare class OpenURLRequest extends Message<OpenURLRequest> {
+  /**
+   * @generated from field: string url = 1;
+   */
+  url: string;
+
+  constructor(data?: PartialMessage<OpenURLRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.OpenURLRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): OpenURLRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): OpenURLRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): OpenURLRequest;
+
+  static equals(a: OpenURLRequest | PlainMessage<OpenURLRequest> | undefined, b: OpenURLRequest | PlainMessage<OpenURLRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message v1.OpenURLResponse
+ */
+export declare class OpenURLResponse extends Message<OpenURLResponse> {
+  constructor(data?: PartialMessage<OpenURLResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "v1.OpenURLResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): OpenURLResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): OpenURLResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): OpenURLResponse;
+
+  static equals(a: OpenURLResponse | PlainMessage<OpenURLResponse> | undefined, b: OpenURLResponse | PlainMessage<OpenURLResponse> | undefined): boolean;
 }
 

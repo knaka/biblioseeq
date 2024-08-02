@@ -86,12 +86,12 @@ WHERE
 `
 
 type DeleteFilesParams struct {
-	OptPath       *string
-	OptPathPrefix *string
+	OptFilePath *string
+	OptDirPath  *string
 }
 
 func (q *Queries) DeleteFiles(ctx context.Context, arg *DeleteFilesParams) error {
-	_, err := q.db.ExecContext(ctx, deleteFiles, arg.OptPath, arg.OptPathPrefix)
+	_, err := q.db.ExecContext(ctx, deleteFiles, arg.OptFilePath, arg.OptDirPath)
 	return err
 }
 
@@ -115,12 +115,12 @@ WHERE rowid IN (
 `
 
 type DeleteFtsFilesParams struct {
-	OptPath       *string
-	OptPathPrefix *string
+	OptFilePath *string
+	OptDirPath  *string
 }
 
 func (q *Queries) DeleteFtsFiles(ctx context.Context, arg *DeleteFtsFilesParams) error {
-	_, err := q.db.ExecContext(ctx, deleteFtsFiles, arg.OptPath, arg.OptPathPrefix)
+	_, err := q.db.ExecContext(ctx, deleteFtsFiles, arg.OptFilePath, arg.OptDirPath)
 	return err
 }
 

@@ -128,20 +128,38 @@ export const ContentResponse = /*@__PURE__*/ proto3.makeMessageType(
 );
 
 /**
- * @generated from message v1.LaunchPathRequest
+ * @generated from message v1.OpenFileRequest
  */
-export const LaunchPathRequest = /*@__PURE__*/ proto3.makeMessageType(
-  "v1.LaunchPathRequest",
+export const OpenFileRequest = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.OpenFileRequest",
   () => [
     { no: 1, name: "path", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 
 /**
- * @generated from message v1.LaunchPathResponse
+ * @generated from message v1.OpenFileResponse
  */
-export const LaunchPathResponse = /*@__PURE__*/ proto3.makeMessageType(
-  "v1.LaunchPathResponse",
+export const OpenFileResponse = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.OpenFileResponse",
+  [],
+);
+
+/**
+ * @generated from message v1.OpenURLRequest
+ */
+export const OpenURLRequest = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.OpenURLRequest",
+  () => [
+    { no: 1, name: "url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
+);
+
+/**
+ * @generated from message v1.OpenURLResponse
+ */
+export const OpenURLResponse = /*@__PURE__*/ proto3.makeMessageType(
+  "v1.OpenURLResponse",
   [],
 );
 
