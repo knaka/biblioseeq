@@ -107,11 +107,10 @@ func (im *IdxMgr) OnNotifyEvent(eventInfo notify.EventInfo) {
 
 func (im *IdxMgr) matchesToTarget(filePath string) bool {
 	return lo.SomeBy(im.targetDirs, func(dir *idxTargetDir) bool {
-		//return E(filepath.Rel(dir.path, filePath)) == nil && lo.SomeBy(dir.fileExtensions, func(ext string) bool {
-
-		return strings.HasPrefix(filePath, dir.path) && lo.SomeBy(dir.fileExtensions, func(ext string) bool {
-			return filepath.Ext(filePath) == ext
-		})
+		return E(filepath.Rel(dir.path, filePath)) == nil &&
+			lo.SomeBy(dir.fileExtensions, func(ext string) bool {
+				return filepath.Ext(filePath) == ext
+			})
 	})
 }
 
@@ -266,30 +265,6 @@ func (im *IdxMgr) deleteFileOrDirIndex(path string) {
 	store.commit()
 }
 
-//func (im *IdxMgr) WaitForInitialScanFinished(ctx context.Context) {
-//	for _, dirIndexer := range im.dirIndexers {
-//		dirIndexer.WaitForInitialScanFinished(ctx)
-//	}
-//}
-
-//func (im *IdxMgr) getDirectoryIndexer(path string) (directory *DirWatcher) {
-//	for _, dir := range im.dirIndexers {
-//		if _, errSub := filepath.Rel(dir.dirPath, path); errSub == nil {
-//			return dir
-//		}
-//	}
-//	return
-//}
-
-//func (im *IdxMgr) indexFile(filePath string) {
-//	dirIndexer := im.getDirectoryIndexer(filePath)
-//	if lo.NoneBy(dirIndexer.fileExtensions, func(ext string) bool {
-//		return filepath.Ext(filePath) == ext
-//	}) {
-//		return
-//	}
-//}
-
 var reSpaces = sync.OnceValue(func() *regexp.Regexp { return regexp.MustCompile(`\s+`) })
 
 type QueryResult struct {
@@ -367,31 +342,3 @@ func (im *IdxMgr) Query(query string) (results []*QueryResult, err error) {
 		}, true
 	}), nil
 }
-
-func (im *IdxMgr) InitialScanFinished() bool {
-	//return lo.EveryBy(im.dirIndexers, func(dirIndexer *DirWatcher) bool {
-	//	return dirIndexer.InitialScanFinished()
-	//})
-	return false
-}
-
-//func NewIndexer(opts ...Option) (ret *IdxMgr) {
-//	ret = &IdxMgr{}
-//	for _, opt := range opts {
-//		opt(ret)
-//	}
-//	if ret.shouldMigrateDB {
-//		dbPath := V(getDefaultDBFilePath())
-//		db.Migrate(dbPath)
-//	}
-//	if ret.dbConn == nil {
-//		panic("dbConn is not set")
-//	}
-//	return
-//}
-
-//return lo.SomeBy(indexer.dirIndexers, func(dirIndexer *DirWatcher) bool {
-//	return strings.HasPrefix(path, dirIndexer.dirPath) && lo.SomeBy(dirIndexer.fileExtensions, func(ext string) bool {
-//		return filepath.Ext(path) == ext
-//	})
-//})
