@@ -106,6 +106,8 @@ func (im *IdxMgr) onNotifyEvent(eventInfo notify.EventInfo) {
 
 func (im *IdxMgr) matchesToTarget(filePath string) bool {
 	return lo.SomeBy(im.targetDirs, func(dir *idxTargetDir) bool {
+		//return E(filepath.Rel(dir.path, filePath)) == nil && lo.SomeBy(dir.fileExtensions, func(ext string) bool {
+
 		return strings.HasPrefix(filePath, dir.path) && lo.SomeBy(dir.fileExtensions, func(ext string) bool {
 			return filepath.Ext(filePath) == ext
 		})

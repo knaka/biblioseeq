@@ -51,14 +51,14 @@ func ReadConfig(configFilePath string) (config *Config, err error) {
 	V0(toml.Unmarshal(configToml, config))
 	homeDir := V(os.UserHomeDir())
 	config.Directories = lo.Map(config.Directories, func(dir *Directory, index int) *Directory {
-		dir.Path = V(filepath.EvalSymlinks(
+		dir.Path = filepath.Clean(V(filepath.EvalSymlinks(
 			V(filepath.Abs(
 				reHomeVariable().ReplaceAllString(
 					reTrailingSlashes().ReplaceAllString(dir.Path, ""),
 					homeDir,
 				),
 			)),
-		))
+		)))
 		dir.FileExtensions = lo.Map(dir.FileExtensions, func(ext string, index int) string {
 			ext = reExtWildcard().ReplaceAllString(ext, ".")
 			if len(ext) > 0 && ext[0] != '.' {
