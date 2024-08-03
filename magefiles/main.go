@@ -18,14 +18,25 @@ type PB mg.Namespace
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (PB) Gen() (err error) {
-	return gobin.RunWith([]string{"go-generate-fast"}, gobin.WithDir("pb"))
+	return gobin.RunEx([]string{"go-generate-fast", "."},
+		gobin.WithDir("pb"),
+		gobin.WithStdout(Ternary(mg.Verbose(), os.Stdout, nil)),
+		gobin.WithStderr(os.Stderr),
+	)
 }
 
 //goland:noinspection GoUnnecessarilyExportedIdentifiers
 type DB mg.Namespace
 
+// Gen generates database binding code.
+//
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (DB) Gen() (err error) {
-	return gobin.RunWith([]string{"go-generate-fast"}, gobin.WithDir("db"))
+	return gobin.RunEx([]string{"go-generate-fast", "."},
+		gobin.WithDir("db"),
+		gobin.WithStdout(Ternary(mg.Verbose(), os.Stdout, nil)),
+		gobin.WithStderr(os.Stderr),
+	)
 }
 
 //goland:noinspection GoUnnecessarilyExportedIdentifiers
@@ -40,6 +51,9 @@ func runClientTask(tasks ...string) (err error) {
 	return cmd.Run()
 }
 
+// Build builds web client.
+//
+//goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Client) Build() (err error) {
 	return runClientTask("build")
 }
@@ -52,5 +66,8 @@ func Gen() (err error) {
 		PB.Gen,
 		DB.Gen,
 	)
-	return gobin.Run("go-generate-fast")
+	return gobin.RunEx([]string{"go-generate-fast", "."},
+		gobin.WithStdout(Ternary(mg.Verbose(), os.Stdout, nil)),
+		gobin.WithStderr(os.Stderr),
+	)
 }
