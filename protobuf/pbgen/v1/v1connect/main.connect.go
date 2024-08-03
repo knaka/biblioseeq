@@ -10,7 +10,7 @@ import (
 	context "context"
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
-	v1 "github.com/knaka/biblioseeq/pbgen/v1"
+	v1 "github.com/knaka/biblioseeq/protobuf/pbgen/v1"
 	http "net/http"
 	strings "strings"
 )

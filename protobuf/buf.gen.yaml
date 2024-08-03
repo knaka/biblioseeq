@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: github.com/knaka/biblioseeq/pbgen
+    default: github.com/knaka/biblioseeq/protobuf/pbgen
 plugins:
   # protoc-gen-go
   - name: go
