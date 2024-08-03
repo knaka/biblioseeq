@@ -3,8 +3,8 @@ package rpc
 import (
 	"context"
 	"github.com/bufbuild/connect-go"
-	"github.com/knaka/biblioseeq/pbgen/v1"
-	"github.com/knaka/biblioseeq/pbgen/v1/v1connect"
+	"github.com/knaka/biblioseeq/pb/bufgen/v1"
+	"github.com/knaka/biblioseeq/pb/bufgen/v1/v1connect"
 	"github.com/knaka/biblioseeq/tokenizer"
 	weblib "github.com/knaka/biblioseeq/web/lib"
 	"google.golang.org/protobuf/types/known/timestamppb"

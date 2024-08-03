@@ -9,12 +9,12 @@ func TestPb_Gen(t *testing.T) {
 	_ = os.Chdir("..")
 	tests := []struct {
 		name    string
-		pb      Pb
+		pb      PB
 		wantErr bool
 	}{
 		{
 			"Test 1",
-			Pb{},
+			PB{},
 			false,
 		},
 	}
