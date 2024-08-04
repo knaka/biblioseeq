@@ -1,5 +1,3 @@
-// gen_from_schema generates code from templates in subdirectories applying PostgreSQL schema information.
-
 package main
 
 import (
