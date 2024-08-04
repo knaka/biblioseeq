@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/knaka/biblioseeq"
-	"github.com/knaka/biblioseeq/pbgen/v1/v1connect"
+	"github.com/knaka/biblioseeq/pb/bufgen/v1/v1connect"
 	"github.com/knaka/biblioseeq/search"
 	weblib "github.com/knaka/biblioseeq/web/lib"
 	"github.com/knaka/biblioseeq/web/rpc"

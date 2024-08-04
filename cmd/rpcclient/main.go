@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"github.com/bufbuild/connect-go"
-	"github.com/knaka/biblioseeq/pbgen/v1"
-	"github.com/knaka/biblioseeq/pbgen/v1/v1connect"
+	"github.com/knaka/biblioseeq/pb/bufgen/v1"
+	"github.com/knaka/biblioseeq/pb/bufgen/v1/v1connect"
 	"log"
 	"net/http"
 
