@@ -3,7 +3,7 @@ package main
 
 import (
 	. "github.com/knaka/go-utils"
-	gobin "github.com/knaka/gobin/lib"
+	"github.com/knaka/gobin"
 	"github.com/magefile/mage/mg"
 	"os"
 )

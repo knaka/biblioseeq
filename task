@@ -1,17 +1,8 @@
 #!/bin/bash
 set -o nounset -o errexit -o pipefail
 
-# Directory containing the .env file.
 DOTENV_DIR="${DOTENV_DIR:-$PWD}"
 export DOTENV_DIR
-basedir="$(readlink -f "$(dirname "$0")")"
-# Install mage if not already installed.
-cd "$basedir"
-gobin="$basedir/.gobin"
-mkdir -p "$gobin"
-if ! test -x "$gobin"/mage
-then
-  GOBIN="$gobin" go install github.com/magefile/mage@latest
-fi
-# Then run mage.
-exec "$gobin"/mage -v "$@"
+
+cd "$(readlink -f "$(dirname "$0")")"
+go run gobin-run.go mage -v "$@"

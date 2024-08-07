@@ -1,10 +1,12 @@
+github.com/bufbuild/buf/cmd/buf@latest requires=protoc-gen-go,protoc-gen-connect-go
+github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@latest
+google.golang.org/protobuf/cmd/protoc-gen-go@latest
+
+github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+
 github.com/oNaiPs/go-generate-fast@latest
-golang.org/x/tools/cmd/stringer@latest
 
-github.com/bufbuild/buf/cmd/buf@v1.9.0
-github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@v1.9.0
-google.golang.org/protobuf/cmd/protoc-gen-go@v1.31.0
+# Go Task runner — Mage :: Mage https://magefile.org/
+github.com/magefile/mage@latest
 
-github.com/wailsapp/wails/v2/cmd/wails@latest
-
-github.com/sqlc-dev/sqlc/cmd/sqlc@v1.26.0
+# github.com/wailsapp/wails/v2/cmd/wails@latest
