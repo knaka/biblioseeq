@@ -2,5 +2,8 @@
 set -o nounset -o errexit -o pipefail
 
 cd "$(readlink -f "$(dirname "$0")")"
-! test -x .gobin/mage && go run gobin-install.go mage
+if ! test -x .gobin/mage
+then
+  go run gobin-install.go mage
+fi
 .gobin/mage -v "$@"

@@ -1,12 +1,16 @@
+# Protocol Buffers
 github.com/bufbuild/buf/cmd/buf@latest requires=protoc-gen-go,protoc-gen-connect-go
 github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@latest
 google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
+# SQLC — Generate type safe Go from SQL
 github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
+# Gomplate — A versatile Go template processor
 github.com/oNaiPs/go-generate-fast@latest
 
 # Go Task runner — Mage :: Mage https://magefile.org/
 github.com/magefile/mage@latest
 
-# github.com/wailsapp/wails/v2/cmd/wails@latest
+# Wails — Build Web Apps in Go https://wails.io/
+github.com/wailsapp/wails/v2/cmd/wails@latest

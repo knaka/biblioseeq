@@ -11,6 +11,7 @@ import (
 func mgRunWith(dir string, args ...string) error {
 	return gobin.RunEx(args,
 		gobin.WithDir(dir),
+		gobin.WithStdin(os.Stdin),
 		gobin.WithStdout(Ternary(mg.Verbose(), os.Stdout, nil)),
 		gobin.WithStderr(os.Stderr),
 	)

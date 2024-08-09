@@ -3,4 +3,5 @@ github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@v1.10.0
 github.com/knaka/gobin/cmd/gobin@v0.1.6
 github.com/magefile/mage@v1.15.0
 github.com/oNaiPs/go-generate-fast@v0.3.0
+github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0
 google.golang.org/protobuf/cmd/protoc-gen-go@v1.34.2
