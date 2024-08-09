@@ -1,6 +1,6 @@
 github.com/bufbuild/buf/cmd/buf@v1.36.0
 github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@v1.10.0
+github.com/knaka/gobin/cmd/gobin@v0.1.6
 github.com/magefile/mage@v1.15.0
 github.com/oNaiPs/go-generate-fast@v0.3.0
 google.golang.org/protobuf/cmd/protoc-gen-go@v1.34.2
-github.com/knaka/gobin/cmd/gobin@v0.0.2024080721

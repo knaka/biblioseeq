@@ -1,8 +1,6 @@
 #!/bin/bash
 set -o nounset -o errexit -o pipefail
 
-DOTENV_DIR="${DOTENV_DIR:-$PWD}"
-export DOTENV_DIR
-
 cd "$(readlink -f "$(dirname "$0")")"
-go run gobin-run.go mage -v "$@"
+! test -x .gobin/mage && go run gobin-install.go mage
+.gobin/mage -v "$@"
