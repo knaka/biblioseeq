@@ -8,13 +8,14 @@ import (
 	"os"
 )
 
-func mgRunWith(dir string, args ...string) error {
-	return gobin.RunEx(args,
+func mgRunWith(dir string, args ...string) (err error) {
+	_, err = gobin.RunEx(args,
 		gobin.WithDir(dir),
 		gobin.WithStdin(os.Stdin),
 		gobin.WithStdout(Ternary(mg.Verbose(), os.Stdout, nil)),
 		gobin.WithStderr(os.Stderr),
 	)
+	return
 }
 
 // Gen generates code.

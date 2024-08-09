@@ -12,8 +12,8 @@ require (
 	github.com/ikawaha/kagome-dict/ipa v1.2.0
 	github.com/ikawaha/kagome/v2 v2.9.11
 	github.com/knaka/go-sqlite3-fts5 v0.0.0-20240729034955-57b867b89cca
-	github.com/knaka/go-utils v0.0.2024080812
-	github.com/knaka/gobin v0.1.7
+	github.com/knaka/go-utils v0.1.1
+	github.com/knaka/gobin v0.1.9
 	github.com/magefile/mage v1.15.0
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/pelletier/go-toml/v2 v2.2.2
