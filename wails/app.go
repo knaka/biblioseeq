@@ -58,6 +58,5 @@ func (a *App) GetAccessInfo() string {
 			"path=/ap/",
 		}, "&"),
 	}
-	url.Path = "/login"
 	return url.String()
 }
