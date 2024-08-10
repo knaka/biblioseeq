@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"github.com/knaka/biblioseeq/search"
 	"github.com/knaka/biblioseeq/web"
 	"github.com/webui-dev/go-webui/v2"
 	neturl "net/url"
@@ -48,7 +49,16 @@ func openWindowAndWait(host string, port int) (err error) {
 }
 
 func main() {
-	server := V(web.NewServer(context.Background(), "", 0))
+	ftsOpts := []search.Option{
+		search.ShouldMigratesDB(true),
+	}
+	searchEngine := search.NewEngine(ftsOpts...)
+	ctx := context.Background()
+	go (func() {
+		searchEngine.Serve(ctx)
+	})()
+	searchEngine.WaitForInitialScanFinished(ctx)
+	server := V(web.NewServer("", 0, searchEngine))
 	go (func() { V0(server.ListenAndServe()) })()
 	V0(openWindowAndWait(V2(web.ParseServerAddr(server.Addr))))
 }

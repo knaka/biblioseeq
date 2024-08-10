@@ -5,8 +5,7 @@ package main
 import (
 	"context"
 	"embed"
-	"github.com/knaka/biblioseeq/conf"
-	"github.com/knaka/biblioseeq/fts"
+	"github.com/knaka/biblioseeq/search"
 	"github.com/knaka/biblioseeq/web"
 	. "github.com/knaka/go-utils"
 	"github.com/wailsapp/wails/v2"
@@ -15,7 +14,6 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
-	"log"
 )
 
 //go:embed frontend/src
@@ -94,24 +92,16 @@ func main() {
 	//ftslog.SetOutput(os.Stderr)
 	host := ""
 	port := V(web.GetFreePort())
-	config := V(conf.ReadConfig())
-	ftsOpts := []fts.Option{
-		fts.WithDefaultDBFilePath(),
-		fts.MigratesDB(),
+	ftsOpts := []search.Option{
+		search.ShouldMigratesDB(true),
 	}
-	for _, confDir := range config.Directories {
-		ftsOpts = append(ftsOpts, fts.WithTargetDirectory(
-			confDir.AbsPath,
-			confDir.FileExtensions,
-		))
-	}
-	ftsIndexer := fts.NewIndexer(ftsOpts...)
+	searchEngine := search.NewEngine(ftsOpts...)
+	ctx := context.Background()
 	go (func() {
-		ftsIndexer.WatchContinuously(context.Background())
+		searchEngine.Serve(ctx)
 	})()
-	ftsIndexer.WaitForInitialScanFinished(context.Background())
-	log.Println("c743caa Finished")
-	server := V(web.NewServer(host, port, ftsIndexer))
-	go func() { V0(server.ListenAndServe()) }()
+	searchEngine.WaitForInitialScanFinished(ctx)
+	server := V(web.NewServer(host, port, searchEngine))
+	go (func() { V0(server.ListenAndServe()) })()
 	V0(openWindowAndWait(V2(web.ParseServerAddr(server.Addr))))
 }

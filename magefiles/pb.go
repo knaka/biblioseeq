@@ -9,5 +9,5 @@ type PB mg.Namespace
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (PB) Gen() (err error) {
-	return mgRunWith("pb", "go-generate-fast", ".")
+	return gobinRun("pb", "go-generate-fast", ".")
 }

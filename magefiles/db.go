@@ -9,5 +9,5 @@ type DB mg.Namespace
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (DB) Gen() (err error) {
-	return mgRunWith("db", "go-generate-fast", ".")
+	return gobinRun("db", "go-generate-fast", ".")
 }

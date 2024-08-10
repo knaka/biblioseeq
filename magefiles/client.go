@@ -25,5 +25,7 @@ func runClientTask(tasks ...string) (err error) {
 //
 //goland:noinspection GoUnusedExportedFunction, GoUnnecessarilyExportedIdentifiers
 func (Client) Build() (err error) {
-	return runClientTask("build")
+	return run("client",
+		filepath.Join(V(os.Getwd()), "client", "task"),
+		"build")
 }

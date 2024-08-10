@@ -7,6 +7,9 @@ const embSearchIconUrl = `data:image/svg+xml,${encodeURIComponent(renderToStatic
 
 const Input = styled.input.attrs(props => ({
   type: "text",
+  spellcheck: false,
+  autocorrect: "off",
+  autocapitalize: "none",
   placeholder: "Search...",
   ...props,
 }))`
